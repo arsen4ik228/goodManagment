@@ -24,9 +24,9 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 }
 
 .body{
-
+    margin-top: 57px;
     flex: 1 1 auto;
-    max-height: calc(100vh - 173px);
+    max-height: calc(100vh - 3px);
 }
 
 .input1{
@@ -107,10 +107,13 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 .first{
     justify-content: center;
     padding: 0;
+    width: 100%;
 
     select{
         font-size: 16px;
         font-family: "'Montserrat', sans-serif";
+        width: 130px;
+        text-align: center;
     }
 }
 
@@ -123,6 +126,7 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
     padding: 1rem 2.5rem;
     /*border: #005475 1px solid;*/
     width: 100%;
+    height: 93px;
     align-items: center;
     justify-content: center;
 

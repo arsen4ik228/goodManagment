@@ -77,10 +77,11 @@ const Strategy = () => {
     }
 
     const saveNewStrategy = async () => {
+        console.log(strategyToOrganizations)
         await postStrategy({
             userId,
             content: htmlContent,
-            state: isState,
+            // state: isState,
             strategyToOrganizations: strategyToOrganizations,
         })
             .unwrap()
@@ -124,18 +125,15 @@ const Strategy = () => {
                 {/*    </div>*/}
                 {/*</div>*/}
 
-                <div className={classes.inputRow1}>
+                {/* <div className={classes.inputRow1}>
                     <div className={classes.first}>
                         <select name={'mySelect'} value={isState} onChange={(e) => setIsState(e.target.value)}>
                             <option value={'Черновик'}>Черновик</option>
                             <option value={'Активный'}>Активный</option>
                         </select>
                     </div>
-                    <div className={classes.second}>
-                        <input type="date" name="calendar" value={valueDate}
-                               onChange={(e) => setValueDate(e.target.value)}/>
-                    </div>
-                </div>
+
+                </div> */}
 
                 <div className={classes.body}>
                     <>

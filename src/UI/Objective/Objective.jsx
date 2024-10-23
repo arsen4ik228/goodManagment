@@ -15,7 +15,7 @@ function Objective(props) {
 
     const {userId} = useParams();
     const [testParam, setTestParam] = useState("");
-    const [activeIndex, setActiveIndex] = useState(0);
+    const [activeIndex, setActiveIndex] = useState('0');
     const [selectedStrategId, setSelectedStrategId] = useState('');
     const [manualSuccessReset, setManualSuccessReset] = useState(false);
     const [manualErrorReset, setManualErrorReset] = useState(false);
@@ -161,6 +161,7 @@ function Objective(props) {
     const addEditor = () => {
         switch (activeIndex) {
             case '0':
+                console.log('<B<B')
                 setContentEditors((prevEditors) => [
                     ...prevEditors,
                     EditorState.createEmpty(),

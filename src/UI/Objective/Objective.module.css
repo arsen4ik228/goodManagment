@@ -134,7 +134,7 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
     align-self: flex-start;
     cursor: pointer;
     transition: all 0.5s ease;
-    margin: 0 auto;
+    margin: 1px auto 0 auto;
 }
 .add:hover {
     background-color: #B4B4B4;
@@ -201,10 +201,6 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
         padding: 1.5rem 0.5rem;
     }
 
-
-    /*button{*/
-    /*    display: flex;*/
-    /*}*/
 
     img{
         display: inline-block;

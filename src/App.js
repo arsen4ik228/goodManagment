@@ -13,6 +13,9 @@ import Goal from "./UI/Goal/Goal";
 import CreateGoal from "./UI/Goal/CreateGoal";
 import Objective from "./UI/Objective/Objective.jsx"
 import NewObjective from "./UI/Objective/NewObjective";
+import CreatePolicyDirectory from './UI/Policy/PolicyDirectory/CreatePolicyDirectory.jsx';
+import Projects from './UI/Projects/Projects.jsx';
+import MainProject from './UI/Projects/MainProject./MainProject.jsx';
 
 function App() {
     return (
@@ -29,6 +32,7 @@ function App() {
 
                                <Route path=":userId/Policy" element={<Policy/>}/>
                                <Route path=":userId/Policy/new" element={<NewPolicy/>}/>
+                               <Route path=":userId/Policy/CreateDirectory" element={<CreatePolicyDirectory/>}/>
 
                                <Route path=":userId/Posts" element={<Posts/>}/>
                                <Route path=":userId/Posts/new" element={<NewPosts/>}/>
@@ -41,6 +45,8 @@ function App() {
 
                                <Route path=":userId/Objective" element={<Objective/>}/>
                                <Route path=":userId/Objective/new" element={<NewObjective/>}/>
+
+                               <Route path=":userId/Projects" element={<MainProject/>}/>
 
                            </Routes>
                        }>

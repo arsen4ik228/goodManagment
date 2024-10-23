@@ -74,14 +74,13 @@ function NewObjective(props) {
             navigate(-1);
         }, 50);
     }
-
+    console.log(data)
     return (
         <>
             <div className={classes.wrapper}>
                 <>
                     <Header create={false} title={' Новая краткосрочная цель'}></Header>
                 </>
-
                 <div className={classes.body}>
                     <div className={classes.left}> Выберите Стратегию:</div>
                     <ul className={classes.selectList}>
@@ -96,7 +95,8 @@ function NewObjective(props) {
 
                                         />
                                         <div> Стратегия №{item.strategyNumber} </div>
-                                    </>) : (
+                                    </>
+                                    ) : (
                                         <>
                                             <input
                                                 type="checkbox"

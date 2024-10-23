@@ -99,9 +99,43 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 
 
 .body{
-
-    flex: 1 1 auto;
+    flex: 1 0 auto;
     max-height: calc(100vh - 173px);
+    border: 1px solid red;
+}
+
+.bodyContainer{
+        display: flex;
+        width: 100vw;
+        height: 100%;
+}
+
+.left{
+    width: 45vw;
+    font-size: 1.6em;
+    justify-content: center;
+    display: flex;
+    color: #005475;
+    padding-left: 0.5em;
+    border-right: 1px solid #005475;
+    height: 98%;
+}
+
+.selectList{
+    overflow-x: auto;
+    overflow-y: hidden;
+    font-size: 1.3em;
+
+    li{
+        display: flex;
+        /* width: 60vw; */
+        padding: 0.3rem 0.8rem;
+        justify-content: flex-start;
+
+        div{
+            margin-left: 10px
+        }
+    }
 }
 
 .input1{

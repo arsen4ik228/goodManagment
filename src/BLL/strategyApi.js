@@ -1,13 +1,14 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import {baseUrl} from "./constans";
 
 export const strategyApi = createApi({
     reducerPath: "strategy",
     tagTypes: ["Strategy"],
-    baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5001/" }),
+    baseQuery: fetchBaseQuery({ baseUrl }),
     endpoints:(build) => ({
         getStrategy: build.query({
-            query: (userId = "") => ({
-                url: `${userId}/strategies`,
+            query: ({userId, organizationId}) => ({
+                url: `${userId}/strategies/organization/${organizationId}`,
             }),
 
             providesTags: (result) =>

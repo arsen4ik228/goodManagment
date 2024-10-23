@@ -9,30 +9,29 @@ export default function CustomSelect({organizations, requestFunc, isToOrganizati
 
     console.log('custom:  ',isToOrganizations)
 
-    const handleSelectItem = (id) => {
-        setToOrganizations(prevIsToOrganizations =>
-            prevIsToOrganizations.includes(id)
-                ? prevIsToOrganizations.filter(item => item !== id)
-                : [...prevIsToOrganizations, id]
-        );
+    // const handleSelectItem = (id) => {
+    //     setToOrganizations(prevIsToOrganizations =>
+    //         prevIsToOrganizations.includes(id)
+    //             ? prevIsToOrganizations.filter(item => item !== id)
+    //             : [...prevIsToOrganizations, id]
+    //     );
 
-        setSelectedItems(prevSelectedItems =>
-            prevSelectedItems.includes(id)
-                ? prevSelectedItems.filter(item => item !== id)
-                : [...prevSelectedItems, id]
-        );
+    //     setSelectedItems(prevSelectedItems =>
+    //         prevSelectedItems.includes(id)
+    //             ? prevSelectedItems.filter(item => item !== id)
+    //             : [...prevSelectedItems, id]
+    //     );
+    // };
+
+    const handleSelectItem = (id) => {
+        setToOrganizations([id]);
+        setSelectedItems(id);
     };
 
     // useEffect(() => {
-    //     setExtractedOrganizations(isToOrganizations);
-    // },[isToOrganizations])
-    //
-    // console.log(isToOrganizations)
+    //         setSelectedItems(isToOrganizations);
 
-    useEffect(() => {
-            setSelectedItems(isToOrganizations);
-
-    }, [isToOrganizations]);
+    // }, [isToOrganizations]);
 
     console.log('selectedItems:   ', selectedItems);
 

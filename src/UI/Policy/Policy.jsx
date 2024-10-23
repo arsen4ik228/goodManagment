@@ -18,15 +18,17 @@ import {
 import SearchModal from "../Custom/SearchModal/SearchModal";
 // import draftToHtml from "draftjs-to-html";
 import draftjs from 'draft-js';
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import Header from "../Custom/Header/Header";
 import CustomSelect from "../Custom/CustomSelect/CustomSelect";
 import HandlerMutation from "../Custom/HandlerMutation";
+import PolicySearchModal from "./PolicySearchModal/PolicySearchModule"
 
 
 const Policy = () => {
 
     const {userId} = useParams()
+    const navigate = useNavigate()
     const [editorState, setEditorState] = useState(EditorState.createEmpty());
     const [valueType, setValueType] = useState('');
     const [isModalOpen, setModalOpen] = useState(false);
@@ -145,6 +147,7 @@ const Policy = () => {
 
     const openModal = () => {
         setModalOpen(true);
+        console.log(isModalOpen)
     }
     const openOrgModal = () => {
         setModalOrgOpen(true)
@@ -187,7 +190,7 @@ const Policy = () => {
                         <button onClick={() => openOrgModal()}> Отредактировать</button>
                     </div>
                     <div>
-                        <img src={searchBlack}/>
+                        <img src={searchBlack} onClick={() => navigate('CreateDirectory')} />
                         {/*<img src={policy} className={classes.image}/>*/}
                         {/*<img src={stats}/>*/}
                     </div>
@@ -202,7 +205,7 @@ const Policy = () => {
                 textError={ErrorUpdatePoliciesMutation?.data?.errors[0]?.errors}
             ></HandlerMutation>
             {isModalOpen &&
-                <SearchModal setSelectedId={setSelectPolicyId} setModalOpen={setModalOpen} firstTitle={'Инструкции'} firstArray={instructions} secondTitle={'Директивы'} secondArray={directives} componentName={'policyName'}  /> }
+                <PolicySearchModal setSelectedId={setSelectPolicyId} setModalOpen={setModalOpen} firstTitle={'Инструкции'} firstArray={instructions} secondTitle={'Директивы'} secondArray={directives} componentName={'policyName'}  /> }
             {ModalOrgOpen && <CustomSelect setModalOpen={setModalOrgOpen} organizations={organizations} requestFunc={saveUpdatePolicy} setToOrganizations={setPolicyToOrganizations} isToOrganizations={policyToOrganizations} ></CustomSelect> }
 </>
 );

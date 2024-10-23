@@ -1,0 +1,105 @@
+/*Обнуление*/
+*{padding: 0;margin: 0;border: 0;}
+*,*:before,*:after{-moz-box-sizing: border-box;-webkit-box-sizing: border-box;box-sizing: border-box;}
+:focus,:active{outline: none;}
+a:focus,a:active{outline: none;}
+nav,footer,header,aside{display: block;}
+html,body{height:100%;width:100%;font-size:100%;line-height:1;font-size:16px;-ms-text-size-adjust:100%;-moz-text-size-adjust:100%;-webkit-text-size-adjust:100%;}
+input,button,textarea{font-family:inherit;}
+input::-ms-clear{display: none;}
+button{cursor: pointer;}
+button::-moz-focus-inner{padding:0;border:0;}
+a,a:visited{text-decoration: none;}
+a:hover{text-decoration: none;}
+ul li{list-style: none;}
+img{vertical-align: top;}
+h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
+/*--------------------*/
+
+.wrapper{
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    font-family: "'Montserrat', sans-serif'";
+    overflow: hidden;
+}
+
+.body{
+    flex: 1 1 auto;
+    margin-top: 30px;
+}
+
+.CardsContainer{
+    display: flex;
+    justify-content: center;
+}
+
+.CardContainer{
+    width: 93%;
+    /* height: 80px; */
+    background-color: #f0eeee;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: row;
+}
+
+.CardLeft{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 50%;
+    padding: 5px 10px;
+    /* border: 1px solid black; */
+}
+
+.CardRight{
+    display: flex;
+    justify-content: center;
+    align-items: end;
+    width: 50%;
+    padding: 5px 10px;
+
+    /* border: 1px solid black; */
+
+}
+
+.LeftContent{
+
+    display: flex;
+    flex-direction: column;
+
+    div{
+        padding: 5px 0;
+    }
+
+    input{
+        height: 22px;
+        width: 120px;
+        font-size: 1.2rem;
+        /* margin-bottom: 10px; */
+        background-color: #f0eeee;
+
+    }
+}
+
+.RightContent{
+
+    display: flex;
+    flex-direction: column;
+    padding: 5px 0;
+
+    select{
+        height: 22px;
+        width: 150px;
+        font-size: 1.2rem;
+        font-family: "'Montserrat', sans-serif'";
+        text-align: center;
+        background-color: #f0eeee;
+
+    }
+
+}
+/* 
+.title{
+    width: 150px;
+} */

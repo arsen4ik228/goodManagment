@@ -213,7 +213,7 @@ const Posts = () => {
 
                                 <div className={classes.bodyContainer}>
                                     <div className={classes.name}>
-                                        Название подразделения <span style={{color: "red"}}>*</span>
+                                        Название подразделения 
                                     </div>
                                     <div className={classes.selectSection}>
                                         <input
@@ -271,6 +271,7 @@ const Posts = () => {
                                         <select
                                             name="mySelect"
                                             className={classes.select}
+                                            disabled={parentPost?.divisionName}
                                             value={organization || currentPost?.organization?.id}
                                             onChange={(e) => {
                                                 setOrganization(e.target.value);

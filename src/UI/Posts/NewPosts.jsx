@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import backRow from './icon/icon _ back.svg'
 import menu from './icon/icon _ menu.svg'
@@ -13,7 +13,7 @@ import {
     useGetPostNewQuery,
     usePostPostsMutation
 } from "../../BLL/postApi";
-import {useNavigate, useParams} from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import HandlerMutation from "../Custom/HandlerMutation";
 import HandlerQeury from "../Custom/HandlerQeury.jsx";
 import Header from "../Custom/Header/Header";
@@ -22,22 +22,25 @@ import blackStatistic from "../Custom/icon/blackStatistic.svg";
 
 const Posts = () => {
 
-    const navigate = useNavigate();
-    const {userId} = useParams();
+    const navigate = useNavigate()
+    const { userId } = useParams()
 
-    const [postName, setPostName] = useState();
-    const [divisionName, setDivisionName] = useState();
-    const [disabledDivisionName, setDisabledDivisionName] = useState(false);
-    const [product, setProduct] = useState();
-    const [purpose, setPurpose] = useState();
+    const [postName, setPostName] = useState()
+    const [divisionName, setDivisionName] = useState()
+    const [disabledDivisionName, setDisabledDivisionName] = useState(false)
+    const [product, setProduct] = useState()
+    const [purpose, setPurpose] = useState()
     const [policy, setPolicy] = useState();
-    const [worker, setWorker] = useState("");
-    const [parentId, setParentId] = useState("null");
-    const [organization, setOrganization] = useState();
+    const [worker, setWorker] = useState("")
+    const [parentId, setParentId] = useState('');
+    const [organization, setOrganization] = useState('')
     const [openList, setOpenList] = useState(true);
 
+    const [divisionOrg, setDivisionOrg] = useState('')
+    const [divisionChapter, setDivisionChapter] = useState('')
+
     useEffect(() => {
-        if (parentId !== "null") {
+        if (parentId) {
             setDisabledDivisionName(true);
         } else {
             setDisabledDivisionName(false);
@@ -45,6 +48,11 @@ const Posts = () => {
         }
     }, [parentId]);
 
+    useEffect(() => {
+        setWorker(divisionChapter)
+        setParentId(divisionOrg)
+    },[divisionChapter, divisionOrg])
+    console.log(worker,parentId)
     const {
         workers = [],
         policies = [],
@@ -54,7 +62,7 @@ const Posts = () => {
         isErrorGetNew,
         data = []
     } = useGetPostNewQuery(userId, {
-        selectFromResult: ({data, isLoading, isError}) => ({
+        selectFromResult: ({ data, isLoading, isError }) => ({
             workers: data?.workers || [],
             policies: data?.policies || [],
             postsWithoutParentId: data?.postsWithoutParentId || [],
@@ -74,6 +82,7 @@ const Posts = () => {
             error: ErrorPostMutation
         },
     ] = usePostPostsMutation();
+
     const reset = () => {
         setPostName("");
         setDivisionName("");
@@ -110,7 +119,7 @@ const Posts = () => {
                 console.error("Ошибка:", JSON.stringify(error, null, 2)); // выводим детализированную ошибку
             });
     };
-
+    console.log(parentId)
     return (
         <>
             <div className={classes.wrapper}>
@@ -121,36 +130,12 @@ const Posts = () => {
 
                 <div className={classes.body}>
 
-                    {/*<div className={classes.bodyContainer} style={{"borderBottom": "1px solid grey"}}>*/}
-                    {/*    <div className={classes.name}>*/}
-                    {/*        Название поста <span style={{ color: "red" }}>*</span>*/}
-                    {/*    </div>*/}
-                    {/*    <div className={classes.selectSection}>*/}
-                    {/*        <input*/}
-                    {/*            type="text"*/}
-                    {/*            value={postName}*/}
-                    {/*            onChange={(e) => {*/}
-                    {/*                setPostName(e.target.value);*/}
-                    {/*            }}*/}
-                    {/*        />*/}
-                    {/*    </div>*/}
-                    {/*</div>*/}
-
-                    {/*<div className={classes.burger} onClick={() => setOpenList(!openList)}>*/}
-                    {/*    <div className={classes.textBurger}></div>*/}
-                    {/*    {!openList && (<div className={classes.textBurger}> Развернуть</div>)}*/}
-                    {/*    <div className={classes.imgBurger}>*/}
-                    {/*        <img src={sublist} alt="icon" style={{transform: openList ? 'none' : 'rotate(90deg)'}}/>*/}
-                    {/*    </div>*/}
-                    {/*</div>*/}
-
-
                     {openList &&
                         (
                             <>
                                 <div className={classes.bodyContainer}>
                                     <div className={classes.name}>
-                                        Название поста <span style={{color: "red"}}>*</span>
+                                        Название поста <span style={{ color: "red" }}>*</span>
                                     </div>
                                     <div className={classes.selectSection}>
                                         <input
@@ -165,7 +150,7 @@ const Posts = () => {
 
                                 <div className={classes.bodyContainer}>
                                     <div className={classes.name}>
-                                        Название подразделения <span style={{color: "red"}}>*</span>
+                                        Название подразделения <span style={{ color: "red" }}>*</span>
                                     </div>
                                     <div className={classes.selectSection}>
                                         <input
@@ -181,7 +166,7 @@ const Posts = () => {
 
                                 <div className={classes.bodyContainer}>
                                     <div className={classes.name}>
-                                        Руководствующий пост
+                                        Родительский пост
                                     </div>
                                     <div className={classes.selectSection}>
                                         <select
@@ -194,6 +179,8 @@ const Posts = () => {
                                                     (item) => item.id === e.target.value
                                                 );
                                                 setDivisionName(obj?.divisionName);
+                                                setDivisionOrg(obj?.organization.organizationName);
+                                                setDivisionChapter(obj?.user.firstName + ' ' + obj?.user.lastName)
                                             }}
                                         >
                                             <option value="" disabled>
@@ -209,53 +196,81 @@ const Posts = () => {
 
                                 <div className={classes.bodyContainer}>
                                     <div className={classes.name}>
-                                        Руководитель поста <span style={{color: "red"}}>*</span>
+                                        Руководитель поста <span style={{ color: "red" }}>*</span>
                                     </div>
-                                    <div className={classes.selectSection}>
-                                        <select
-                                            name="mySelect"
-                                            className={classes.select}
-                                            value={worker}
-                                            onChange={(e) => {
-                                                setWorker(e.target.value);
-                                            }}
-                                        >
-                                            <option value="" disabled>
-                                                Выберите опцию
-                                            </option>
-                                            {workers?.map((item) => {
-                                                return (
-                                                    <option key={item.id} value={item.id}>
-                                                        {`${item.firstName} ${item.lastName}`}
-                                                    </option>
-                                                );
-                                            })}
-                                        </select>
-                                    </div>
+                                    {!disabledDivisionName ? (
+                                        <div className={classes.selectSection}>
+                                            <select
+                                                name="mySelect"
+                                                className={classes.select}
+                                                value={worker}
+                                                onChange={(e) => {
+                                                    setWorker(e.target.value);
+                                                }}
+                                            >
+                                                <option value="" disabled>
+                                                    Выберите опцию
+                                                </option>
+                                                {workers?.map((item) => {
+                                                    return (
+                                                        <option key={item.id} value={item.id}>
+                                                            {`${item.firstName} ${item.lastName}`}
+                                                        </option>
+                                                    );
+                                                })}
+                                            </select>
+                                        </div>
+                                    ) : (
+                                        <div className={classes.selectSection}>
+                                            <input
+                                                type="text"
+                                                value={divisionChapter}
+                                                onChange={(e) => {
+                                                    setDivisionOrg(e.target.value);
+                                                }}
+                                                disabled={disabledDivisionName}
+                                            />
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className={classes.bodyContainer}>
                                     <div className={classes.name}>
-                                        Организация <span style={{color: "red"}}>*</span>
+                                        Организация <span style={{ color: "red" }}>*</span>
                                     </div>
-                                    <div className={classes.selectSection}>
-                                        <select
-                                            name="mySelect"
-                                            className={classes.select}
-                                            value={organization}
-                                            onChange={(e) => {
-                                                setOrganization(e.target.value);
-                                            }}
-                                        >
-                                            <option value="">Выберите опцию</option>
-                                            {organizations?.map((item) => {
-                                                return (
-                                                    <option key={item.id}
+                                    {!disabledDivisionName ? (
+                                        <div className={classes.selectSection}>
+                                            <select
+                                                name="mySelect"
+                                                className={classes.select}
+                                                value={organization}
+                                                disabled={disabledDivisionName}
+
+                                                onChange={(e) => {
+                                                    setOrganization(e.target.value);
+                                                }}
+                                            >
+                                                <option value="">Выберите опцию</option>
+                                                {organizations?.map((item) => {
+                                                    return (
+                                                        <option key={item.id}
                                                             value={item.id}>{item.organizationName}</option>
-                                                );
-                                            })}
-                                        </select>
-                                    </div>
+                                                    );
+                                                })}
+                                            </select>
+                                        </div>
+                                    ) : (
+                                        <div className={classes.selectSection}>
+                                            <input
+                                                type="text"
+                                                value={divisionOrg}
+                                                onChange={(e) => {
+                                                    setDivisionOrg(e.target.value);
+                                                }}
+                                                disabled={disabledDivisionName}
+                                            />
+                                        </div>
+                                    )}
                                 </div>
 
 
@@ -292,33 +307,33 @@ const Posts = () => {
                                 ) : (
                                     <>
                                         <div className={classes.productTeaxtaera}>
-                  <textarea
-                      className={classes.Teaxtaera}
-                      placeholder="описание продукта поста"
-                      value={product}
-                      onChange={(e) => {
-                          setProduct(e.target.value);
-                      }}
-                  />
+                                            <textarea
+                                                className={classes.Teaxtaera}
+                                                placeholder="описание продукта поста"
+                                                value={product}
+                                                onChange={(e) => {
+                                                    setProduct(e.target.value);
+                                                }}
+                                            />
                                         </div>
 
                                         <div className={classes.destinyTeaxtaera}>
-                  <textarea
-                      className={classes.Teaxtaera}
-                      placeholder="описнаие предназначения поста"
-                      value={purpose}
-                      onChange={(e) => {
-                          setPurpose(e.target.value);
-                      }}
-                  />
+                                            <textarea
+                                                className={classes.Teaxtaera}
+                                                placeholder="описнаие предназначения поста"
+                                                value={purpose}
+                                                onChange={(e) => {
+                                                    setPurpose(e.target.value);
+                                                }}
+                                            />
                                         </div>
 
                                         <div className={classes.post}>
-                                            <img src={blackStatistic} alt="blackStatistic"/>
+                                            <img src={blackStatistic} alt="blackStatistic" />
                                             <div>
-                    <span className={classes.nameButton}>
-                      Выбрать или создать статистику для поста
-                    </span>
+                                                <span className={classes.nameButton}>
+                                                    Выбрать или создать статистику для поста
+                                                </span>
                                             </div>
                                         </div>
                                         <HandlerMutation
@@ -343,7 +358,7 @@ const Posts = () => {
                             <button onClick={() => savePosts()}> СОХРАНИТЬ</button>
                         </div>
                         <div>
-                            <img src={searchBlack}/>
+                            <img src={searchBlack} />
                             {/*<img src={policy} className={classes.image}/>*/}
                             {/*<img src={stats}/>*/}
                         </div>
