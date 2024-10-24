@@ -15,7 +15,8 @@ import Objective from "./UI/Objective/Objective.jsx"
 import NewObjective from "./UI/Objective/NewObjective";
 import CreatePolicyDirectory from './UI/Policy/PolicyDirectory/CreatePolicyDirectory.jsx';
 import Projects from './UI/Projects/Projects.jsx';
-import MainProject from './UI/Projects/MainProject./MainProject.jsx';
+import MainProject from './UI/Projects/MainProject/MainProject.jsx';
+import Target from './UI/Projects/Targets/Target.jsx';
 
 function App() {
     return (
@@ -47,6 +48,8 @@ function App() {
                                <Route path=":userId/Objective/new" element={<NewObjective/>}/>
 
                                <Route path=":userId/Projects" element={<MainProject/>}/>
+                               <Route path=":userId/Projects/:projectId" element={<Projects/>}/>
+                               <Route path=":userId/Projects/Target" element={<Target/>}/>
 
                            </Routes>
                        }>

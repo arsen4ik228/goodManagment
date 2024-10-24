@@ -16,60 +16,46 @@ img{vertical-align: top;}
 h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 /*--------------------*/
 
-.wrapper{
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    font-family: "'Montserrat', sans-serif'";
-    overflow: hidden;
-}
 
 .body{
+    width: 100%;
     flex: 1 1 auto;
-    margin-top: 50px;
+    background-color: aliceblue;
 }
 
-.ColumnContainer{
-    display: flex;
+.cardContainer{
+    width: 95%;
+    display:flex;
     flex-direction: column;
+    /* box-shadow: 0 0 1px 1px; */
+    border-radius: 15px; 
+    margin: 0 auto;   
     margin-top: 10px;
+    background-color: white;
+    font-family: "'Montserrat', sans-serif'";
 }
 
-.ContainerElem{
+.content{
+    padding: 10px 10px 5px 10px;
+}
+
+.bottom{
     display: flex;
+    padding: 5px 10px 10px 10px;
     justify-content: space-between;
-    flex-direction: row;
-    padding: 5px 10px;
-    border-bottom: 1px solid grey;
- 
 }
 
-.ContainerElem1{
+.worker{
     display: flex;
-    /* justify-content: space-between; */
-    flex-direction: column;
-    padding: 0 10px;
+    align-items: center;
 
+    >select{
+        font-family: "'Montserrat', sans-serif'";
+        font-size: 1rem;
+    }   
 }
 
-.ElemTitle{
-    font-size: 1.6rem;
-    color: #005475
+.deadline{
+    display: flex;
+    align-items: flex-end;
 }
-
-.Elem1Title{
-    font-size: 1.2rem;
-    padding: 5px 15px;
-    border: 1px solid black;
-
-}
-
-.ListOfProjects {
-    list-style-type: none; /* Убираем маркеры списка */
-    padding-left: 0; /* Убираем отступы слева */
-  }
-.ProjectListItem {
-    font-size: 1.2rem;
-    padding: 5px 15px;
- }
-  
