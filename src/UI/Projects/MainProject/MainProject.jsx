@@ -34,7 +34,7 @@ export default function MainProject() {
     <>
       <div className={classes.wrapper}>
         <>
-          <Header title={"Проекты"} new={false}></Header>
+          <Header title={"Проекты"} create={true} ></Header>
         </>
         {/* <div className={classes.heading}>
 
