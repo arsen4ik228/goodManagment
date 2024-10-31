@@ -35,10 +35,15 @@ export default function CustomSelect({organizations, requestFunc, isToOrganizati
 
     console.log('selectedItems:   ', selectedItems);
 
-    const buttonClick = () => {
-        requestFunc().then(
-        setModalOpen(false))
-    }
+    const buttonClick = async () => {
+        try {
+          await requestFunc();
+          setModalOpen(false);
+        } catch (error) {
+          console.error("Ошибка:", error);
+        }
+      };
+      
     return (
         <>
             <div className={classes.wrapper}>

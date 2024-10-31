@@ -44,7 +44,7 @@ export const projectApi = createApi({
       transformResponse: (response) => ({ 
         currentProject: response || {}, 
         targets: response?.targets || [], 
-        projectToOrganizations: response?.projectToOrganizations || [] 
+        projectToOrganizations: response?.organization || [] 
       }),
       providesTags: (result, error,  {projectId}) => result ? [{type: "Project1", id: projectId }]: []
     }),

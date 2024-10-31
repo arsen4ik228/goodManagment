@@ -230,8 +230,10 @@ function NewGoal(props) {
                                                         } // Учитываем ручной сброс
                                                         textSuccess={"Цель обновлена"}
                                                         textError={
-                                                            Error?.data?.errors[0]?.errors[0]
-                                                        }
+                                                            Error?.data?.errors?.[0]?.errors?.[0] 
+                                                              ? Error.data.errors[0].errors[0] 
+                                                              : Error?.data?.message
+                                                          }
                                                     ></HandlerMutation>
                                                 </>
                                             ) : (
