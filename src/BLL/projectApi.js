@@ -13,6 +13,21 @@ export const projectApi = createApi({
       providesTags: (result) => result ? [{type: 'Project', id: "LIST"}] : [],
     }),
 
+    getProgramNew: build.query({
+      query: (userId = "") => ({
+        url: `${userId}/projects/program/new`,
+      }),
+      transformResponse: (response) => {
+        console.log(response); // Отладка ответа
+        return {
+          workers: response?.workers || [],
+          strategies: response?.strategies || [],
+          organizations: response?.organizations || [],
+          projects: response?.projects || [],
+        };
+      },
+    }),
+
     postProject: build.mutation({
       query: ({ userId, ...body }) => ({
         url: `${userId}/projects/new`,
@@ -21,6 +36,7 @@ export const projectApi = createApi({
       }),
       invalidatesTags: (result) => result ? [{type: 'Project', id: "LIST"}] : [],
     }),
+
 
     getProjectNew: build.query({
       query: (userId = "") => ({
@@ -32,7 +48,7 @@ export const projectApi = createApi({
           workers: response?.workers || [],
           strategies: response?.strategies || [],
           organizations: response?.organizations || [],
-          programsWithoutProject: response?.programsWithoutProject || [],
+          programs: response?.programs || [],
         };
       },
     }),
@@ -60,4 +76,4 @@ export const projectApi = createApi({
   }),
 });
 
-export const { useGetProjectQuery, useGetProjectNewQuery, usePostProjectMutation, useGetProjectIdQuery, useUpdateProjectMutation } = projectApi;
+export const { useGetProjectQuery, useGetProgramNewQuery, useGetProjectNewQuery, usePostProjectMutation, useGetProjectIdQuery, useUpdateProjectMutation } = projectApi;

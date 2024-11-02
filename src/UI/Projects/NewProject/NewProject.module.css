@@ -57,8 +57,8 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    padding: 2rem 2rem;
-    height: 50px;
+    padding: 10px 25px;
+    /* height: 20px; */
     /*border-bottom: #005475 solid 1px;*/
 }
 
@@ -75,7 +75,7 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
     /*border: black solid 1px;*/
 
     >select{
-        font-size: 1rem;
+        font-size: 1.2rem;
         font-family:"'Montserrat', sans-serif'";
         border-bottom: #005475 1px solid;
         height: 30px;
@@ -84,8 +84,8 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
     }
 
     >input{
-        font-size: 1rem;
-        height: 30px;
+        font-size: 1.2rem;
+        /* height: 30px; */
         font-family: "'Montserrat', sans-serif";
         border-bottom: #005475 1px solid;
         padding-left: 10px;
@@ -142,6 +142,8 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
     flex-direction: column;
 }
 
+
+  
 .sectionName{
     display: flex;
     background-color: #005475;
@@ -157,8 +159,49 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
     background-position: 98% 50%;
 }
 
+[data-section-id="2"] {
+    background-image: url(../../Custom/icon/icon\ _\ downarrow\ _\ white.svg);
+  }
+
+[data-section-id="1"] {
+    background-image: url(../../Custom/icon/icon\ _\ uparrow\ _\ white.svg);
+  }
+
 .targetContainer{
     /* border: #005475 1px solid; */
+}
+
+
+.descriptionFlex{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+.descriptionContainer{
+
+    width: 95%;
+    display: flex;
+    flex-direction: column;
+    /* box-shadow: 0 0 1px 1px; */
+    border-radius: 15px;
+    margin: 0 auto;
+    margin-top: 10px;
+    background-color: white;
+    font-family: "'Montserrat', sans-serif'";
+
+    padding: 10px;
+
+    >textarea {
+        font-size: 1.1rem;
+        box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.25);
+        border-radius: 15px;
+        width: 100%;
+        overflow: hidden;
+        resize: none;
+        /* min-height: 50px; */
+        transition: height 0.3s ease-out;
+        padding: 0.3em 0.5em 0.3em 0.5em;
+    }
 }
 
 .inputContainer{

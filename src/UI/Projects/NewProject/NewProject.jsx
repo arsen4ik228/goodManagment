@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import classes from "./NewProject.module.css";
 import Target from "../Targets/Target";
-import { useGetProjectNewQuery, usePostProjectMutation } from "../../../BLL/projectApi";
+import { useGetProjectNewQuery, usePostProjectMutation, useGetProgramNewQuery } from "../../../BLL/projectApi";
 import { useParams } from "react-router-dom";
-import CustomSelect from "../../Custom/CustomSelect/CustomSelect";
+import CustomSelectModal from "../CustomSelectModal/CustomSelectModal";
 import deleteIcon from '../../Custom//icon/icon _ delete.svg'
 import Header from "../../Custom/Header/Header";
 import HandlerMutation from "../../Custom/HandlerMutation";
@@ -11,10 +11,13 @@ import HandlerMutation from "../../Custom/HandlerMutation";
 export default function NewProject() {
   const { userId } = useParams();
   const [typeProject, setTypeProject] = useState(true);
-  const [isToOrganization, setIsToOrganization] = useState([])
+  const [openDescription, setOpenDescription] = useState(false)
+  const [projectDescription, setProjectDescription] = useState('')
+  const [projectName, setProjectName] = useState('')
+  const [isToOrganization, setIsToOrganization] = useState('')
   const [selectedStrategy, setSelectedStrategy] = useState('')
   const [selectedProgram, setSelectedProgram] = useState('')
-  const [nameSelectedOrg, setNameSelectedOrg] = useState('')
+  const [sortPrograms, setSortPrograms] = useState([])
   const [selectedWorker, setSelectedWorker] = useState('')
   const [deadlineDate, setDeadlineDate] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
@@ -24,51 +27,54 @@ export default function NewProject() {
   const [productsArray, setProductsArray] = useState([])
   const [statisticsArray, setStatisticsArray] = useState([])
   const [simpleArray, setSimpleArray] = useState([])
+  const [eventArray, setEventArray] = useState([])
+
+  const [sortStrategy, setSortStrategy] = useState([])
 
   const [targetIndex, setTargetIndex] = useState()
   const [targetContent, setTargetContent] = useState('')
   const [targetType, setTargetType] = useState('')
 
+  const [workers, setWorkers] = useState([])
+  const [programs, setPrograms] = useState([])
+  const [organizations, setOrganizations] = useState([])
+  const [projects, setProjects] = useState([])
+  const [strategies, setStrategies] = useState([])
+
+  console.log(workers, programs, organizations, 'проекты для программмы ', projects, strategies)
 
   const TARGET_TYPES = {
-    Правила: 'rules',
-    Продукт: 'products',
-    Статистика: 'statistics',
-    Обычная: 'simple'
+    'Правила': 'rules',
+    'Продукт': 'products',
+    'Статистика': 'statistics',
+    'Обычная': 'simple',
+    'Организационные мероприятия': 'event',
   };
 
   const ADD_TARGET = {
     rules: { array: rulesArray, setFunction: setRulesArray },
     products: { array: productsArray, setFunction: setProductsArray },
     statistics: { array: statisticsArray, setFunction: setStatisticsArray },
-    simple: { array: simpleArray, setFunction: setSimpleArray }
+    simple: { array: simpleArray, setFunction: setSimpleArray },
+    event: { array: eventArray, setFunction: setEventArray },
   };
 
-  console.log(rulesArray, productsArray, statisticsArray, simpleArray)
-  // console.log(isToOrganization)
+
   const {
-    workers = [],
-    organizations = [],
-    programsWithoutProject = [],
-    strategies = [],
+    projectData = [],
   } = useGetProjectNewQuery(userId, {
     selectFromResult: ({ data }) => ({
-      programsWithoutProject: data?.programsWithoutProject,
-      organizations: data?.organizations,
-      strategies: data?.strategies,
-      workers: data?.workers,
+      projectData: data
     }),
   });
-  // console.log(
-  //   "workers",
-  //   workers,
-  //   "organization",
-  //   organizations,
-  //   "programsWithoutProject",
-  //   programsWithoutProject,
-  //   "strategies",
-  //   strategies
-  // );
+
+  const {
+    programData = [],
+  } = useGetProgramNewQuery(userId, {
+    selectFromResult: ({ data }) => ({
+      programData: data
+    }),
+  });
 
   const [
     postProject,
@@ -81,10 +87,45 @@ export default function NewProject() {
   ] = usePostProjectMutation();
 
   useEffect(() => {
-    const organization = organizations.find(org => org.id == isToOrganization);
-    setNameSelectedOrg(organization?.organizationName)
-  }, [isToOrganization, organizations])
+    if (typeProject) {
+      console.log(programData?.organizations)
+      setWorkers(programData?.workers)
+      setOrganizations(programData?.organizations)
+      setStrategies(programData?.strategies)
+      setProjects(programData?.projects)
+    }
+    else {
+      setWorkers(projectData.workers)
+      setOrganizations(projectData.organizations)
+      setStrategies(projectData.strategies)
+      setPrograms(projectData.programs)
+    }
+  }, [typeProject, programData, projectData])
 
+  useEffect(() => {
+    if (isToOrganization) {
+      const filteredStrategies = strategies.filter(
+        (strategy) => strategy?.organization?.id === isToOrganization
+      );
+      setSortStrategy(filteredStrategies);
+    }
+  }, [strategies, isToOrganization]);
+
+  useEffect(() => {
+    if (isToOrganization) {
+      const filteredPrograms = programs.filter(
+        (program) => program?.organization?.id === isToOrganization
+      );
+      setSortPrograms(filteredPrograms);
+    }
+  }, [programs, isToOrganization]);
+
+  useEffect(() => {
+    if (organizations?.length > 0 && !isToOrganization) {
+      setIsToOrganization(organizations[0]?.id)
+    }
+  }, [organizations])
+  console.log(isToOrganization)
   useEffect(() => {
     if (targetType) {
       const { array, setFunction } = ADD_TARGET[targetType];
@@ -157,22 +198,33 @@ export default function NewProject() {
 
     typeProject ? Data.type = 'Программа' : Data.type = 'Проект'
     if (isToOrganization) {
-      Data.organizationId = isToOrganization[0]
+      Data.organizationId = isToOrganization
     }
-    if (selectedProgram) {
+    if (selectedProgram && !typeProject) {
       Data.programId = selectedProgram
+    }
+    if (projectName) {
+      Data.projectName = projectName
+    }
+    if (selectedStrategy) {
+      Data.strategyId = selectedStrategy
+    }
+    if (projectDescription) {
+      Data.content = projectDescription
     }
     if (
       rulesArray.length > 0 ||
       productsArray.length > 0 ||
       statisticsArray.length > 0 ||
-      simpleArray.length > 0
+      simpleArray.length > 0 ||
+      eventArray.length > 0
     ) {
       Data.targetCreateDtos = [
         ...rulesArray,
         ...productsArray,
         ...statisticsArray,
         ...simpleArray,
+        ...eventArray,
       ];
     }
     console.log(Data)
@@ -185,7 +237,7 @@ export default function NewProject() {
         reset();
       })
       .catch((error) => {
-        console.error("Ошибка:", JSON.stringify(error, null, 2)); // выводим детализированную ошибку
+        console.error("Ошибка:", JSON.stringify(error, null, 2));
       });
 
   }
@@ -216,6 +268,28 @@ export default function NewProject() {
                 Программа
               </div>
             </div>
+            <div
+              className={classes.bodyContainer}
+              style={{ borderBottom: "1px solid grey" }}
+            >
+              <div className={classes.name}>Название</div>
+              <div className={classes.selectSection}>
+                <input type="text" onChange={(e) => setProjectName(e.target.value)} />
+              </div>
+            </div>
+            <div
+              className={classes.bodyContainer}
+              style={{ borderBottom: "1px solid grey" }}
+            >
+              <div className={classes.name}>Организация</div>
+              <div className={classes.selectSection}>
+                <select name="selectOrg" value={isToOrganization} onChange={(e) => setIsToOrganization(e.target.value)}>
+                  {organizations?.map((item, index) => (
+                    <option key={index} value={item.id}>{item.organizationName}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
             {!typeProject && (
               <div
                 className={classes.bodyContainer}
@@ -223,9 +297,9 @@ export default function NewProject() {
               >
                 <div className={classes.name}>Программа</div>
                 <div className={classes.selectSection}>
-                  <select name="selectProgram" id="1" onChange={(e) => setSelectedProgram(e.target.value)}>
+                  <select name="selectProgram" disabled={!isToOrganization} onChange={(e) => setSelectedProgram(e.target.value)}>
                     <option value="">-</option>
-                    {programsWithoutProject.map((item,index) => (
+                    {sortPrograms?.map((item, index) => (
                       <option key={index} value={item.id} >Программма №{item.projectNumber}</option>
                     ))}
                   </select>
@@ -236,21 +310,11 @@ export default function NewProject() {
               className={classes.bodyContainer}
               style={{ borderBottom: "1px solid grey" }}
             >
-              <div className={classes.name}>Организация</div>
-              <div className={classes.OrgSection}>
-                <div className={nameSelectedOrg ? 'none' : classes.OrgName} onClick={() => setModalOpen(true)}>
-                  {isToOrganization.length > 0 ? `${nameSelectedOrg}` : 'Не выбрано'}
-                </div>
-              </div>
-            </div>
-            <div
-              className={classes.bodyContainer}
-              style={{ borderBottom: "1px solid grey" }}
-            >
               <div className={classes.name}>Стратегия</div>
               <div className={classes.selectSection}>
-                <select name="selectProgram" id="1">
-                  {strategies.map((item, index) => (
+                <select name="selectProgram" disabled={!isToOrganization} onChange={(e) => setSelectedStrategy(e.target.value)}>
+                  <option value="">-</option>
+                  {sortStrategy?.map((item, index) => (
                     <option key={index} value={item.id}>Стратегия №{item.strategyNumber}</option>
                   ))}
                 </select>
@@ -261,6 +325,44 @@ export default function NewProject() {
         </div>
         <>
           <div className={classes.targetsContainer}>
+            <div className={classes.sectionName} data-section-id={openDescription ? "1" : "2"} onClick={() => setOpenDescription(!openDescription)}>Описание</div>
+            <div className={classes.targetsFlex}>
+              {openDescription && (
+                <div className={classes.descriptionFlex}>
+                  <div className={classes.descriptionContainer}>
+                    <textarea name="description" placeholder="Введите описание проекта..." onChange={(e) => setProjectDescription}></textarea>
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className={classes.sectionName} onClick={() => addTarget('Продукт')}>Продукт</div>
+            <div className={classes.targetsFlex}>
+              {productsArray.map((item, index) => (
+                <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Продукт')}>
+                  <Target id={item.id} isNew={true} contentSender={setTargetContent} workersList={workers} setSelectedWorker={setSelectedWorker} setDeadlineDate={setDeadlineDate}></Target>
+                </div>
+              ))}
+              {productsArray.length > 0 && (
+                <div className={classes.deleteContainer} onClick={() => deleteTarget(productsArray)}>
+                  Удалить
+                  <img src={deleteIcon} alt="delete" />
+                </div>
+              )}
+            </div>
+            <div className={classes.sectionName} onClick={() => addTarget('Организационные мероприятия')}>Организационные мероприятия</div>
+            <div className={classes.targetsFlex}>
+              {eventArray.map((item, index) => (
+                <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Организационные мероприятия')}>
+                  <Target id={item.id} isNew={true} contentSender={setTargetContent} workersList={workers} setSelectedWorker={setSelectedWorker} setDeadlineDate={setDeadlineDate}></Target>
+                </div>
+              ))}
+              {eventArray.length > 0 && (
+                <div className={classes.deleteContainer} onClick={() => deleteTarget(eventArray)}>
+                  Удалить
+                  <img src={deleteIcon} alt="delete" />
+                </div>
+              )}
+            </div>
             <div className={classes.sectionName} onClick={() => addTarget('Правила')}>Правила</div>
             <div className={classes.targetsFlex}>
               {rulesArray.map((item, index) => (
@@ -276,45 +378,38 @@ export default function NewProject() {
               )}
             </div>
 
-            <div className={classes.sectionName} onClick={() => addTarget('Продукт')}>Продукт</div>
-            <div className={classes.targetsFlex}>
-              {productsArray.map((item, index) => (
-                <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Продукт')}>
-                  <Target id={item.id} isNew={true} contentSender={setTargetContent} workersList={workers} setSelectedWorker={setSelectedWorker} setDeadlineDate={setDeadlineDate}></Target>
-                  </div>
-              ))}
-              {productsArray.length > 0 && (
-                <div className={classes.deleteContainer} onClick={() => deleteTarget(productsArray)}>
-                  Удалить
-                  <img src={deleteIcon} alt="delete" />
+            {!typeProject ? (
+              <>
+                <div className={classes.sectionName} onClick={() => addTarget('Обычная')}>Задачи</div>
+                <div className={classes.targetsFlex}>
+                  {simpleArray.map((item, index) => (
+                    <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Обычная')}>
+                      <Target id={item.id} isNew={true} contentSender={setTargetContent} workersList={workers} setSelectedWorker={setSelectedWorker} setDeadlineDate={setDeadlineDate}></Target>
+                    </div>
+                  ))}
+                  {simpleArray.length > 0 && (
+                    <div className={classes.deleteContainer} onClick={() => deleteTarget(simpleArray)}>
+                      Удалить
+                      <img src={deleteIcon} alt="delete" />
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              </>
+            ) : (
+              <>
+                <div className={classes.sectionName} onClick={()=> setModalOpen(true)}>Проекты</div>
+              </>
+            )}
 
-            <div className={classes.sectionName} onClick={() => addTarget('Статистика')}>Статистика</div>
+            <div className={classes.sectionName} onClick={() => addTarget('Статистика')}> Метрика</div>
             <div className={classes.targetsFlex}>
               {statisticsArray.map((item, index) => (
                 <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Статистика')}>
                   <Target id={item.id} isNew={true} contentSender={setTargetContent} workersList={workers} setSelectedWorker={setSelectedWorker} setDeadlineDate={setDeadlineDate}></Target>
-                  </div>
+                </div>
               ))}
               {statisticsArray.length > 0 && (
                 <div className={classes.deleteContainer} onClick={() => deleteTarget(statisticsArray)}>
-                  Удалить
-                  <img src={deleteIcon} alt="delete" />
-                </div>
-              )}
-            </div>
-
-            <div className={classes.sectionName} onClick={() => addTarget('Обычная')}>Обычная</div>
-            <div className={classes.targetsFlex}>
-              {simpleArray.map((item, index) => (
-                <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Обычная')}>
-                  <Target id={item.id} isNew={true} contentSender={setTargetContent} workersList={workers} setSelectedWorker={setSelectedWorker} setDeadlineDate={setDeadlineDate}></Target>
-                  </div>
-              ))}
-              {simpleArray.length > 0 && (
-                <div className={classes.deleteContainer} onClick={() => deleteTarget(simpleArray)}>
                   Удалить
                   <img src={deleteIcon} alt="delete" />
                 </div>
@@ -340,15 +435,15 @@ export default function NewProject() {
         </>
       </div>
 
-      {modalOpen && <CustomSelect requestFunc={closeOrgModal} isToOrganizations={isToOrganization} setToOrganizations={setIsToOrganization} organizations={organizations} setModalOpen={setModalOpen} ></CustomSelect>}
+      {modalOpen && <CustomSelectModal setModalOpen={setModalOpen} projects={projects}></CustomSelectModal>}
       <HandlerMutation
         Loading={isLoadingProjectMutation}
         Error={isErrorProjectMutation}
         Success={isSuccessProjectMutation}
         textSuccess={"Проект успешно создан."}
         textError={
-          Error?.data?.errors?.[0]?.errors?.[0] 
-            ? Error.data.errors[0].errors[0] 
+          Error?.data?.errors?.[0]?.errors?.[0]
+            ? Error.data.errors[0].errors[0]
             : Error?.data?.message
         }
       ></HandlerMutation>

@@ -27,7 +27,7 @@ function Projects(props) {
       }),
     }
   );
-
+  console.log(currentProject)
   
   useEffect(() => {
     if (targets.length > 0) {
