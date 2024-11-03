@@ -258,3 +258,70 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
         justify-content: center;
     }
 }
+
+.cardContainer {
+    width: 95%;
+    display: flex;
+    flex-direction: column;
+    /* box-shadow: 0 0 1px 1px; */
+    border-radius: 15px;
+    margin: 0 auto;
+    margin-top: 10px;
+    background-color: white;
+    font-family: "'Montserrat', sans-serif'";
+}
+
+.content {
+    padding: 10px 10px 5px 10px;
+    /* border: 1px solid black; */
+
+    >div{
+        font-size: 1.2rem;
+    }
+
+    >textarea {
+        font-size: 1.1rem;
+        box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.25);
+        border-radius: 15px;
+        width: 100%;
+        overflow: hidden;
+        resize: none;
+        /* min-height: 50px; */
+        transition: height 0.3s ease-out;
+        padding: 0.3em 0.5em 0.3em 0.5em;
+    }
+}
+
+.titleProject{
+    font-size: 1.5rem !important;
+}
+
+.bottom {
+    display: flex;
+    padding: 5px 10px 5px 10px;
+    justify-content: space-between;
+
+    /* div{
+        border: 1px solid black;
+    } */
+}
+
+.worker {
+    display: flex;
+    align-items: center;
+
+    >select {
+        font-family: "'Montserrat', sans-serif'";
+        font-size: 1rem;
+    }
+}
+
+.deadline {
+    display: flex;
+    align-items: center;
+
+    >input {
+        width: 100px;
+        font-size: 1rem;
+    }
+}

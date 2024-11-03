@@ -7,6 +7,7 @@ import CustomSelectModal from "../CustomSelectModal/CustomSelectModal";
 import deleteIcon from '../../Custom//icon/icon _ delete.svg'
 import Header from "../../Custom/Header/Header";
 import HandlerMutation from "../../Custom/HandlerMutation";
+import {formattedDate} from "../../../BLL/constans"
 
 export default function NewProject() {
   const { userId } = useParams();
@@ -35,13 +36,17 @@ export default function NewProject() {
   const [targetContent, setTargetContent] = useState('')
   const [targetType, setTargetType] = useState('')
 
+  const [selectedProject, setSelectedProject] = useState([])
+  const [filtredProjects, setFiltredProjects] = useState([])
+  const [currentProjects, setCurrentProjects] = useState([])
+
   const [workers, setWorkers] = useState([])
   const [programs, setPrograms] = useState([])
   const [organizations, setOrganizations] = useState([])
   const [projects, setProjects] = useState([])
   const [strategies, setStrategies] = useState([])
 
-  console.log(workers, programs, organizations, 'проекты для программмы ', projects, strategies)
+  console.log('selectedProject   ',selectedProject)
 
   const TARGET_TYPES = {
     'Правила': 'rules',
@@ -88,7 +93,6 @@ export default function NewProject() {
 
   useEffect(() => {
     if (typeProject) {
-      console.log(programData?.organizations)
       setWorkers(programData?.workers)
       setOrganizations(programData?.organizations)
       setStrategies(programData?.strategies)
@@ -101,6 +105,17 @@ export default function NewProject() {
       setPrograms(projectData.programs)
     }
   }, [typeProject, programData, projectData])
+
+  useEffect(() => {
+    if (!filtredProjects || !Array.isArray(filtredProjects)) return;
+
+    const currentProjects = filtredProjects.filter(project => {
+      return selectedProject.some(id => project.id === id);
+    });
+
+    setCurrentProjects(currentProjects);
+  }, [filtredProjects, selectedProject]);
+
 
   useEffect(() => {
     if (isToOrganization) {
@@ -125,7 +140,7 @@ export default function NewProject() {
       setIsToOrganization(organizations[0]?.id)
     }
   }, [organizations])
-  console.log(isToOrganization)
+
   useEffect(() => {
     if (targetType) {
       const { array, setFunction } = ADD_TARGET[targetType];
@@ -189,6 +204,15 @@ export default function NewProject() {
   const closeOrgModal = () => {
     console.log('organization change')
   }
+
+  const deleteProject = (id) => {
+    console.log('id   ' ,id )
+    setSelectedProject(prevSelectedProject => 
+      prevSelectedProject.filter(project => project !== id)
+    );
+    console.log(selectedProject)
+  };
+  
 
   const reset = () => { }
 
@@ -397,7 +421,38 @@ export default function NewProject() {
               </>
             ) : (
               <>
-                <div className={classes.sectionName} onClick={()=> setModalOpen(true)}>Проекты</div>
+                <div className={classes.sectionName} onClick={() => setModalOpen(true)}>Проекты</div>
+                <div className={classes.targetsFlex}>
+                  {currentProjects.map((item, index) => (
+                    <>
+                      <div className={classes.cardContainer}>
+                        <div className={classes.content}>
+                          <div className={classes.titleProject}>{item.nameProject}</div>
+                          <div className={classes.contentProductTarget}>{item.product}</div>
+                        </div>
+                        <div className={classes.bottom}>
+                          <div className={classes.worker}>
+                            {item.worker}
+                          </div>
+                          <div className={classes.deleteContainer}  onClick={() => deleteProject(item.id)}>
+                            Удалить
+                            <img src={deleteIcon} alt="delete" />
+                          </div>
+                          <div className={classes.deadline}>
+                          {formattedDate(item.deadline)}
+                            {/* {item.deadline?.slice(0, 10)} */}
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  ))}
+                  {/* {simpleArray.length > 0 && (
+                    <div className={classes.deleteContainer} onClick={() => deleteTarget(simpleArray)}>
+                      Удалить
+                      <img src={deleteIcon} alt="delete" />
+                    </div>
+                  )} */}
+                </div>
               </>
             )}
 
@@ -435,7 +490,7 @@ export default function NewProject() {
         </>
       </div>
 
-      {modalOpen && <CustomSelectModal setModalOpen={setModalOpen} projects={projects}></CustomSelectModal>}
+      {modalOpen && <CustomSelectModal setModalOpen={setModalOpen} projects={projects} workers={workers} selectedProject={selectedProject} setSelectedProject={setSelectedProject} setParentFilteredProjects={setFiltredProjects}></CustomSelectModal>}
       <HandlerMutation
         Loading={isLoadingProjectMutation}
         Error={isErrorProjectMutation}
