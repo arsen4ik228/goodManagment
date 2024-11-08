@@ -159,12 +159,13 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
   
 .sectionName{
     display: flex;
-    background-color: #005475;
+    background-color: white;
     justify-content: center;
     align-items: center;
     font-size: 1.2rem;
     height: 1.4rem;
-    color: white;
+    color: #005475;
+    border-bottom: #005475 1px solid;
     font-weight: 600;
     margin-top: 10px;
     background-image: url(../Custom/icon/icon\ _\ add\ _\ white.svg);
@@ -172,11 +173,11 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
     background-position: 98% 50%;
 }
 
-[data-section-id="2"] {
+[data-section-id="1"] {
     background-image: url(../Custom/icon/icon\ _\ add\ _\ 005476.svg);
   }
 
-[data-section-id="1"] {
+[data-section-id="2"] {
     background-image: url(../Custom/icon/icon\ _\ uparrow\ _\ white.svg);
   }
 

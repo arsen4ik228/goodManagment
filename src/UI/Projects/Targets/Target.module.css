@@ -109,8 +109,31 @@ h6 {
     font-family: "'Montserrat', sans-serif'";
 }
 
+.header{
+    display: flex;
+    justify-content: flex-end;
+    /* padding: 0 15px 0 1px; */
+}
+
+.confirm{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 10px 0 0;
+    font-style: italic;
+    text-decoration: underline;
+
+    >input{
+        margin-left: 5px;
+    }
+}
+
+.remove{
+    padding: 0 3px 0 0;
+}
+
 .content {
-    padding: 10px 10px 5px 10px;
+    padding: 5px 10px 5px 10px;
 
     >textarea {
         font-size: 1.1rem;
@@ -150,3 +173,4 @@ h6 {
         font-size: 1rem;
     }
 }
+

@@ -13,6 +13,9 @@ export default function MainProject() {
   const [openPrograms, setOpenPrograms] = useState(true);
   const [programsList, setProgramsList] = useState([]);
   const [projectsList, setProjectsList] = useState([]);
+  const [projectsOfProgramsList, setProjectsOfProgramsList] = useState([])
+
+  const [open, setOpen] = useState()
 
   const { data = [] } = useGetProjectQuery(userId, {
     selectFromResult: ({ data }) => ({
@@ -25,11 +28,21 @@ export default function MainProject() {
       (item) => item.type === "Проект" && item.programId == null
     );
     const secondArray = data.filter((item) => item.type === "Программа");
+    const thirdArray = data.filter(item => item.type === 'Проект' && item.programId !== null)
 
     setProjectsList(firstArray);
     setProgramsList(secondArray);
+    setProjectsOfProgramsList(thirdArray)
   }, [data]);
-  console.log(data);
+
+  const openProjectsOfProgram = (index) => {
+    if (open === index) {
+      setOpen(null)
+    } else {
+      setOpen(index)
+    }
+  }
+
   return (
     <>
       <div className={classes.wrapper}>
@@ -54,19 +67,17 @@ export default function MainProject() {
             </div>
             {openProjects && (
               <div className={classes.ContainerElem1}>
-                <ul className={classes.ListOfProjects}>
+                <ol className={classes.ListOfProjects}>
                   {projectsList.map((item, index) => (
                     <li
                       key={index}
                       className={classes.ProjectListItem}
                       onClick={() => navigate(item.id)}
                     >
-                      {item.programId === null
-                        ? `Проект №${item.projectNumber}`
-                        : ""}
+                      {item.projectName}
                     </li>
                   ))}
-                </ul>
+                </ol>
               </div>
             )}
             <div
@@ -82,13 +93,28 @@ export default function MainProject() {
             </div>
             {openPrograms && (
               <div className={classes.ContainerElem1}>
-                <ul className={classes.ListOfProjects}>
+                <ol className={classes.ListOfProjects}>
                   {programsList.map((item, index) => (
-                    <li key={index} className={classes.ProjectListItem}>
-                      Программа №{item.projectNumber}
-                    </li>
+                    <>
+                      <li key={index} className={classes.ProjectListItem} onClick={() => openProjectsOfProgram(index)}>
+                        {item.projectName}
+                      </li>
+                      {open === index &&
+                        (
+                          <div className={classes.projectsOfProgram}>
+                            <div onClick={() => navigate(`program/${item.id}`)}>Раскрыть Программу</div>
+                            <ol className=''>
+                              {projectsOfProgramsList.filter(project => project.programId === item.id).map((element, index1) => (
+                                <li key={index1} onClick={() => navigate(element.id)}>
+                                  {element.projectName}
+                                </li>
+                              ))}
+                            </ol>
+                          </div>
+                        )}
+                    </>
                   ))}
-                </ul>
+                </ol>
               </div>
             )}
           </div>

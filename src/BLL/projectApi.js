@@ -58,11 +58,23 @@ export const projectApi = createApi({
         url: `${userId}/projects/${projectId}`,
       }),
       transformResponse: (response) => ({ 
-        currentProject: response || {}, 
-        targets: response?.targets || [], 
-        projectToOrganizations: response?.organization || [] 
+        currentProject: response.project || {}, 
+        targets: response?.project?.targets || [], 
+        strategies: response?.strategies || [] 
       }),
       providesTags: (result, error,  {projectId}) => result ? [{type: "Project1", id: projectId }]: []
+    }),
+
+    getProgramId: build.query({
+      query: ({userId, programId}) => ({
+        url: `${userId}/projects/${programId}/program`,
+      }),
+      transformResponse: (response) => ({ 
+        currentProgram: response?.program || {}, 
+        currentProjects: response?.projects || [],
+        targets: response?.program?.targets || [] 
+      }),
+      providesTags: (result, error,  {programId}) => result ? [{type: "Project1", id: programId }]: []
     }),
 
     updateProject: build.mutation({
@@ -76,4 +88,4 @@ export const projectApi = createApi({
   }),
 });
 
-export const { useGetProjectQuery, useGetProgramNewQuery, useGetProjectNewQuery, usePostProjectMutation, useGetProjectIdQuery, useUpdateProjectMutation } = projectApi;
+export const { useGetProjectQuery, useGetProgramIdQuery,useGetProgramNewQuery, useGetProjectNewQuery, usePostProjectMutation, useGetProjectIdQuery, useUpdateProjectMutation } = projectApi;

@@ -7,7 +7,7 @@ import CustomSelectModal from "../CustomSelectModal/CustomSelectModal";
 import deleteIcon from '../../Custom//icon/icon _ delete.svg'
 import Header from "../../Custom/Header/Header";
 import HandlerMutation from "../../Custom/HandlerMutation";
-import {formattedDate} from "../../../BLL/constans"
+import { formattedDate } from "../../../BLL/constans"
 
 export default function NewProject() {
   const { userId } = useParams();
@@ -46,7 +46,7 @@ export default function NewProject() {
   const [projects, setProjects] = useState([])
   const [strategies, setStrategies] = useState([])
 
-  console.log('selectedProject   ',selectedProject)
+  console.log('selectedProject   ', selectedProject)
 
   const TARGET_TYPES = {
     'Правила': 'rules',
@@ -171,7 +171,7 @@ export default function NewProject() {
 
     const newIndex = array.length + 1;
     const newTarget = {
-      id: new Date(),
+      // id: new Date(),
       type: type,
       orderNumber: newIndex,
       content: "",
@@ -206,14 +206,14 @@ export default function NewProject() {
   }
 
   const deleteProject = (id) => {
-    console.log('id   ' ,id )
-    setSelectedProject(prevSelectedProject => 
+    console.log('id   ', id)
+    setSelectedProject(prevSelectedProject =>
       prevSelectedProject.filter(project => project !== id)
     );
     console.log(selectedProject)
   };
-  
 
+  console.warn(selectedProject)
   const reset = () => { }
 
   const saveProject = async () => {
@@ -363,7 +363,15 @@ export default function NewProject() {
             <div className={classes.targetsFlex}>
               {productsArray.map((item, index) => (
                 <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Продукт')}>
-                  <Target id={item.id} isNew={true} contentSender={setTargetContent} workersList={workers} setSelectedWorker={setSelectedWorker} setDeadlineDate={setDeadlineDate}></Target>
+                  <Target
+                    id={item.id}
+                    isNew={true}
+                    contentSender={setTargetContent}
+                    workersList={workers}
+                    setSelectedWorker={setSelectedWorker}
+                    setDeadlineDate={setDeadlineDate}>
+
+                  </Target>
                 </div>
               ))}
               {productsArray.length > 0 && (
@@ -434,24 +442,18 @@ export default function NewProject() {
                           <div className={classes.worker}>
                             {item.worker}
                           </div>
-                          <div className={classes.deleteContainer}  onClick={() => deleteProject(item.id)}>
+                          <div className={classes.deleteContainer} onClick={() => deleteProject(item.id)}>
                             Удалить
                             <img src={deleteIcon} alt="delete" />
                           </div>
                           <div className={classes.deadline}>
-                          {formattedDate(item.deadline)}
+                            {formattedDate(item.deadline)}
                             {/* {item.deadline?.slice(0, 10)} */}
                           </div>
                         </div>
                       </div>
                     </>
                   ))}
-                  {/* {simpleArray.length > 0 && (
-                    <div className={classes.deleteContainer} onClick={() => deleteTarget(simpleArray)}>
-                      Удалить
-                      <img src={deleteIcon} alt="delete" />
-                    </div>
-                  )} */}
                 </div>
               </>
             )}

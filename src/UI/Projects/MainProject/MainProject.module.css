@@ -11,7 +11,7 @@ button{cursor: pointer;}
 button::-moz-focus-inner{padding:0;border:0;}
 a,a:visited{text-decoration: none;}
 a:hover{text-decoration: none;}
-ul li{list-style: none;}
+/* ul li{list-style: none;} */
 img{vertical-align: top;}
 h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 /*--------------------*/
@@ -58,18 +58,40 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 }
 
 .Elem1Title{
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     padding: 5px 15px;
     border: 1px solid black;
 
 }
 
 .ListOfProjects {
-    list-style-type: none; /* Убираем маркеры списка */
-    padding-left: 0; /* Убираем отступы слева */
+    padding-left: 15px; /* Убираем отступы слева */
+    list-style-type: disc;
   }
 .ProjectListItem {
-    font-size: 1.2rem;
-    padding: 5px 15px;
+    font-size: 1.4rem;
+    padding: 5px 5px;
  }
-  
+
+ .projectsOfProgram{
+
+    div{
+        font-size: 1.1rem;
+        margin-left: 25px;
+        padding: 5px 0;
+        /* text-decoration: underline; */
+        color: #005475;
+        border: 1px solid red;
+        display: block;
+    }
+
+    ol{
+        padding-left: 20px;
+        list-style-type: circle;
+    }
+
+    li{
+        padding: 5px 5px;
+        font-size: 1.1rem;
+    }
+ }

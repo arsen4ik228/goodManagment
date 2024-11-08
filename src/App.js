@@ -18,6 +18,7 @@ import Projects from './UI/Projects/Projects.jsx';
 import MainProject from './UI/Projects/MainProject/MainProject.jsx';
 import Target from './UI/Projects/Targets/Target.jsx';
 import NewProject from './UI/Projects/NewProject/NewProject.jsx';
+import Programs from './UI/Projects/Programs.jsx';
 
 function App() {
     return (
@@ -52,6 +53,7 @@ function App() {
                                <Route path=":userId/Projects/:projectId" element={<Projects/>}/>
                                <Route path=":userId/Projects/Target" element={<Target/>}/>
                                <Route path=":userId/Projects/new" element={<NewProject/>}/>
+                               <Route path=":userId/Projects/program/:programId" element={<Programs/>}/>
 
                            </Routes>
                        }>
