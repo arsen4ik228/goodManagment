@@ -6,64 +6,63 @@ export default function CustomSelectModalProgram({ setModalOpen, workers, projec
     console.log('workers in Modal ', workers)
     const [filteredProjects, setFilteredProjects] = useState([]);
 
-    // const selectProject = (id) => {
-    //     setSelectedProject(prevSelectedProject =>
-    //         prevSelectedProject.includes(id)
-    //             ? prevSelectedProject.filter(item => item !== id)
-    //             : [...prevSelectedProject, id]
-    //     )
-    // }
-
-    // useEffect(() => {
-    //     setParentFilteredProjects(filteredProjects)
-    // }, [filteredProjects])
-
     useEffect(() => {
-        if (parentFilteredProjects && Array.isArray(parentFilteredProjects) && workers && !filteredProjects.length > 0) {
+        if (parentFilteredProjects && Array.isArray(parentFilteredProjects) && workers) {
             const filteredArray = parentFilteredProjects.map(project => {
-                const targetWithProductType = project.targets.find(target => target.type === 'Продукт');
-
-                if (targetWithProductType) {
-                    const worker = workers.find(worker => worker.id === targetWithProductType.holderUserId);
+                // Проверяем, нет ли project.id в projectsList
+                if (!projectsList.some(element => element.id === project.id)) {
+                    const targetWithProductType = project?.targets?.find(target => target.type === 'Продукт');
+    
+                    if (targetWithProductType) {
+                        const worker = workers.find(worker => worker.id === targetWithProductType.holderUserId);
+                        return {
+                            id: project.id,
+                            nameProject: project.projectName,
+                            product: targetWithProductType.content,
+                            deadline: targetWithProductType.deadline,
+                            worker: worker ? worker.firstName + ' ' + worker.lastName : null,
+                            avatar_url: worker ? worker.avatar_url : null
+                        };
+                    }
+    
                     return {
                         id: project.id,
                         nameProject: project.projectName,
-                        product: targetWithProductType.content,
-                        deadline: targetWithProductType.deadline,
-                        worker: worker ? worker.firstName + ' ' + worker.lastName : null,
-                        avatar_url: worker ? worker.avatar_url : null
+                        product: null,
+                        deadline: null,
+                        worker: null,
+                        avatar_url: null
                     };
                 }
-
-                return {
-                    id: project.id,
-                    nameProject: project.projectName,
-                    product: null,
-                    deadline: null,
-                    worker: null,
-                    avatar_url: null
-                };
-            });
-
+    
+                // Если project.id присутствует в projectsList, игнорируем этот проект
+                return null;
+            }).filter(Boolean); // Убираем null значения
+    
             setFilteredProjects(filteredArray);
         }
-    }, [parentFilteredProjects, workers]);
+    }, [parentFilteredProjects,workers]);
+
+
+
 
     const clickProject = (type, id) => {
-        const newArray = projectsList.filter(item => item?.id !== id);
-        const deletedProject = projectsList.find(item => item.id === id);
         switch (type) {
             
             case 'delete':
-                // const newArray = projectsList.filter(item => item?.id !== id);
-                // const deletedProject = projectsList.find(item => item.id === id);
+                const newArray = projectsList.filter(item => item?.id !== id);
+                const deletedProject = projectsList.find(item => item.id === id);
                 setProjectsList(newArray);
                 setFilteredProjects(prevState => [...prevState, deletedProject]);
                 console.log(newArray, deletedProject)
                 break;
             case 'added':
-                setFilteredProjects(newArray);
-                setProjectsList(prevState => [...prevState, deletedProject]);
+                const newFiltred = filteredProjects.filter(item => item?.id !== id)
+                const deleteProject = filteredProjects.find(item => item?.id === id)
+                console.log(deleteProject)
+                setFilteredProjects(newFiltred);
+                setProjectsList(prevState => [...prevState, deleteProject]);
+                console.log(projectsList)
                 break;
         }
     }

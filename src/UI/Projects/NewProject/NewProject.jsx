@@ -8,6 +8,7 @@ import deleteIcon from '../../Custom//icon/icon _ delete.svg'
 import Header from "../../Custom/Header/Header";
 import HandlerMutation from "../../Custom/HandlerMutation";
 import { formattedDate } from "../../../BLL/constans"
+import { resizeTextarea } from "../../../BLL/constans";
 
 export default function NewProject() {
   const { userId } = useParams();
@@ -265,7 +266,7 @@ export default function NewProject() {
       });
 
   }
-
+  console.log(productsArray)
   return (
     <>
       <div className={classes.wrapper}>
@@ -354,7 +355,13 @@ export default function NewProject() {
               {openDescription && (
                 <div className={classes.descriptionFlex}>
                   <div className={classes.descriptionContainer}>
-                    <textarea name="description" placeholder="Введите описание проекта..." onChange={(e) => setProjectDescription}></textarea>
+                    <textarea name="description" placeholder="Введите описание проекта..." id="1"
+                      onChange={(e) => {
+                        setProjectDescription(e.target.value)
+                        setTimeout(resizeTextarea('1'), 0)
+                      }}
+                    >
+                    </textarea>
                   </div>
                 </div>
               )}
@@ -364,13 +371,12 @@ export default function NewProject() {
               {productsArray.map((item, index) => (
                 <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Продукт')}>
                   <Target
-                    id={item.id}
+                    item={item}
                     isNew={true}
                     contentSender={setTargetContent}
                     workersList={workers}
                     setSelectedWorker={setSelectedWorker}
                     setDeadlineDate={setDeadlineDate}>
-
                   </Target>
                 </div>
               ))}

@@ -19,6 +19,8 @@ export default function Programs() {
   const [modalOpen, setModalOpen] = useState(false)
   const [selectedProject, setSelectedProject] = useState([])
   const [filtredProjects, setFiltredProjects] = useState([])
+  const [rejectedProject, setRejectedProject] = useState([])
+
   const [projectsList, setProjectsList] = useState([])
   const [allProjects, setAllProjects] = useState([])
 
@@ -143,8 +145,9 @@ export default function Programs() {
     }
   }, [currentProjects, workers])
 
+
   useEffect(() => {
-    if(projects) {
+    if(projects && !filtredProjects.length>0) {
       const filtredProjects = projects.filter(project => project?.organization?.id === selectedOrg)
       setFiltredProjects(filtredProjects)
     }

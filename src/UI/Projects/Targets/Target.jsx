@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import classes from "./Target.module.css";
 import remove from "../../Custom/icon/icon _ remove.svg"
 import ConfirmRemoveModal from "../../Custom/ConfirmRemoveModal/ConfirmRemoveModal";
+import { resizeTextarea } from "../../../BLL/constans";
 
 function Target({ id, contentSender, workersList, setSelectedWorker, setDeadlineDate, isNew, edit, targetsList, item, setTargetState }) {
   const [textareaHeight, setTextareaHeight] = useState(50);
@@ -12,25 +13,23 @@ function Target({ id, contentSender, workersList, setSelectedWorker, setDeadline
   const [deadline, setDeadline] = useState()
   const [targetStatus, setTargetStatus] = useState()
 
-  const resizeTextarea = () => {
-    const textarea = document.getElementById(id);
-    if (textarea) {
-      textarea.style.height = 'auto';
-      textarea.style.height = textarea.scrollHeight + 'px';
-    }
-  };
 
   useEffect(() => {
     if (!isNew) {
       setContent(item?.content)
-
       SetWorker(item?.holderUserId)
       setDeadline(item.deadline.slice(0, 10))
       setTargetStatus(item.targetState)
+      // resizeTextarea(item?.type + item?.orderNumber)
     }
-  }, [item])
+  }, [item, isNew])
 
   useEffect(() => {
+    resizeTextarea(item?.type + item?.orderNumber)
+  }, [content])
+
+  useEffect(() => {
+    resizeTextarea(item?.type + item?.orderNumber)
     contentSender(content)
   }, [content])
 
@@ -59,13 +58,13 @@ function Target({ id, contentSender, workersList, setSelectedWorker, setDeadline
               <textarea
                 name="content"
                 placeholder="Введите текст задачи..."
-                id={id}
+                id={item.type + item.orderNumber}
                 value={content}
                 disabled={!edit}
                 style={{ height: `${textareaHeight}px` }}
                 onChange={(e) => {
                   setContent(e.target.value)
-                  setTimeout(resizeTextarea, 0)
+                  setTimeout(resizeTextarea(item.type + item.orderNumber), 0)
                 }}
               />
             </div>
@@ -74,12 +73,12 @@ function Target({ id, contentSender, workersList, setSelectedWorker, setDeadline
               <textarea
                 name="content"
                 placeholder="Введите текст задачи..."
-                id={id}
+                id={item?.type + item?.orderNumber}
                 value={content}
                 style={{ height: `${textareaHeight}px` }}
                 onChange={(e) => {
                   setContent(e.target.value)
-                  setTimeout(resizeTextarea, 0)
+                  setTimeout(resizeTextarea(item?.type + item?.orderNumber), 0)
                 }}
               />
             </div>
