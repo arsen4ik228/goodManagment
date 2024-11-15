@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import classes from "./Target.module.css";
 import remove from "../../Custom/icon/icon _ remove.svg"
 import ConfirmRemoveModal from "../../Custom/ConfirmRemoveModal/ConfirmRemoveModal";
-import { resizeTextarea } from "../../../BLL/constans";
+import { formattedDate, resizeTextarea } from "../../../BLL/constans";
 
 function Target({ id, contentSender, workersList, setSelectedWorker, setDeadlineDate, isNew, edit, targetsList, item, setTargetState }) {
   const [textareaHeight, setTextareaHeight] = useState(50);
@@ -37,7 +37,7 @@ function Target({ id, contentSender, workersList, setSelectedWorker, setDeadline
     <>
       <div className={classes.cardContainer}>
         <div className={classes.header}>
-          {(!isNew && !edit) &&
+          {(!isNew && !edit && !item?.isExpired) &&
             (
               <div className={classes.confirm} onClick={() => setTargetState(targetStatus === 'Активная' ? 'Завершена' : 'Активная')}>
                 Завершить задачу
@@ -106,15 +106,23 @@ function Target({ id, contentSender, workersList, setSelectedWorker, setDeadline
                   ))}
                 </select>
               </div>
-              <div className={classes.deadline}>
-                <input type="date" value={deadline} disabled={!edit} onChange={(e) => setDeadlineDate(e.target.value)} />
-              </div>
+              {(item?.isExpired) ?
+                (
+                  <div className={classes.deadline}>
+                    {/* <input type="date" value={deadline} disabled={!edit} onChange={(e) => setDeadlineDate(e.target.value)} /> */}
+                    <span> Просрочено {formattedDate(deadline)} </span>
+                  </div>
+                ) : (
+                  <div className={classes.deadline}>
+                    <input type="date" value={deadline} disabled={!edit} onChange={(e) => setDeadlineDate(e.target.value)} />
+                  </div>
+                )}
             </>
           )}
         </div>
 
       </div>
-      {openConfirmRemoveModal && <ConfirmRemoveModal setTargetState={setTargetState} setOpenConfirmRemoveModal={setOpenConfirmRemoveModal}></ConfirmRemoveModal>}
+      {openConfirmRemoveModal && <ConfirmRemoveModal setTargetState={setTargetState} setOpenModal={setOpenConfirmRemoveModal} item={item}></ConfirmRemoveModal>}
     </>
   );
 }

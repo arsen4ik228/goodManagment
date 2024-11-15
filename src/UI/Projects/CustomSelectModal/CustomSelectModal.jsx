@@ -3,7 +3,7 @@ import classes from "./CustomSelectModal.module.css"
 import close from "../../Custom/SearchModal/icon/icon _ add.svg"
 
 export default function CustomSelectModal({ setModalOpen, projects, workers, selectedProject, setSelectedProject, setParentFilteredProjects }) {
-    console.log('workers in Modal ', workers)
+
     const [filteredProjects, setFilteredProjects] = useState([]);
 
     const selectProject = (id) => {
@@ -13,7 +13,7 @@ export default function CustomSelectModal({ setModalOpen, projects, workers, sel
                 : [...prevSelectedProject, id]
         )
     }
-
+    console.log(projects, selectedProject)
     useEffect(() => {
         setParentFilteredProjects(filteredProjects)
     }, [filteredProjects])

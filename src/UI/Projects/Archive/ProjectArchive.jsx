@@ -1,28 +1,19 @@
 import React, { useEffect, useState } from "react"
-import classes from "./Programs.module.css"
-import Target from "./Targets/Target"
-import { useGetProgramIdQuery, useGetProgramNewQuery, useUpdateProjectMutation } from "../../BLL/projectApi"
+import classes from './ProjectArchive.module.css'
+import Target from "../Targets/Target"
+import { useGetProjectIdQuery, useGetProjectNewQuery, useUpdateProjectMutation } from "../../../BLL/projectApi"
 import { useParams } from "react-router-dom"
-import CustomSelectModal from "./CustomSelectModal/CustomSelectModal"
-import deleteIcon from '../Custom//icon/icon _ delete.svg'
-import Header from "../Custom/Header/Header"
-import HandlerMutation from "../Custom/HandlerMutation"
-import { formattedDate, transformArraiesForUpdate } from "../../BLL/constans"
-import editIcon from '../Custom/icon/icon _ save.svg'
-import CustomSelectModalProgram from "./CustomSelectModalProgram/CustomSelectModalProgram"
+// import CustomSelectModal from "./CustomSelectModal/CustomSelectModal"
+import deleteIcon from '../../Custom//icon/icon _ delete.svg'
+import Header from "../../Custom/Header/Header"
+import HandlerMutation from "../../Custom/HandlerMutation"
+import { formattedDate, resizeTextarea, transformArraiesForUpdate } from "../../../BLL/constans"
+import editIcon from '../../Custom/icon/icon _ save.svg'
 
-export default function Programs() {
-  const { userId, programId } = useParams();
+export default function ProjectArchive() {
+  const { userId, projectId } = useParams();
   const [edit, setEdit] = useState(false)
   const [dummyKey, setDummyKey] = useState(0)
-  const [sectionId, setSectionId] = useState(1)
-  const [modalOpen, setModalOpen] = useState(false)
-  const [selectedProject, setSelectedProject] = useState([])
-  const [filtredProjects, setFiltredProjects] = useState([])
-  const [selectedProjectsForRequest, setSelectedProjectsForRequest] = useState([])
-
-  const [projectsList, setProjectsList] = useState([])
-  const [allProjects, setAllProjects] = useState([])
 
   const [selectedOrg, setSelectedOrg] = useState()
   const [selectedStrategy, setSelectedStrategy] = useState('')
@@ -92,31 +83,25 @@ export default function Programs() {
   const {
     currentProject = [],
     targets = [],
-    currentProjects = [],
-  } = useGetProgramIdQuery({ userId, programId }, {
+  } = useGetProjectIdQuery({ userId, projectId }, {
     selectFromResult: ({ data }) => ({
-      currentProject: data?.currentProgram,
+      currentProject: data?.currentProject,
       targets: data?.targets,
-      currentProjects: data?.currentProjects,
-      //   targets: data?.targets,
     })
   })
-  console.log(rulesList)
-
   const {
-    workers = [],
-    projects = [],
-    strategies = [],
     organizations = [],
-  } = useGetProgramNewQuery(userId, {
+    programs = [],
+    strategies = [],
+    workers = []
+  } = useGetProjectNewQuery(userId, {
     selectFromResult: ({ data }) => ({
-      workers: data?.workers,
-      projects: data?.projects,
-      strategies: data?.strategies,
       organizations: data?.organizations,
+      programs: data?.programs,
+      strategies: data?.strategies,
+      workers: data?.workers,
     }),
   });
-  console.log(currentProjects, projects, workers)
 
   const [
     updateProject, {
@@ -127,96 +112,58 @@ export default function Programs() {
     },
   ] = useUpdateProjectMutation()
 
+  const reset = () => {
+      
+      
+  }
 
   useEffect(() => {
-    if ((!projectsList.length > 0) && workers.length > 0) {
-      const filteredArray = currentProjects.map(project => {
-        const targetWithProductType = project.targets.find(target => target.type === 'Продукт');
-        console.warn(targetWithProductType?.holderUserId)
-        if (targetWithProductType) {
-          const worker = workers.find(worker => worker?.id === targetWithProductType?.holderUserId);
-          console.warn(worker)
-          return {
-            id: project.id,
-            nameProject: project.projectName,
-            product: targetWithProductType.content,
-            deadline: targetWithProductType.deadline,
-            worker: worker ? worker.firstName + ' ' + worker.lastName : null,
-            avatar_url: worker ? worker.avatar_url : null
-          };
-        }
-
-        return {
-          id: project.id,
-          nameProject: project.projectName,
-          product: null,
-          deadline: null,
-          worker: null,
-          avatar_url: null
-        };
-      });
-      setProjectsList(filteredArray)
-      setAllProjects(filteredArray)
+    if(isSuccessUpdateProjectMutation) {
+      setTimeout(window.location.reload() , 1000)
     }
-  }, [currentProjects, workers])
-
-
-  useEffect(() => {
-    if(projects && !filtredProjects.length>0) {
-      const filtredProjects = projects.filter(project => project?.organization?.id === selectedOrg)
-      setFiltredProjects(filtredProjects)
-    }
-  }, [projects, selectedOrg])
-
-  useEffect(() => {
-      const newIds = projectsList?.map(item => item?.id);
-      setSelectedProjectsForRequest(newIds);
-  }, [projectsList])
-  
-  console.error(selectedProjectsForRequest)
-  // useEffect(() => {
-  //   if (currentProjects && Array.isArray(currentProjects)) {
-  //     const ids = currentProjects.map(project => project.id);
-  //     setSelectedProject(ids);
-  //   }
-  // }, [currentProjects]);
-
-
-  // useEffect(() => {
-  //   if (!filtredProjects || !Array.isArray(filtredProjects)) return;
-
-  //   const projectsList = filtredProjects.filter(project => {
-  //     return selectedProject.some(id => project.id === id);
-  //   });
-
-  //   setProjectsList(currentProjects);
-  // }, [filtredProjects, selectedProject]);
+  }, [isSuccessUpdateProjectMutation])
 
   useEffect(() => { // фильтр Стратегий по организации
-    if (strategies) {
-      const filtredStrategies = strategies.filter(strategy => strategy?.organization?.id === selectedOrg)
-      setFilterStrategies(filtredStrategies)
+    if (strategies.length>0 && !filtredStrategies.length>0) {
+      const filter = strategies.filter(strategy => strategy?.organization?.id === selectedOrg)
+      setFilterStrategies(filter)
     }
-  }, [strategies, selectedOrg])
+  }, [strategies, ])
+
+  useEffect(() => { // фильтр Программ по организации
+    if (programs.length>0 && !filtredPrograms.length>0) {
+      const filtredPrograms = programs.filter(program => program?.organization?.id === selectedOrg)
+      setFilterPrograms(filtredPrograms)
+    }
+  }, [programs, selectedOrg])
 
   useEffect(() => { // формирование массивов на основе targets
     if (targets.length > 0 && productsArray.length < 1 && rulesArray.length < 1 && eventArray.length < 1 && simpleArray.length < 1 && statisticsArray.length < 1) {
       targets.forEach((item) => {
+        // const newElement = {
+        //   _id : item?.id,
+        //   content : item?.content,
+        //   dateStart: item?.dateStart,
+        //   deadline: item?.deadline,
+        //   status: item?.status,
+
+        // }
+        // newElement?._id = item.id
         switch (item.type) {
           case 'Продукт':
-            setProductsArray([...productsArray, item])
+            setProductsArray((prevState) => ([...prevState, item]))
             break;
           case 'Правила':
-            setRulesArray([...rulesArray, item])
+            setRulesArray((prevState) => ([...prevState, item]))
             break;
           case 'Организационные мероприятия':
-            setEventArray([...eventArray, item])
+            setEventArray((prevState) => ([...prevState, item]))
             break;
           case 'Обычная':
-            setSimpleArray([...simpleArray, item])
+            setSimpleArray((prevState) => ([...prevState, item]))
             break;
           case 'Статистика':
-            setStatisticsArray([...statisticsArray, item])
+            setStatisticsArray((prevState) => ([...prevState, item]))
             break;
         }
       })
@@ -224,7 +171,6 @@ export default function Programs() {
   }, [targets])
 
   console.log('массивчики   ', productsArray, rulesArray, eventArray, simpleArray, statisticsArray)
-
   useEffect(() => { // предустановка значений при загрузке страницы
     if (currentProject?.organization?.id) {
       setSelectedOrg(currentProject?.organization.id)
@@ -278,8 +224,11 @@ export default function Programs() {
   }, [selectedWorker])
 
   useEffect(() => {
+    resizeTextarea('1')
+  }, [descriptionProject])
+
+  useEffect(() => {
     if (targetType) {
-      console.warn('ОТработка пошла')
       const { array, setFunction } = ADD_TARGET[targetType];
       const updatedArray = [...array]
       const updatedItem = { ...updatedArray[targetIndex], targetState: targetState }
@@ -288,11 +237,9 @@ export default function Programs() {
     }
   }, [targetState])
 
-
   const targetFormation = (index, type) => {
     setTargetIndex(index)
     setTargetType(TARGET_TYPES[type])
-    console.log('TargetFormation on click  ', targetIndex, '  ', targetType)
   }
 
   const deleteTarget = (array) => {
@@ -323,17 +270,9 @@ export default function Programs() {
     }
     // setTargetIndex(newIndex);
   }
-  const deleteProject = (id) => {
-    console.log('id   ', id)
-    setSelectedProject(prevSelectedProject =>
-      prevSelectedProject.filter(project => project !== id)
-    );
-    console.log(selectedProject)
-  };
 
-  const reset = () => {
 
-  }
+
 
   const saveProject = async () => {
 
@@ -341,11 +280,11 @@ export default function Programs() {
     const updatedRules = transformArraiesForUpdate(rulesArray)
     const updatedEvent = transformArraiesForUpdate(eventArray)
     const updatedStatistics = transformArraiesForUpdate(statisticsArray)
-    // const updatedSimple = transformArraiesForUpdate(simpleArray)
+    const updatedSimple = transformArraiesForUpdate(simpleArray)
 
     const Data = {}
 
-    Data._id = programId
+    Data._id = projectId
 
     if ((selectedOrg !== currentProject?.organization?.id) && selectedOrg) {
       Data.organizationId = selectedOrg
@@ -363,32 +302,29 @@ export default function Programs() {
       rulesList.length > 0 ||
       productsList.length > 0 ||
       statisticsList.length > 0 ||
-      // simpleList.length > 0 ||
+      simpleList.length > 0 ||
       eventList.length > 0
     ) {
       Data.targetCreateDtos = [
         ...rulesList,
         ...productsList,
         ...statisticsList,
-        // ...simpleList,
+        ...simpleList,
         ...eventList,
       ];
     }
     Data.targetUpdateDtos = [
-      // ...updatedSimple,
+      ...updatedSimple,
       ...updatedProducts,
       ...updatedEvent,
       ...updatedRules,
       ...updatedStatistics
     ]
-    Data.projectIds = [
-      ...selectedProjectsForRequest
-    ]
 
     console.log(Data)
       await updateProject({
         userId,
-        projectId: programId,
+        projectId,
         ...Data,
       })
         .unwrap()
@@ -399,7 +335,7 @@ export default function Programs() {
           console.error("Ошибка:", JSON.stringify(error, null, 2));
         });
   }
-  console.warn(projectsList)
+
   return (
     <>
       <div className={classes.wrapper}>
@@ -410,7 +346,7 @@ export default function Programs() {
           <>
             <div className={classes.selectedType}>
               {currentProject.projectName}
-              <img src={editIcon} alt="" onClick={() => setEdit(!edit)} />
+              {/* <img src={editIcon} alt="" onClick={() => setEdit(!edit)} /> */}
             </div>
 
             <div
@@ -434,7 +370,7 @@ export default function Programs() {
                 </div>
               )}
             </div>
-            {/* {(edit || currentProject.programId) &&
+            {(edit || currentProject.programId) &&
               (
                 <div
                   className={classes.bodyContainer}
@@ -452,11 +388,11 @@ export default function Programs() {
                     </div>
                   ) : (
                     <div className={classes.title}>
-                      {currentProject?.programNumber}
+                      {currentProject?.projectName}
                     </div>
                   )}
                 </div>
-              )} */}
+              )}
 
             {(edit || currentProject?.strategy?.id) && (
               <div
@@ -467,6 +403,7 @@ export default function Programs() {
                 {edit ? (
                   <div className={classes.selectSection}>
                     <select name="selectProgram" value={selectedStrategy} onChange={(e) => setSelectedStrategy(e.target.value)}>
+                      <option value="">-</option>
                       {filtredStrategies.map((item, index) => (
                         <option value={item.id}> Стратегия №{item.strategyNumber}</option>
                       ))}
@@ -492,9 +429,16 @@ export default function Programs() {
                     <div className={classes.descriptionContainer}>
                       <textarea
                         name="description"
+                        id="1"
+                        disabled={!edit}
                         placeholder="Введите описание проекта..."
                         value={descriptionProject}
-                        onChange={(e) => setDescriptionProject(e.target.value)}></textarea>
+                        onChange={(e) => {
+                          setDescriptionProject(e.target.value)
+                          setTimeout(resizeTextarea('1'), 0)
+                        }}
+                      >
+                      </textarea>
                     </div>
                   </div>
                 </div>
@@ -524,32 +468,36 @@ export default function Programs() {
                       </Target>
                     </div>
                   ))}
-                  {productsList.map((item, index) => (
-                    <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'ПродуктNEW')}>
-                      <Target
-                        id={item.id}
-                        isNew={true}
-                        contentSender={setTargetContent}
-                        workersList={workers}
-                        setSelectedWorker={setSelectedWorker}
-                        setDeadlineDate={setDeadlineDate}
-                      ></Target>
-                    </div>
-                  ))}
-                  {productsList.length > 0 && (
-                    <div className={classes.deleteContainer} onClick={() => deleteTarget(productsList)}>
-                      Удалить
-                      <img src={deleteIcon} alt="delete" />
-                    </div>
+                  {edit && (
+                    <>
+                      {productsList.map((item, index) => (
+                        <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'ПродуктNEW')}>
+                          <Target
+                            item={item}
+                            isNew={true}
+                            contentSender={setTargetContent}
+                            workersList={workers}
+                            setSelectedWorker={setSelectedWorker}
+                            setDeadlineDate={setDeadlineDate}
+                          ></Target>
+                        </div>
+                      ))}
+                      {productsList.length > 0 && (
+                        <div className={classes.deleteContainer} onClick={() => deleteTarget(productsList)}>
+                          Удалить
+                          <img src={deleteIcon} alt="delete" />
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               </>
             )}
-             {(eventArray.length > 0 || edit) && (
+            {(eventArray.length > 0 || edit) && (
               <>
                 <div className={classes.sectionName} data-section-id={edit ? "1" : "none"} onClick={() => addTarget('Организационные мероприятияNEW')}>Организационные мероприятия</div>
                 <div className={classes.targetsFlex}>
-                  {eventArray.map((item, index) => (
+                  {eventArray.filter(item => item.targetState !== 'Отменена').map((item, index) => (
                     <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Организационные мероприятия')}>
                       <Target id={item.id}
                         item={item}
@@ -596,7 +544,7 @@ export default function Programs() {
               <>
                 <div className={classes.sectionName} data-section-id={edit ? "1" : "none"} onClick={() => addTarget('ПравилаNEW')}>Правила</div>
                 <div className={classes.targetsFlex}>
-                  {rulesArray.map((item, index) => (
+                  {rulesArray.filter(item => item.targetState !== 'Отменена').map((item, index) => (
                     <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Правила')}>
                       <Target id={item.id}
                         item={item}
@@ -639,39 +587,60 @@ export default function Programs() {
               </>
             )}
 
-            <>
-              <div className={classes.sectionName} data-section-id={edit ? "1" : "none"} onClick={() => setModalOpen(true)}>Проекты</div>
-              <div className={classes.targetsFlex}>
-                {projectsList.map((item, index) => (
-                  <>
-                    <div className={classes.cardContainer}>
-                      <div className={classes.content}>
-                        <div className={classes.titleProject}>{item?.nameProject}</div>
-                        <div className={classes.contentProductTarget}>{item?.product}</div>
-                      </div>
-                      <div className={classes.bottom}>
-                        <div className={classes.worker}>
-                          {item?.worker}
+
+            {(simpleArray.length > 0 || edit) && (
+              <>
+                <div className={classes.sectionName} data-section-id={edit ? "1" : "none"} onClick={() => addTarget('ОбычнаяNEW')}>Задачи</div>
+                <div className={classes.targetsFlex}>
+                  {simpleArray.filter(item => item.targetState !== 'Отменена').map((item, index) => (
+                    <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Обычная')}>
+                      <Target id={item.id}
+                        item={item}
+                        isNew={false}
+                        edit={edit ? true : false}
+                        contentSender={setTargetContent}
+                        workersList={workers}
+                        setSelectedWorker={setSelectedWorker}
+                        setDeadlineDate={setDeadlineDate}
+                        targetsList={targets}
+                        selectedWorker={selectedWorker}
+                        deadlineDate={deadlineDate}
+                        setTargetState={setTargetState}>
+                      </Target>
+                    </div>
+                  ))}
+                  {edit && (
+                    <>
+                      {simpleList.map((item, index) => (
+                        <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'ОбычнаяNEW')}>
+                          <Target
+                            item={item}
+                            isNew={true}
+                            contentSender={setTargetContent}
+                            workersList={workers}
+                            setSelectedWorker={setSelectedWorker}
+                            setDeadlineDate={setDeadlineDate}
+                          ></Target>
                         </div>
-                        {/* <div className={classes.deleteContainer} onClick={() => deleteProject(item.id)}>
+                      ))}
+                      {simpleList.length > 0 && (
+                        <div className={classes.deleteContainer} onClick={() => deleteTarget(simpleList)}>
                           Удалить
                           <img src={deleteIcon} alt="delete" />
-                        </div> */}
-                        <div className={classes.deadline}>
-                          {formattedDate(item?.deadline)}
-                          {/* {item.deadline?.slice(0, 10)} */}
                         </div>
-                      </div>
-                    </div>
-                  </>
-                ))}
-              </div>
-            </>
+                      )}
+                    </>
+                  )}
+                </div>
+              </>
+            )}
+
+
             {(statisticsArray.length > 0 || edit) && (
               <>
                 <div className={classes.sectionName} data-section-id={edit ? "1" : "none"} onClick={() => addTarget('СтатистикаNEW')}> Метрика</div>
                 <div className={classes.targetsFlex}>
-                  {statisticsArray.filter(item => item.targetState !== 'Отменена').map((item, index) => (
+                  {statisticsArray.filter(item => item.targetState !== 'Отменена').filter(item => item.targetState !== 'Отменена').map((item, index) => (
                     <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Статистика')}>
                       <Target
                         id={item.id}
@@ -715,7 +684,6 @@ export default function Programs() {
                 </div>
               </>
             )}
-
           </div>
         </>
 
@@ -724,7 +692,11 @@ export default function Programs() {
             <div className={classes.inputRow2}>
               <div></div>
               <div>
-                <button onClick={() => saveProject()}>{edit ? 'РЕДАКТИРОВАТЬ' : 'СОХРАНИТЬ'}</button>
+                <button
+                  onClick={() => saveProject()}
+                >
+                  {edit ? 'РЕДАКТИРОВАТЬ' : 'СОХРАНИТЬ'}
+                </button>
               </div>
               <div>
 
@@ -734,20 +706,19 @@ export default function Programs() {
         </>
 
       </div>
-      {modalOpen && <CustomSelectModalProgram setModalOpen={setModalOpen} workers={workers} projectsList={projectsList} setParentFiltredProjects={setFiltredProjects} setProjectsList={setProjectsList} parentFilteredProjects={filtredProjects}></CustomSelectModalProgram>}
 
       {/* {modalOpen && <CustomSelectModal setModalOpen={setModalOpen} projects={projects} workers={workers} selectedProject={selectedProject} setSelectedProject={setSelectedProject} setParentFilteredProjects={setFiltredProjects}></CustomSelectModal>}
-    */}  <HandlerMutation
+ */}     <HandlerMutation
         Loading={isLoadingUpdateProjectMutation}
         Error={isErrorUpdateProjectMutation}
         Success={isSuccessUpdateProjectMutation}
-        textSuccess={"Программа успешно создан."}
+        textSuccess={"Проект успешно обновлён."}
         textError={
           Error?.data?.errors?.[0]?.errors?.[0]
             ? Error.data.errors[0].errors[0]
             : Error?.data?.message
         }
-      ></HandlerMutation> 
+      ></HandlerMutation>
     </>
   );
 }

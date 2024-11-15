@@ -1,8 +1,8 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import classes from "./Goal.module.css"
 import Header from "../Custom/Header/Header";
-import {useGetGoalIdQuery, useGetGoalQuery, useUpdateGoalMutation} from "../../BLL/goalApi";
-import {useParams} from "react-router-dom";
+import { useGetGoalIdQuery, useGetGoalQuery, useUpdateGoalMutation } from "../../BLL/goalApi";
+import { useParams } from "react-router-dom";
 import { EditorState, convertFromHTML, ContentState } from "draft-js";
 import draftToHtml from "draftjs-to-html"; // Импортируем конвертер
 import { convertToRaw } from "draft-js";
@@ -12,13 +12,14 @@ import SearchModal from "../Custom/SearchModal/SearchModal";
 import HandlerQeury from "../Custom/HandlerQeury";
 import MyEditor from "../Custom/Editor/MyEditor";
 import HandlerMutation from "../Custom/HandlerMutation";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 function NewGoal(props) {
 
-    const {userId} = useParams();
+    const { userId } = useParams();
     const [inputName, setInputName] = useState('')
     const [selectedOrg, setSelectedOrg] = useState('')
-    const  [selectedGoalId, setSelectedGoalId] = useState('')
+    const [selectedGoalId, setSelectedGoalId] = useState('')
     const [isModalOpen, setModalOpen] = useState(false)
 
     const [editorState, setEditorState] = useState([]);
@@ -40,7 +41,6 @@ function NewGoal(props) {
             isFetchingGetGoal: isFetching,
         }),
     });
-    console.log(data)
     const {
         currentGoal = {},
         organizations = [],
@@ -60,7 +60,7 @@ function NewGoal(props) {
             skip: !selectedGoalId,
         }
     );
-    console.log(currentGoal);
+    console.log(currentGoal)
 
     const [
         updateGoal,
@@ -109,6 +109,27 @@ function NewGoal(props) {
         });
     };
 
+    const onDragEnd = (result) => {
+        const { source, destination } = result;
+
+        if (!destination) {
+            return;
+        }
+
+        // Создаем новый массив состояний
+        const updatedState = editorState.map((state) => {
+            // Создаем новый экземпляр редактора для каждого состояния
+            return EditorState.createWithContent(state.getCurrentContent());
+        });
+
+        // Перемещаем редактор
+        const [movedItem] = updatedState.splice(source.index, 1);
+        updatedState.splice(destination.index, 0, movedItem);
+
+        setEditorState(updatedState);
+    };
+
+
     const saveUpdateGoal = async () => {
         await updateGoal({
             userId,
@@ -145,7 +166,7 @@ function NewGoal(props) {
                             <option>-</option>
                             {data?.map((item) => (
                                 <>
-                                    <option value={item.id}>{item.organization.organizationName}</option>
+                                    <option value={item.id}>{item?.organization?.organizationName}</option>
                                 </>
                             ))}
                         </select>
@@ -177,25 +198,54 @@ function NewGoal(props) {
                                         <>
                                             {currentGoal.content ? (
                                                 <>
-                                                    {editorState.map((item, index) => (
-                                                        <div key={index} className={classes.editorContainer}>
-                                                            <MyEditor
-                                                                key={index}
-                                                                editorState={item}
-                                                                setEditorState={(newState) => {
-                                                                    const updatedState = [...editorState];
-                                                                    updatedState[index] = newState;
-                                                                    setEditorState(updatedState);
-                                                                }}
-                                                            />
-                                                            <img
-                                                                src={deleteImage}
-                                                                alt="deleteImage"
-                                                                className={classes.deleteIcon}
-                                                                onClick={() => deleteEditor(index)}
-                                                            />
-                                                        </div>
-                                                    ))}
+                                                    <DragDropContext onDragEnd={onDragEnd}>
+
+                                                        <Droppable droppableId="editorList">
+                                                            {(provided) => (
+                                                                <div
+                                                                    {...provided.droppableProps}
+                                                                    ref={provided.innerRef}
+                                                                    className={classes.droppableContainer}
+                                                                >
+                                                                    {editorState.map((item, index) => (
+                                                                        <Draggable
+                                                                            key={index}
+                                                                            draggableId={`item-${index}`}
+                                                                            index={index}
+                                                                        >
+                                                                            {(provided) => (
+                                                                                <div
+                                                                                    ref={provided.innerRef}
+                                                                                    {...provided.draggableProps}
+                                                                                    {...provided.dragHandleProps}
+                                                                                    className={classes.editorContainer}
+                                                                                >
+                                                                                    <MyEditor
+                                                                                        key={index}
+                                                                                        editorState={item}
+                                                                                        setEditorState={(newState) => {
+                                                                                            const updatedState = [
+                                                                                                ...editorState
+                                                                                            ];
+                                                                                            updatedState[index] = newState;
+                                                                                            setEditorState(updatedState);
+                                                                                        }}
+                                                                                    />
+                                                                                    <img
+                                                                                        src={deleteImage}
+                                                                                        alt="deleteImage"
+                                                                                        className={classes.deleteIcon}
+                                                                                        onClick={() => deleteEditor(index)}
+                                                                                    />
+                                                                                </div>
+                                                                            )}
+                                                                        </Draggable>
+                                                                    ))}
+                                                                    {provided.placeholder}
+                                                                </div>
+                                                            )}
+                                                        </Droppable>
+                                                    </DragDropContext>
                                                     <button
                                                         className={classes.add}
                                                         onClick={() => addEditor()}
@@ -206,7 +256,7 @@ function NewGoal(props) {
                                                             viewBox="0 0 19.998 20"
                                                             fill="none"
                                                         >
-                                                            <defs/>
+                                                            <defs />
                                                             <path
                                                                 id="Vector"
                                                                 d="M10 20C4.47 19.99 0 15.52 0 10L0 9.8C0.1 4.3 4.63 -0.08 10.13 0C15.62 0.07 20.03 4.56 19.99 10.06C19.96 15.56 15.49 19.99 10 20ZM5 9L5 11L9 11L9 15L11 15L11 11L15 11L15 9L11 9L11 5L9 5L9 9L5 9Z"
@@ -217,9 +267,9 @@ function NewGoal(props) {
                                                         </svg>
 
                                                         <div>
-                            <span className={classes.nameButton}>
-                              Добавить еще одну цель
-                            </span>
+                                                            <span className={classes.nameButton}>
+                                                                Добавить еще одну цель
+                                                            </span>
                                                         </div>
                                                     </button>
                                                     <HandlerMutation
@@ -230,10 +280,10 @@ function NewGoal(props) {
                                                         } // Учитываем ручной сброс
                                                         textSuccess={"Цель обновлена"}
                                                         textError={
-                                                            Error?.data?.errors?.[0]?.errors?.[0] 
-                                                              ? Error.data.errors[0].errors[0] 
-                                                              : Error?.data?.message
-                                                          }
+                                                            Error?.data?.errors?.[0]?.errors?.[0]
+                                                                ? Error.data.errors[0].errors[0]
+                                                                : Error?.data?.message
+                                                        }
                                                     ></HandlerMutation>
                                                 </>
                                             ) : (

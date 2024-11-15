@@ -11,3 +11,17 @@ export const resizeTextarea = (id) => {
       textarea.style.height = textarea.scrollHeight + 'px';
     }
   };
+
+  export const transformArraiesForUpdate = (array) => {
+    const updatedArray = array.map(item => ({
+      _id: item?.id,
+      content: item?.content,
+      dateStart: item?.dateStart,
+      deadline: item?.deadline,
+      holderUserId: item?.holderUserId,
+      targetState: item?.targetState,
+    }))
+        // setFunction(updatedArray);
+
+        return updatedArray; // Явно возвращаем массив
+  }

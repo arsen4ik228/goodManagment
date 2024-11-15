@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import classes from "./NewProject.module.css";
 import Target from "../Targets/Target";
 import { useGetProjectNewQuery, usePostProjectMutation, useGetProgramNewQuery } from "../../../BLL/projectApi";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import CustomSelectModal from "../CustomSelectModal/CustomSelectModal";
 import deleteIcon from '../../Custom//icon/icon _ delete.svg'
 import Header from "../../Custom/Header/Header";
@@ -12,6 +12,7 @@ import { resizeTextarea } from "../../../BLL/constans";
 
 export default function NewProject() {
   const { userId } = useParams();
+  const navigate = useNavigate()
   const [typeProject, setTypeProject] = useState(true);
   const [openDescription, setOpenDescription] = useState(false)
   const [projectDescription, setProjectDescription] = useState('')
@@ -37,6 +38,7 @@ export default function NewProject() {
   const [targetContent, setTargetContent] = useState('')
   const [targetType, setTargetType] = useState('')
 
+  const [projectsForModal, setProjectsForModal] = useState([])
   const [selectedProject, setSelectedProject] = useState([])
   const [filtredProjects, setFiltredProjects] = useState([])
   const [currentProjects, setCurrentProjects] = useState([])
@@ -46,8 +48,6 @@ export default function NewProject() {
   const [organizations, setOrganizations] = useState([])
   const [projects, setProjects] = useState([])
   const [strategies, setStrategies] = useState([])
-
-  console.log('selectedProject   ', selectedProject)
 
   const TARGET_TYPES = {
     'Правила': 'rules',
@@ -120,7 +120,7 @@ export default function NewProject() {
 
   useEffect(() => {
     if (isToOrganization) {
-      const filteredStrategies = strategies.filter(
+      const filteredStrategies = strategies?.filter(
         (strategy) => strategy?.organization?.id === isToOrganization
       );
       setSortStrategy(filteredStrategies);
@@ -129,9 +129,24 @@ export default function NewProject() {
 
   useEffect(() => {
     if (isToOrganization) {
-      const filteredPrograms = programs.filter(
-        (program) => program?.organization?.id === isToOrganization
+      const filteredProjects = projects.filter(
+        (project) => 
+          project?.organization?.id === isToOrganization &&
+          project?.targets.some(target => 
+            target.targetState === "Активная" &&
+            target.isExpired === false &&
+            target.type === 'Продукт'
+          )
       );
+      setProjectsForModal(filteredProjects);
+    }
+  }, [projects, isToOrganization]);
+  console.log(projects, 'fff', projectsForModal)
+  
+
+  useEffect(() => {
+    if (isToOrganization) {
+      const filteredPrograms = programs.filter( (program) => program?.organization?.id === isToOrganization);
       setSortPrograms(filteredPrograms);
     }
   }, [programs, isToOrganization]);
@@ -164,6 +179,12 @@ export default function NewProject() {
       array[targetIndex].holderUserId = selectedWorker
     }
   }, [selectedWorker])
+
+  useEffect(() => {
+    if(isSuccessProjectMutation) {
+      setTimeout(window.location.reload() , 1000)
+    }
+  }, [isSuccessProjectMutation])
 
   const addTarget = (type) => {
     setTargetType(null)
@@ -214,7 +235,6 @@ export default function NewProject() {
     console.log(selectedProject)
   };
 
-  console.warn(selectedProject)
   const reset = () => { }
 
   const saveProject = async () => {
@@ -237,12 +257,28 @@ export default function NewProject() {
     if (projectDescription) {
       Data.content = projectDescription
     }
-    if (
+    if (typeProject && (
+      rulesArray.length > 0 ||
+      productsArray.length > 0 ||
+      statisticsArray.length > 0 ||
+      // simpleArray.length > 0 ||
+      eventArray.length > 0
+    )
+    ) {
+      Data.targetCreateDtos = [
+        ...rulesArray,
+        ...productsArray,
+        ...statisticsArray,
+        // ...simpleArray,
+        ...eventArray,
+      ];
+    } else if (!typeProject && (
       rulesArray.length > 0 ||
       productsArray.length > 0 ||
       statisticsArray.length > 0 ||
       simpleArray.length > 0 ||
       eventArray.length > 0
+    )
     ) {
       Data.targetCreateDtos = [
         ...rulesArray,
@@ -251,6 +287,11 @@ export default function NewProject() {
         ...simpleArray,
         ...eventArray,
       ];
+    }
+    if (typeProject) {
+      Data.projectIds = [
+        ...selectedProject
+      ]
     }
     console.log(Data)
     await postProject({
@@ -266,7 +307,7 @@ export default function NewProject() {
       });
 
   }
-  console.log(productsArray)
+
   return (
     <>
       <div className={classes.wrapper}>
@@ -498,12 +539,12 @@ export default function NewProject() {
         </>
       </div>
 
-      {modalOpen && <CustomSelectModal setModalOpen={setModalOpen} projects={projects} workers={workers} selectedProject={selectedProject} setSelectedProject={setSelectedProject} setParentFilteredProjects={setFiltredProjects}></CustomSelectModal>}
+      {modalOpen && <CustomSelectModal setModalOpen={setModalOpen} projects={projectsForModal} workers={workers} selectedProject={selectedProject} setSelectedProject={setSelectedProject} setParentFilteredProjects={setFiltredProjects}></CustomSelectModal>}
       <HandlerMutation
         Loading={isLoadingProjectMutation}
         Error={isErrorProjectMutation}
         Success={isSuccessProjectMutation}
-        textSuccess={"Проект успешно создан."}
+        textSuccess={typeProject ? "Программа успешно создана." : "Проект успешно создан"}
         textError={
           Error?.data?.errors?.[0]?.errors?.[0]
             ? Error.data.errors[0].errors[0]

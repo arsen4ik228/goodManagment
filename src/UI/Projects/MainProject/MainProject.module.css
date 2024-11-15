@@ -1,22 +1,93 @@
 /*Обнуление*/
-*{padding: 0;margin: 0;border: 0;}
-*,*:before,*:after{-moz-box-sizing: border-box;-webkit-box-sizing: border-box;box-sizing: border-box;}
-:focus,:active{outline: none;}
-a:focus,a:active{outline: none;}
-nav,footer,header,aside{display: block;}
-html,body{height:100%;width:100%;font-size:100%;line-height:1;font-size:16px;-ms-text-size-adjust:100%;-moz-text-size-adjust:100%;-webkit-text-size-adjust:100%;}
-input,button,textarea{font-family:inherit;}
-input::-ms-clear{display: none;}
-button{cursor: pointer;}
-button::-moz-focus-inner{padding:0;border:0;}
-a,a:visited{text-decoration: none;}
-a:hover{text-decoration: none;}
+* {
+    padding: 0;
+    margin: 0;
+    border: 0;
+}
+
+*,
+*:before,
+*:after {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+:focus,
+:active {
+    outline: none;
+}
+
+a:focus,
+a:active {
+    outline: none;
+}
+
+nav,
+footer,
+header,
+aside {
+    display: block;
+}
+
+html,
+body {
+    height: 100%;
+    width: 100%;
+    font-size: 100%;
+    line-height: 1;
+    font-size: 16px;
+    -ms-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+}
+
+input,
+button,
+textarea {
+    font-family: inherit;
+}
+
+input::-ms-clear {
+    display: none;
+}
+
+button {
+    cursor: pointer;
+}
+
+button::-moz-focus-inner {
+    padding: 0;
+    border: 0;
+}
+
+a,
+a:visited {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
 /* ul li{list-style: none;} */
-img{vertical-align: top;}
-h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
+img {
+    vertical-align: top;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-size: inherit;
+    font-weight: inherit;
+}
+
 /*--------------------*/
 
-.wrapper{
+.wrapper {
     display: flex;
     flex-direction: column;
     height: 100vh;
@@ -24,27 +95,27 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
     overflow: hidden;
 }
 
-.body{
+.body {
     flex: 1 1 auto;
     margin-top: 50px;
 }
 
-.ColumnContainer{
+.ColumnContainer {
     display: flex;
     flex-direction: column;
-    margin-top: 10px;
+    /* margin-top: 10px; */
 }
 
-.ContainerElem{
+.ContainerElem {
     display: flex;
     justify-content: space-between;
     flex-direction: row;
     padding: 5px 10px;
     border-bottom: 1px solid grey;
- 
+
 }
 
-.ContainerElem1{
+.ContainerElem1 {
     display: flex;
     /* justify-content: space-between; */
     flex-direction: column;
@@ -52,12 +123,12 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 
 }
 
-.ElemTitle{
+.ElemTitle {
     font-size: 1.6rem;
     color: #005475
 }
 
-.Elem1Title{
+.Elem1Title {
     font-size: 1.4rem;
     padding: 5px 15px;
     border: 1px solid black;
@@ -65,17 +136,19 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 }
 
 .ListOfProjects {
-    padding-left: 15px; /* Убираем отступы слева */
+    padding-left: 15px;
+    /* Убираем отступы слева */
     list-style-type: disc;
-  }
+}
+
 .ProjectListItem {
     font-size: 1.4rem;
     padding: 5px 5px;
- }
+}
 
- .projectsOfProgram{
+.projectsOfProgram {
 
-    div{
+    div {
         font-size: 1.1rem;
         margin-left: 25px;
         padding: 5px 0;
@@ -85,13 +158,64 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
         display: block;
     }
 
-    ol{
+    /* ol{
         padding-left: 20px;
         list-style-type: circle;
-    }
+    } */
 
-    li{
+
+}
+
+.ListOfProgram {
+    padding-left: 20px;
+    list-style-type: circle;
+
+    li {
         padding: 5px 5px;
         font-size: 1.1rem;
     }
- }
+}
+
+.bodyContainer{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 10px 25px;
+    /* font-family: "'Montserrat', sans-serif'"; */
+    /* height: 20px; */
+    /*border-bottom: #005475 solid 1px;*/
+}
+
+.name{
+    font-size: 1.25rem;
+    width: 50%;
+    /*border: black solid 1px;*/
+}
+
+.selectSection{
+    display: flex;
+    font-size: 1.2rem;
+    width: 50%;
+    /*border: black solid 1px;*/
+
+    >select{
+        font-size: 1.2rem;
+        font-family:"'Montserrat', sans-serif'";
+        border-bottom: #005475 1px solid;
+        height: 30px;
+        width: 100%;
+        text-align: center;
+    }
+
+    >input{
+        font-size: 1.2rem;
+        /* height: 30px; */
+        font-family: "'Montserrat', sans-serif";
+        border-bottom: #005475 1px solid;
+        padding-left: 10px;
+        width: 100%;
+    }
+
+  
+}

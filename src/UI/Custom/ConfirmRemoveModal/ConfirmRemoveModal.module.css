@@ -54,3 +54,10 @@
 
     }
   }
+
+  .close{
+    position: absolute;
+    float: right;
+    top: 138px;
+    right: 16px;
+}

@@ -179,6 +179,7 @@ const Policy = () => {
                     <MyEditor
                         editorState={editorState}
                         setEditorState={setEditorState}
+                        policyContent={true}
                     />
                 </>
             </div>

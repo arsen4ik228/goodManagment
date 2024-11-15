@@ -201,6 +201,8 @@ h6 {
 
 .worker{
     padding: 2px;
+    word-break: break-word;
+    text-overflow: ellipsis;
 }
 
 .data{

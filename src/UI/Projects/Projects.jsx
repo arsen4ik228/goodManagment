@@ -7,7 +7,7 @@ import CustomSelectModal from "./CustomSelectModal/CustomSelectModal"
 import deleteIcon from '../Custom//icon/icon _ delete.svg'
 import Header from "../Custom/Header/Header"
 import HandlerMutation from "../Custom/HandlerMutation"
-import { formattedDate, resizeTextarea } from "../../BLL/constans"
+import { formattedDate, resizeTextarea, transformArraiesForUpdate } from "../../BLL/constans"
 import editIcon from '../Custom/icon/icon _ save.svg'
 
 export default function NewProject() {
@@ -108,23 +108,30 @@ export default function NewProject() {
       isLoading: isLoadingUpdateProjectMutation,
       isSuccess: isSuccessUpdateProjectMutation,
       isError: isErrorUpdateProjectMutation,
-      error: ErrorUpdateProjectMutation
+      error: Error,
     },
   ] = useUpdateProjectMutation()
 
   const reset = () => {
-
+      
+      
   }
 
-  useEffect(() => { // фильтр Стратегий по организации
-    if (strategies) {
-      const filterStrategies = strategies.filter(strategy => strategy?.organization?.id === selectedOrg)
-      setFilterStrategies(filterStrategies)
+  useEffect(() => {
+    if(isSuccessUpdateProjectMutation) {
+      setTimeout(window.location.reload() , 1000)
     }
-  }, [strategies, selectedOrg])
+  }, [isSuccessUpdateProjectMutation])
+
+  useEffect(() => { // фильтр Стратегий по организации
+    if (strategies.length>0 && !filtredStrategies.length>0) {
+      const filter = strategies.filter(strategy => strategy?.organization?.id === selectedOrg)
+      setFilterStrategies(filter)
+    }
+  }, [strategies, ])
 
   useEffect(() => { // фильтр Программ по организации
-    if (programs) {
+    if (programs.length>0 && !filtredPrograms.length>0) {
       const filtredPrograms = programs.filter(program => program?.organization?.id === selectedOrg)
       setFilterPrograms(filtredPrograms)
     }
@@ -133,29 +140,37 @@ export default function NewProject() {
   useEffect(() => { // формирование массивов на основе targets
     if (targets.length > 0 && productsArray.length < 1 && rulesArray.length < 1 && eventArray.length < 1 && simpleArray.length < 1 && statisticsArray.length < 1) {
       targets.forEach((item) => {
+        // const newElement = {
+        //   _id : item?.id,
+        //   content : item?.content,
+        //   dateStart: item?.dateStart,
+        //   deadline: item?.deadline,
+        //   status: item?.status,
+
+        // }
+        // newElement?._id = item.id
         switch (item.type) {
           case 'Продукт':
-            setProductsArray([...productsArray, item])
+            setProductsArray((prevState) => ([...prevState, item]))
             break;
           case 'Правила':
-            setRulesArray([...rulesArray, item])
+            setRulesArray((prevState) => ([...prevState, item]))
             break;
           case 'Организационные мероприятия':
             setEventArray((prevState) => ([...prevState, item]))
             break;
           case 'Обычная':
-            setSimpleArray([...simpleArray, item])
+            setSimpleArray((prevState) => ([...prevState, item]))
             break;
           case 'Статистика':
-            setStatisticsArray([...statisticsArray, item])
+            setStatisticsArray((prevState) => ([...prevState, item]))
             break;
         }
       })
     }
   }, [targets])
 
-  // console.log('массивчики   ', productsArray, rulesArray, eventArray, simpleArray, statisticsArray)
-  console.log(statisticsList)
+  console.log('массивчики   ', productsArray, rulesArray, eventArray, simpleArray, statisticsArray)
   useEffect(() => { // предустановка значений при загрузке страницы
     if (currentProject?.organization?.id) {
       setSelectedOrg(currentProject?.organization.id)
@@ -222,12 +237,11 @@ export default function NewProject() {
     }
   }, [targetState])
 
-
   const targetFormation = (index, type) => {
     setTargetIndex(index)
     setTargetType(TARGET_TYPES[type])
   }
-  console.warn(targetIndex, targetType)
+
   const deleteTarget = (array) => {
     if (array && Array.isArray(array)) {
       array.pop();
@@ -257,7 +271,16 @@ export default function NewProject() {
     // setTargetIndex(newIndex);
   }
 
+
+
+
   const saveProject = async () => {
+
+    const updatedProducts = transformArraiesForUpdate(productsArray)
+    const updatedRules = transformArraiesForUpdate(rulesArray)
+    const updatedEvent = transformArraiesForUpdate(eventArray)
+    const updatedStatistics = transformArraiesForUpdate(statisticsArray)
+    const updatedSimple = transformArraiesForUpdate(simpleArray)
 
     const Data = {}
 
@@ -290,21 +313,27 @@ export default function NewProject() {
         ...eventList,
       ];
     }
-    
-    console.log(Data)
-    await updateProject({
-      userId,
-      projectId,
-      ...Data,
-    })
-      .unwrap()
-      .then(() => {
-        reset();
-      })
-      .catch((error) => {
-        console.error("Ошибка:", JSON.stringify(error, null, 2));
-      });
+    Data.targetUpdateDtos = [
+      ...updatedSimple,
+      ...updatedProducts,
+      ...updatedEvent,
+      ...updatedRules,
+      ...updatedStatistics
+    ]
 
+    console.log(Data)
+      await updateProject({
+        userId,
+        projectId,
+        ...Data,
+      })
+        .unwrap()
+        .then(() => {
+          reset();
+        })
+        .catch((error) => {
+          console.error("Ошибка:", JSON.stringify(error, null, 2));
+        });
   }
 
   return (
@@ -359,7 +388,7 @@ export default function NewProject() {
                     </div>
                   ) : (
                     <div className={classes.title}>
-                      {currentProject?.programNumber}
+                      {currentProject?.projectName}
                     </div>
                   )}
                 </div>
@@ -468,7 +497,7 @@ export default function NewProject() {
               <>
                 <div className={classes.sectionName} data-section-id={edit ? "1" : "none"} onClick={() => addTarget('Организационные мероприятияNEW')}>Организационные мероприятия</div>
                 <div className={classes.targetsFlex}>
-                  {eventArray.map((item, index) => (
+                  {eventArray.filter(item => item.targetState !== 'Отменена').map((item, index) => (
                     <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Организационные мероприятия')}>
                       <Target id={item.id}
                         item={item}
@@ -515,7 +544,7 @@ export default function NewProject() {
               <>
                 <div className={classes.sectionName} data-section-id={edit ? "1" : "none"} onClick={() => addTarget('ПравилаNEW')}>Правила</div>
                 <div className={classes.targetsFlex}>
-                  {rulesArray.map((item, index) => (
+                  {rulesArray.filter(item => item.targetState !== 'Отменена').map((item, index) => (
                     <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Правила')}>
                       <Target id={item.id}
                         item={item}
@@ -563,7 +592,7 @@ export default function NewProject() {
               <>
                 <div className={classes.sectionName} data-section-id={edit ? "1" : "none"} onClick={() => addTarget('ОбычнаяNEW')}>Задачи</div>
                 <div className={classes.targetsFlex}>
-                  {simpleArray.map((item, index) => (
+                  {simpleArray.filter(item => item.targetState !== 'Отменена').map((item, index) => (
                     <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Обычная')}>
                       <Target id={item.id}
                         item={item}
@@ -611,7 +640,7 @@ export default function NewProject() {
               <>
                 <div className={classes.sectionName} data-section-id={edit ? "1" : "none"} onClick={() => addTarget('СтатистикаNEW')}> Метрика</div>
                 <div className={classes.targetsFlex}>
-                  {statisticsArray.filter(item => item.targetState !== 'Отменена').map((item, index) => (
+                  {statisticsArray.filter(item => item.targetState !== 'Отменена').filter(item => item.targetState !== 'Отменена').map((item, index) => (
                     <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Статистика')}>
                       <Target
                         id={item.id}
@@ -679,17 +708,17 @@ export default function NewProject() {
       </div>
 
       {/* {modalOpen && <CustomSelectModal setModalOpen={setModalOpen} projects={projects} workers={workers} selectedProject={selectedProject} setSelectedProject={setSelectedProject} setParentFilteredProjects={setFiltredProjects}></CustomSelectModal>}
-      <HandlerMutation
-        Loading={isLoadingProjectMutation}
-        Error={isErrorProjectMutation}
-        Success={isSuccessProjectMutation}
-        textSuccess={"Проект успешно создан."}
+ */}     <HandlerMutation
+        Loading={isLoadingUpdateProjectMutation}
+        Error={isErrorUpdateProjectMutation}
+        Success={isSuccessUpdateProjectMutation}
+        textSuccess={"Проект успешно обновлён."}
         textError={
           Error?.data?.errors?.[0]?.errors?.[0]
             ? Error.data.errors[0].errors[0]
             : Error?.data?.message
         }
-      ></HandlerMutation> */}
+      ></HandlerMutation>
     </>
   );
 }

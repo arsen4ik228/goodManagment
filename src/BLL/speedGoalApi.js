@@ -7,6 +7,15 @@ export const speedGoalApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl }),
   endpoints: (build) => ({
     
+    getSpeedGoals: build.query({
+      query: (userId = "") => ({
+        url: `${userId}/objectives`,
+      }),
+      providesTags: (result, error, userId) =>
+        result ? [{ type: "SpeedGoal", id: userId }] : [], 
+    }),
+
+
     getSpeedGoalNew: build.query({
       query: (userId = "") => ({
         url: `${userId}/objectives/new`,
@@ -68,5 +77,6 @@ export const {
   usePostSpeedGoalMutation,
   useGetSpeedGoalIdQuery,
   useUpdateSpeedGoalMutation,
-  useGetSpeedGoalUpdateQuery
+  useGetSpeedGoalUpdateQuery,
+  useGetSpeedGoalsQuery
 } = speedGoalApi;
