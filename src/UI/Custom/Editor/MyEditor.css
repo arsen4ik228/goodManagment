@@ -1,6 +1,6 @@
 
 .demo-wrapper {
-  border: 1px solid #000;
+  /* border: 1px solid #000; */
   padding: 10px;
   /*height: 300px;*/
 
@@ -8,6 +8,7 @@
 
 .demo-editor {
   background-color: #f0f8ff;
+  /* width: 100%; */
   /* Смените цвет фона на нужный */
   padding: 10px;
   min-height: 300px;
@@ -15,6 +16,7 @@
   /* Высота редактора */
   color: #000;
   /* Цвет текста */
+  border-radius: 15px;
 
 }
 

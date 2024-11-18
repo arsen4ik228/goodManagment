@@ -35,11 +35,11 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 }
 .left{
     width: 40vw;
-    font-size: 1.8em;
+    font-size: 1.2rem;
     justify-content: center;
     display: flex;
     color: #005475;
-    padding-left: 0.5em;
+    padding-left: 0.5rem;
     border-right: 1px solid #005475;
     height: 98%;
 }

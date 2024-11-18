@@ -114,7 +114,7 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 
 .deleteIcon {
     position: absolute; /* Позиционируем элемент абсолютно */
-    top: -27px; /* Расстояние от верхней части контейнера */
+    top: -17px; /* Расстояние от верхней части контейнера */
     right: 0px;
     cursor: pointer; /* Изменяем курсор при наведении на иконку */
 }

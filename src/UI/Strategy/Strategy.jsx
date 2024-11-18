@@ -53,9 +53,10 @@ const Strategy = () => {
         allStrategies = [],
     } = useGetStrategyQuery({ userId, organizationId: selectedOrg }, {
         selectFromResult: ({ data }) => ({
-            allStrategies: data?.strategyToOrganizations,
+            allStrategies: data,
         }),
     });
+    console.log(allStrategies)
     const {
         currentStrategy = [],
         // organizations = [],
@@ -69,6 +70,7 @@ const Strategy = () => {
             skip: !selectedId,
         }
     );
+    console.log('selectedId   ', selectedId)
 
     const [
         updateStrategy,
@@ -81,7 +83,7 @@ const Strategy = () => {
     ] = useUpdateStrategyMutation();
 
     const saveUpdateStrategy = async () => {
-        console.log( selectedId,currentStrategy.state, currentStrategy.strategyToOrganizations)
+        console.log(selectedId, currentStrategy.state, currentStrategy.strategyToOrganizations)
         await updateStrategy({
             // userId,
             strategyId: selectedId,
@@ -149,7 +151,7 @@ const Strategy = () => {
     const openOrgModal = () => {
         setModalOrgOpen(true);
     }
-    console.log(isState)
+    console.log(selectedOrg)
     return (
         <>
             <div className={classes.wrapper}>
@@ -157,91 +159,95 @@ const Strategy = () => {
                     <Header create={true} title={'Стратегии'}></Header>
                 </>
 
+                {/* {isState && ( */}
                 <div className={classes.inputRow1}>
                     <div className={classes.first}>
-                        <select name={'mySelect'} value={isState} onChange={(e) => setIsState(e.target.value)}>
-                            {isState=='Черновик' && (<option value={'Черновик'}>Черновик</option>)}
+                        <select name={'mySelect'} disabled={!isState || isState === 'Завершено'} value={isState} onChange={(e) => setIsState(e.target.value)}>
+                            {isState == 'Черновик' && (<option value={'Черновик'}>Черновик</option>)}
                             <option value={'Активный'}>Активный</option>
-                            <option value={'Завершено'}>Завершено</option>
+                            {isState == 'Активный' && (<option value={'Завершено'}>Завершено</option>)}
                         </select>
                         <img src={search} onClick={openSearchModal} />
                         {/*</div>*/}
                         {/*<div className={classes.second}>*/}
-                        <input type="date" name="calendar" value={valueDate}
+                        <input type="date" name="calendar" disabled={!isState} value={valueDate}
                             onChange={(e) => setValueDate(e.target.value)} />
                     </div>
                 </div>
+                {/* )} */}
 
                 <div className={classes.body}>
-                    <div className={classes.bodyContainer}>
+
                     {isState ? (
-                        <>
-                            <MyEditor editorState={editorState} setEditorState={setEditorState} toolBar={true} />
-                        </>
+                        <div className={classes.editorContainer}>
+                            <MyEditor editorState={editorState} setEditorState={setEditorState} />
+                        </div>
                     ) : (
                         <>
-                            <div className={classes.left}> Выберите Стратегию:</div>
-                            <div className={classes.right}>
-                                <ul className={classes.selectList}>
-                                    {organizations?.map((item) => (
-                                        <li key={item.id} onChange={(e) => setSelectedOrg(item.id)}>
-                                            {(selectedOrg == item.id) ?
-                                                (<>
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={selectedOrg.includes(item.id)}
-                                                        readOnly
-
-                                                    />
-                                                    <div> {item.organizationName} </div>
-                                                </>) : (
-                                                    <>
+                            <div className={classes.bodyContainer}>
+                                <div className={classes.left}> Выберите Стратегию:</div>
+                                <div className={classes.right}>
+                                    <ul className={classes.selectList}>
+                                        {organizations?.map((item) => (
+                                            <li key={item.id} onChange={(e) => setSelectedOrg(item.id)}>
+                                                {(selectedOrg == item.id) ?
+                                                    (<>
                                                         <input
                                                             type="checkbox"
                                                             checked={selectedOrg.includes(item.id)}
                                                             readOnly
-                                                        />
-                                                        <div style={{ 'color': 'grey' }}> {item.organizationName} </div>
-                                                    </>
-                                                )}
-                                        </li>
-                                    ))}
-                                </ul>
 
-                                {selectedOrg && (
-                                    <>
-                                        <div className="">Стратегии:</div>
-                                        <ul className={classes.selectList}>
-                                            {allStrategies?.map((item) => (
-                                                <li key={item.id} onChange={(e) => setSelectedStrategy(item.strategy.id)}>
-                                                    {(selectedStrategy == item.strategy.id) ?
-                                                        (<>
+                                                        />
+                                                        <div> {item.organizationName} </div>
+                                                    </>) : (
+                                                        <>
                                                             <input
                                                                 type="checkbox"
-                                                                checked={selectedStrategy.includes(item.strategy.id)}
+                                                                checked={selectedOrg.includes(item.id)}
                                                                 readOnly
-
                                                             />
-                                                            <div> Стратегия №{item.strategy.strategyNumber} </div>
-                                                        </>) : (
-                                                            <>
+                                                            <div style={{ 'color': 'grey' }}> {item.organizationName} </div>
+                                                        </>
+                                                    )}
+                                            </li>
+                                        ))}
+                                    </ul>
+
+                                    {selectedOrg && (
+                                        <>
+                                            <div className="">Стратегии:</div>
+                                            <ul className={classes.selectList}>
+                                                {allStrategies?.strategies?.map((item, index) => (
+                                                    <li key={index} onChange={(e) => setSelectedStrategy(item?.id)}>
+                                                        {(selectedStrategy == item?.strategy?.id) ?
+                                                            (<>
                                                                 <input
                                                                     type="checkbox"
-                                                                    checked={selectedStrategy.includes(item.id)}
+                                                                    checked={selectedStrategy.includes(item?.id)}
                                                                     readOnly
+
                                                                 />
-                                                                <div style={{ 'color': 'grey' }}> Стратегия №{item.strategy.strategyNumber} </div>
-                                                            </>
-                                                        )}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </>
-                                )}
+                                                                <div> Стратегия №{item?.strategyNumber} </div>
+                                                            </>) : (
+                                                                <>
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        checked={selectedStrategy.includes(item?.id)}
+                                                                        readOnly
+                                                                    />
+                                                                    <div style={{ 'color': 'grey' }}> Стратегия №{item.strategyNumber} </div>
+                                                                </>
+                                                            )}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </>
+                                    )}
+                                </div>
                             </div>
                         </>
                     )}
-                    </div>
+
                 </div>
 
 
@@ -252,7 +258,7 @@ const Strategy = () => {
                             <button onClick={() => openOrgModal()}> ОТРЕДАКТИРОВАТЬ</button>
                         </div>
                         <div>
-                            <img src={searchBlack} />
+                            {/* <img src={searchBlack} /> */}
                             {/*<img src={policy} className={classes.image}/>*/}
                             {/*<img src={stats}/>*/}
                         </div>
@@ -275,8 +281,7 @@ const Strategy = () => {
                 organizations={organizations} isToOrganizations={strategyToOrganizations}
                 setToOrganizations={setStrategyToOrganizations}></CustomSelect>}
         </>
-    )
-        ;
+    );
 };
 
 export default Strategy;

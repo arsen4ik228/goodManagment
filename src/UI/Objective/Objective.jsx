@@ -35,7 +35,7 @@ function Objective(props) {
         data = [],
         isLoadingGetUpdateSpeedGoal,
         isErrorGetUpdateSpeedGoal,
-    } = useGetSpeedGoalUpdateQuery(userId, {
+    } = useGetSpeedGoalsQuery(userId, {
         selectFromResult: ({ data, isLoading, isError }) => ({
             data: data || [],
             isLoadingGetUpdateSpeedGoal: isLoading,
@@ -163,20 +163,20 @@ function Objective(props) {
 
     const addEditor = () => {
         switch (activeIndex) {
-            case '0':
+            case 0:
                 console.log('<B<B')
                 setContentEditors((prevEditors) => [
                     ...prevEditors,
                     EditorState.createEmpty(),
                 ]);
                 break;
-            case '1':
+            case 1:
                 setSituationEditors((prevEditors) => [
                     ...prevEditors,
                     EditorState.createEmpty(),
                 ]);
                 break;
-            case '2':
+            case 2:
                 console.log('работаем братья V')
                 setRootCauseEditors((prevEditors) => [
                     ...prevEditors,
@@ -287,7 +287,7 @@ function Objective(props) {
         <>
             <div className={classes.wrapper}>
                 <>
-                    <Header create={true} title={' Краткосрочная цель'} />
+                    <Header create={false} title={' Краткосрочная цель'} />
                 </>
 
                 <div className={classes.inputRow1}>
@@ -296,7 +296,7 @@ function Objective(props) {
                             <option>-</option>
                             {data?.map((item, index) => (
                                 <>
-                                    <option key={index} value={item.id}>Стратегия №{item.strategyNumber}</option>
+                                    <option key={index} value={item?.strategy?.id}>Стратегия №{item?.strategy?.strategyNumber}</option>
                                 </>
                             ))}
                         </select>
@@ -335,7 +335,7 @@ function Objective(props) {
                         />
                     ) : (
                         <>
-                            {activeIndex === 0 && (
+                            {activeIndex == 0 && (
                                 <DragDropContext
                                     onDragEnd={(result) => onDragEnd(result, "content")}
                                 >

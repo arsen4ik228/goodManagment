@@ -70,9 +70,8 @@ function NewObjective(props) {
     };
 
     const reset = () => {
-        setTimeout(() => {
-            navigate(-1);
-        }, 50);
+        navigate(-1)
+        console.warn('reset')
     }
     console.log(data)
     return (

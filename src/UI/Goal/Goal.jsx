@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import classes from "./Goal.module.css"
 import Header from "../Custom/Header/Header";
-import { useGetGoalIdQuery, useGetGoalQuery, useUpdateGoalMutation } from "../../BLL/goalApi";
+import { useGetGoalIdQuery, useGetGoalQuery, usePostGoalMutation, useUpdateGoalMutation } from "../../BLL/goalApi";
 import { useParams } from "react-router-dom";
 import { EditorState, convertFromHTML, ContentState } from "draft-js";
 import draftToHtml from "draftjs-to-html"; // Импортируем конвертер
@@ -21,6 +21,9 @@ function NewGoal(props) {
     const [selectedOrg, setSelectedOrg] = useState('')
     const [selectedGoalId, setSelectedGoalId] = useState('')
     const [isModalOpen, setModalOpen] = useState(false)
+    const [selectName, setSelectname] = useState('')
+
+    const [organizationIdForRequestingCreateGoal, setOrganizationIdForRequestingCreateGoal] = useState(null)
 
     const [editorState, setEditorState] = useState([]);
     const [htmlContent, setHtmlContent] = useState([]);
@@ -29,13 +32,17 @@ function NewGoal(props) {
     const [manualErrorReset, setManualErrorReset] = useState(false);
 
     const {
-        data = [],
+        organizationsWithGoal = [],
+        organizationsWithoutGoal = [],
+        goals = [],
         isErrorGetGoal,
         isLoadingGetGoal,
         isFetchingGetGoal,
     } = useGetGoalQuery(userId, {
         selectFromResult: ({ data, isLoading, isError, isFetching }) => ({
-            data: data || [],
+            organizationsWithGoal: data?.organizationsWithGoal || [],
+            organizationsWithoutGoal: data?.organizationsWithoutGoal || [],
+            goals: data?.goals || [],
             isErrorGetGoal: isError,
             isLoadingGetGoal: isLoading,
             isFetchingGetGoal: isFetching,
@@ -60,7 +67,7 @@ function NewGoal(props) {
             skip: !selectedGoalId,
         }
     );
-    console.log(currentGoal)
+    console.log(organizationsWithGoal, organizationsWithoutGoal, goals)
 
     const [
         updateGoal,
@@ -71,6 +78,21 @@ function NewGoal(props) {
             error: Error,
         },
     ] = useUpdateGoalMutation();
+
+    const [
+        postGoal,
+        {
+            isLoading: isLoadingPostPoliciesMutation,
+            isSuccess: isSuccessPostPoliciesMutation,
+            isError: isErrorPostPoliciesMutation,
+        },
+    ] = usePostGoalMutation();
+
+    useEffect(() => {
+        if(!selectedGoalId && organizationsWithGoal.length>0){
+            setSelectedGoalId(organizationsWithGoal[0]?.goal?.id)
+        }
+    }, [organizationsWithGoal])
 
     useEffect(() => {
         if (Array.isArray(currentGoal.content)) {
@@ -95,6 +117,17 @@ function NewGoal(props) {
         );
     }, [editorState]);
 
+    useEffect(() => {
+        if (organizationIdForRequestingCreateGoal !== null) {
+            const currentOrganization = organizationsWithGoal.find(item => item.id === organizationIdForRequestingCreateGoal)
+            if (currentOrganization) {
+                setOrganizationIdForRequestingCreateGoal(null)
+                selectGoal(currentOrganization?.goal?.id)
+            }
+            else console.error('Для выбранной организации не найдена цель')
+        }
+    }, [organizationsWithGoal])
+
     const addEditor = () => {
         setEditorState((prevEditors) => [
             ...prevEditors,
@@ -108,6 +141,27 @@ function NewGoal(props) {
             return updated;
         });
     };
+
+    // const establishCreatedGoalId = () => {
+    //     console.warn('establish...worked')
+    //     const currentOrganization = organizationsWithGoal.find(item => item.id === organizationIdForRequestingCreateGoal)
+    //     console.log(currentOrganization)
+    //     setOrganizationIdForRequestingCreateGoal(null)
+    //     selectGoal(currentOrganization?.goal?.id)
+    // }
+
+    const selectGoal = (target) => {
+        console.warn('selectGoal:  ', target)
+        if (goals.some(goal => goal.id === target)) {
+            setSelectedGoalId(target)
+            // setSelectedOrg('')
+        }
+        else {
+            console.log('nonono')
+            setOrganizationIdForRequestingCreateGoal(target)
+            saveGoal(target)
+        }
+    }
 
     const onDragEnd = (result) => {
         const { source, destination } = result;
@@ -129,6 +183,20 @@ function NewGoal(props) {
         setEditorState(updatedState);
     };
 
+    const saveGoal = async (organizationId) => {
+        await postGoal({
+            userId,
+            organizationId: organizationId,
+            content: [],
+        })
+            .unwrap()
+            .then(() => {
+                // establishCreatedGoalId()
+            })
+            .catch((error) => {
+                console.error("Ошибка:", JSON.stringify(error, null, 2));
+            });
+    };
 
     const saveUpdateGoal = async () => {
         await updateGoal({
@@ -150,23 +218,27 @@ function NewGoal(props) {
             });
     };
 
-
     return (
 
         <>
             <div className={classes.wrapper}>
 
                 <>
-                    <Header title={'Цели'} create={true}></Header>
+                    <Header title={'Цели'} create={false}></Header>
                 </>
 
                 <div className={classes.inputRow1}>
                     <div className={classes.first}>
-                        <select name={'organizations'} onChange={(e) => setSelectedGoalId(e.target.value)}>
-                            <option>-</option>
-                            {data?.map((item) => (
+                        <select name={'organizations'} value={selectedGoalId} onChange={(e) => selectGoal(e.target.value)}>
+                            {!organizationsWithGoal.length>0 && (<option>-</option>)}
+                            {organizationsWithGoal?.map((item, index) => (
                                 <>
-                                    <option value={item.id}>{item?.organization?.organizationName}</option>
+                                    <option key={index} value={item?.goal?.id}>{item?.organizationName}</option>
+                                </>
+                            ))}
+                            {organizationsWithoutGoal?.map((item, index) => (
+                                <>
+                                    <option key={index} value={item?.id}>{item?.organizationName}</option>
                                 </>
                             ))}
                         </select>
