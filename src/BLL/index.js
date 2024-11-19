@@ -7,6 +7,7 @@ import { strategyApi } from "./strategyApi";
 import { speedGoalApi } from "./speedGoalApi";
 import { projectApi } from './projectApi';
 import { organizationsApi } from './organizationsApi';
+import strategReducer from "./strategSlice";
 
 export const store = configureStore({
     reducer: {
@@ -18,6 +19,7 @@ export const store = configureStore({
         [policyDirectoriesApi.reducerPath]: policyDirectoriesApi.reducer,
         [projectApi.reducerPath]: projectApi.reducer,
         [organizationsApi.reducerPath]: organizationsApi.reducer,
+        strateg: strategReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware()

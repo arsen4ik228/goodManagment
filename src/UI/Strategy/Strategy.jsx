@@ -18,6 +18,8 @@ import { convertToRaw } from "draft-js";
 import Header from "../Custom/Header/Header";
 import CustomSelect from "../Custom/CustomSelect/CustomSelect";
 import HandlerMutation from "../Custom/HandlerMutation";
+import { useSelector } from "react-redux";
+import ModalWindow from '../Custom/ConfirmStrategyToComplited/ModalWindow';
 
 const Strategy = () => {
 
@@ -34,6 +36,17 @@ const Strategy = () => {
     const [strategyToOrganizations, setStrategyToOrganizations] = useState([]);
     const [extractedOrganizations, setExtractedOrganizations] = useState([]);
 
+    const [openModal, setOpenModal] = useState(false)
+    const [activeStrategDB, setActiveStrategDB] = useState();
+
+    // Доступ к локальному Redux стейту
+    const selectedOrganizationId = useSelector(
+        (state) => state.strateg.selectedOrganizationId
+    );
+    const selectedStrategyId = useSelector(
+        (state) => state.strateg.selectedStrategyId
+    );
+
     const [selectedOrg, setSelectedOrg] = useState('')
     const [selectedStrategy, setSelectedStrategy] = useState('')
 
@@ -49,13 +62,28 @@ const Strategy = () => {
         }),
     });
 
+    // const {
+    //     allStrategies = [],
+    // } = useGetStrategyQuery({ userId, organizationId: selectedOrg }, {
+    //     selectFromResult: ({ data }) => ({
+    //         allStrategies: data,
+    //     }),
+    // });
     const {
         allStrategies = [],
-    } = useGetStrategyQuery({ userId, organizationId: selectedOrg }, {
-        selectFromResult: ({ data }) => ({
-            allStrategies: data,
-        }),
-    });
+        isLoadingStrateg,
+        isErrorStrateg,
+      } = useGetStrategyQuery(
+        { userId, organizationId: selectedOrg },
+        {
+          selectFromResult: ({ data, isLoading, isError }) => ({
+            allStrategies: data || {},
+            isLoadingStrateg: isLoading,
+            isErrorStrateg: isError,
+          }),
+        //   skip: !selectedOrg,
+        }
+      );
     console.log(allStrategies)
     const {
         currentStrategy = [],
@@ -91,7 +119,7 @@ const Strategy = () => {
             _id: selectedId,
             state: isState,
             content: htmlContent,
-            strategyToOrganizations: strategyToOrganizations,
+            // strategyToOrganizations: strategyToOrganizations,
 
         })
             .unwrap()
@@ -142,7 +170,85 @@ const Strategy = () => {
         setValueDate(currentStrategy.dataActive)
     }, [currentStrategy.state, currentStrategy.dataActive, extractedOrganizations]);
 
+    useEffect(() => {
+        if (selectedOrg !== "") {
+        //   setDisabledNumber(false);
+          const activeStrateg = allStrategies?.strategies?.find(
+            (item) => item.state === "Активный"
+          );
+          setActiveStrategDB(activeStrateg?.id);
+        }
+      }, [selectedOrg]);
+    
+      useEffect(() => {
+        const activeStrateg = allStrategies?.strategies?.find(
+          (item) => item.state === "Активный"
+        );
+        setActiveStrategDB(activeStrateg?.id);
+      }, [isLoadingStrateg]);
 
+    // useEffect(() => {
+    //     if (selectedOrganizationId && selectedStrategyId) {
+    //         setSelectedOrg(selectedOrganizationId);
+    //         setSelectedStrategy(selectedStrategyId);
+    //     }
+    // }, []);
+    const save = () => {
+        console.log("save");
+        // console.log(state);
+        console.log(currentStrategy.state);
+        console.log(activeStrategDB);
+        console.log(isState)
+        if (
+          isState === "Активный" &&
+          currentStrategy.state === "Черновик" &&
+          activeStrategDB
+        ) {
+          setOpenModal(true);
+        } else {
+          saveUpdateStrategy();
+        }
+      };
+
+    const btnYes = async () => {
+        await updateStrategy({
+            userId,
+            strategyId: activeStrategDB,
+            _id: activeStrategDB,
+            state: "Завершено",
+        })
+            .unwrap()
+            .then(() => {
+                saveUpdateStrategy();
+            })
+            .catch((error) => {
+                // При ошибке также сбрасываем флаги
+                // setManualErrorReset(false);
+                console.error("Ошибка:", JSON.stringify(error, null, 2)); // выводим детализированную ошибку
+            });
+    };
+
+    const btnNo = async () => {
+        const Data = [];
+        if (htmlContent !== currentStrategy.content) {
+            Data.content = htmlContent;
+        }
+        if (Data.content) {
+            await updateStrategy({
+                userId,
+                strategyId: selectedId,
+                _id: selectedId,
+                ...Data,
+            })
+                .unwrap()
+                .then(() => { })
+                .catch((error) => {
+                    // При ошибке также сбрасываем флаги
+                    //   setManualErrorReset(false);
+                    console.error("Ошибка:", JSON.stringify(error, null, 2));
+                });
+        }
+    };
 
     const openSearchModal = () => {
         setIsState('');
@@ -255,7 +361,7 @@ const Strategy = () => {
                     <div className={classes.inputRow2}>
                         <div></div>
                         <div>
-                            <button onClick={() => openOrgModal()}> ОТРЕДАКТИРОВАТЬ</button>
+                            <button onClick={() => save()}> ОТРЕДАКТИРОВАТЬ</button>
                         </div>
                         <div>
                             {/* <img src={searchBlack} /> */}
@@ -266,12 +372,23 @@ const Strategy = () => {
                 </footer>
             </div>
 
+            {openModal && (
+                <ModalWindow
+                    text={
+                        "У Вас уже есть Активная стратегия, при нажатии на Да, Она будет завершена."
+                    }
+                    close={setOpenModal}
+                    btnYes={btnYes}
+                    btnNo={btnNo}
+                ></ModalWindow>
+            )}
+
             <HandlerMutation
                 Loading={isLoadingUpdateStrategyMutation}
                 Error={isErrorUpdateStrategyMutation}
                 Success={isSuccessUpdateStrategyMutation}
                 textSuccess={"Cтратегия успешно обновлена."}
-                textError={ErrorStrategyMutation?.data?.errors[0]?.errors}
+                // textError={ErrorStrategyMutation?.data?.errors[0]?.errors}
             ></HandlerMutation>
 
             {isModalSearchOpen &&
