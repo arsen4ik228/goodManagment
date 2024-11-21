@@ -58,7 +58,7 @@ export default function CustomSelect({organizations, requestFunc, isToOrganizati
                                 <li key={item.id} onClick={() => handleSelectItem(item.id)}>
                                     <input
                                         type="checkbox"
-                                        checked={selectedItems.includes(item.id)}
+                                        checked={isToOrganizations.includes(item.id)}
                                         readOnly
                                     />
                                     {item.organizationName}

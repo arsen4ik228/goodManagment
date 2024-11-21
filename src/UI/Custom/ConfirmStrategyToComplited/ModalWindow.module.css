@@ -14,10 +14,10 @@
 
 .modalDeleteElement {
     position: relative;
-    height: 120px;
-    width: 300px;
-    left: 10%;
-    top: -5%;
+    /* height: 120px; */
+    width: 85%; 
+    /* left: 10%;
+    top: -5%; */
     background-color: #fff;
     display: flex;
     flex-direction: column;
@@ -32,20 +32,19 @@
 .modalRow1{
     display: flex;
     flex-direction: row;
-    min-width: 280px;
+    /* min-width: 280px; */
 }
 
 .modalRow2 {
     display: flex;
-    flex-direction: row;
-    column-gap: 5px;
-    margin-left: auto;
-    margin-right: 5px;
+    justify-content: space-between;
+    width: 80%;
+    margin-top: 15px;
 }
 
 .btnYes {
-    height: 25px;
-    width: 40px;
+    height: 30px;
+    width: 70px;
     border-radius: 10px;
     background-color: #005475;
     transition: background-color 0.3s ;
@@ -55,8 +54,8 @@
 }
 
 .btnNo {
-    height: 25px;
-    width: 40px;
+    height: 30px;
+    width: 70px;
     border-radius: 10px;
     background-color: #ffff;
     border: 1px solid #005475;
@@ -83,7 +82,7 @@
     font-weight: 400;
     font-family: 'Montserrat';
     color: rgb(58, 58, 58);
-    font-size: 14px;
+    font-size: 1.2rem;
     line-height: 16px; 
 }
 
@@ -91,6 +90,6 @@
     position: absolute;
     float: right;
     top: -27px;
-    right: -27px;
+    right: -20px;
     cursor: pointer;
 }

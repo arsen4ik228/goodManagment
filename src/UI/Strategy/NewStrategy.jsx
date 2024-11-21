@@ -21,7 +21,7 @@ import HandlerMutation from "../Custom/HandlerMutation";
 
 const Strategy = () => {
 
-    const {userId} = useParams()
+    const {userId,organizationId} = useParams()
     const navigate = useNavigate()
     const [inputValue, setInputValue] = useState('');
     const [valueDate, setValueDate] = useState('');
@@ -77,12 +77,11 @@ const Strategy = () => {
     }
 
     const saveNewStrategy = async () => {
-        console.log(strategyToOrganizations)
+        console.log(organizationId)
         await postStrategy({
             userId,
             content: htmlContent,
-            // state: isState,
-            strategyToOrganizations: strategyToOrganizations,
+            organizationId,
         })
             .unwrap()
             .then(() => {
@@ -143,12 +142,11 @@ const Strategy = () => {
                 </div>
 
                 <footer className={classes.inputContainer}>
-                    <div className={classes.inputColumn}>
                         <div className={classes.inputRow2}>
-                            <button onClick={() => click()}> СОЗДАТЬ</button>
+                            <button onClick={() => saveNewStrategy()}> СОЗДАТЬ</button>
                         </div>
-                    </div>
                 </footer>
+
             </div>
 
 

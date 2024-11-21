@@ -23,7 +23,10 @@ import ModalWindow from '../Custom/ConfirmStrategyToComplited/ModalWindow';
 
 const Strategy = () => {
 
-    const { userId } = useParams()
+    const { userId, strategyId } = useParams()
+    useEffect(() => {
+        setSelectedStrategy(strategyId)
+    }, [strategyId])
     const navigate = useNavigate()
     const [inputValue, setInputValue] = useState('');
     const [valueDate, setValueDate] = useState('');
@@ -62,13 +65,6 @@ const Strategy = () => {
         }),
     });
 
-    // const {
-    //     allStrategies = [],
-    // } = useGetStrategyQuery({ userId, organizationId: selectedOrg }, {
-    //     selectFromResult: ({ data }) => ({
-    //         allStrategies: data,
-    //     }),
-    // });
     const {
         allStrategies = [],
         isLoadingStrateg,
@@ -77,28 +73,27 @@ const Strategy = () => {
         { userId, organizationId: selectedOrg },
         {
           selectFromResult: ({ data, isLoading, isError }) => ({
-            allStrategies: data || {},
+            allStrategies: data?.activeAndDraftStrategies || [],
             isLoadingStrateg: isLoading,
             isErrorStrateg: isError,
           }),
-        //   skip: !selectedOrg,
+          skip: !selectedOrg,
         }
       );
-    console.log(allStrategies)
-    const {
+      console.warn(allStrategies)
+      const {
         currentStrategy = [],
         // organizations = [],
     } = useGetStrategyIdQuery(
-        { userId, strategyId: selectedId },
+        { userId, strategyId: strategyId },
         {
             selectFromResult: ({ data, isLoading, isError, isFetching }) => ({
                 currentStrategy: data?.currentStrategy || [],
                 organizations: data?.organizations || [],
             }),
-            skip: !selectedId,
+            skip: !strategyId,
         }
     );
-    console.log('selectedId   ', selectedId)
 
     const [
         updateStrategy,
@@ -110,34 +105,12 @@ const Strategy = () => {
         },
     ] = useUpdateStrategyMutation();
 
-    const saveUpdateStrategy = async () => {
-        console.log(selectedId, currentStrategy.state, currentStrategy.strategyToOrganizations)
-        await updateStrategy({
-            // userId,
-            strategyId: selectedId,
-            userId: userId,
-            _id: selectedId,
-            state: isState,
-            content: htmlContent,
-            // strategyToOrganizations: strategyToOrganizations,
+  
 
-        })
-            .unwrap()
-            .catch((error) => {
-                console.error("Ошибка:", JSON.stringify(error, null, 2)); // выводим детализированную ошибку
-            });
-    };
-
-
-    // useEffect(() => {
-    //     const firstInstructionId = allStrategies.length > 0 ? allStrategies[0].id : null;
-    //     setSelectedId(firstInstructionId);
-    // }, [allStrategies]);
     useEffect(() => {
         setSelectedId(selectedStrategy)
     }, [selectedStrategy])
-    console.log(allStrategies)
-    console.log(selectedId, currentStrategy)
+
 
     useEffect(() => {
         const rawContent = draftToHtml(
@@ -146,6 +119,11 @@ const Strategy = () => {
         setHtmlContent(rawContent);
     }, [editorState]);
 
+    useEffect(() => {
+        setSelectedOrg(currentStrategy?.organization?.id)
+    }, [currentStrategy])
+
+    console.log(selectedOrg)
     useEffect(() => {
         if (currentStrategy.content) {
             const { contentBlocks, entityMap } = convertFromHTML(
@@ -171,28 +149,38 @@ const Strategy = () => {
     }, [currentStrategy.state, currentStrategy.dataActive, extractedOrganizations]);
 
     useEffect(() => {
-        if (selectedOrg !== "") {
-        //   setDisabledNumber(false);
-          const activeStrateg = allStrategies?.strategies?.find(
+        if (selectedOrg !== "" ) {
+          const activeStrateg = allStrategies?.find(
             (item) => item.state === "Активный"
           );
           setActiveStrategDB(activeStrateg?.id);
         }
       }, [selectedOrg]);
-    
-      useEffect(() => {
-        const activeStrateg = allStrategies?.strategies?.find(
-          (item) => item.state === "Активный"
-        );
-        setActiveStrategDB(activeStrateg?.id);
-      }, [isLoadingStrateg]);
 
-    // useEffect(() => {
-    //     if (selectedOrganizationId && selectedStrategyId) {
-    //         setSelectedOrg(selectedOrganizationId);
-    //         setSelectedStrategy(selectedStrategyId);
-    //     }
-    // }, []);
+      console.log(activeStrategDB)
+
+      const saveUpdateStrategy = async () => {
+        console.log(strategyId, currentStrategy.state, currentStrategy.strategyToOrganizations)
+        await updateStrategy({
+            // userId,
+            strategyId: strategyId,
+            userId: userId,
+            _id: strategyId,
+            state: currentStrategy.state !== isState ? isState : undefined,
+            content: htmlContent,
+            // strategyToOrganizations: strategyToOrganizations,
+
+        })
+            .unwrap()
+            .then(() => {
+                setTimeout(() => navigate(-1), 800);
+            })            
+            .catch((error) => {
+                console.error("Ошибка:", JSON.stringify(error, null, 2)); // выводим детализированную ошибку
+            });
+    };
+
+
     const save = () => {
         console.log("save");
         // console.log(state);
@@ -220,6 +208,7 @@ const Strategy = () => {
             .unwrap()
             .then(() => {
                 saveUpdateStrategy();
+                setOpenModal(false)
             })
             .catch((error) => {
                 // При ошибке также сбрасываем флаги
@@ -229,6 +218,7 @@ const Strategy = () => {
     };
 
     const btnNo = async () => {
+        console.log('оооо')
         const Data = [];
         if (htmlContent !== currentStrategy.content) {
             Data.content = htmlContent;
@@ -236,28 +226,29 @@ const Strategy = () => {
         if (Data.content) {
             await updateStrategy({
                 userId,
-                strategyId: selectedId,
-                _id: selectedId,
+                strategyId: strategyId,
+                _id: strategyId,
                 ...Data,
             })
                 .unwrap()
-                .then(() => { })
+                .then(() => {
+                    // saveUpdateStrategy();
+                    setOpenModal(false)
+                    setTimeout(() => navigate(-1), 800);
+                })  
                 .catch((error) => {
                     // При ошибке также сбрасываем флаги
                     //   setManualErrorReset(false);
                     console.error("Ошибка:", JSON.stringify(error, null, 2));
                 });
         }
+        else {
+            setOpenModal(false)
+        }
     };
 
-    const openSearchModal = () => {
-        setIsState('');
-        setSelectedStrategy('')
-    }
-    const openOrgModal = () => {
-        setModalOrgOpen(true);
-    }
-    console.log(selectedOrg)
+
+
     return (
         <>
             <div className={classes.wrapper}>
@@ -265,95 +256,23 @@ const Strategy = () => {
                     <Header create={true} title={'Стратегии'}></Header>
                 </>
 
-                {/* {isState && ( */}
                 <div className={classes.inputRow1}>
                     <div className={classes.first}>
-                        <select name={'mySelect'} disabled={!isState || isState === 'Завершено'} value={isState} onChange={(e) => setIsState(e.target.value)}>
-                            {isState == 'Черновик' && (<option value={'Черновик'}>Черновик</option>)}
+                        <select name={'mySelect'} disabled={currentStrategy.state === 'Завершено'} value={isState} onChange={(e) => setIsState(e.target.value)}>
+                            {currentStrategy.state == 'Черновик' && (<option value={'Черновик'}>Черновик</option>)}
                             <option value={'Активный'}>Активный</option>
-                            {isState == 'Активный' && (<option value={'Завершено'}>Завершено</option>)}
+                            {currentStrategy.state == 'Активный' && (<option value={'Завершено'}>Завершено</option>)}
                         </select>
-                        <img src={search} onClick={openSearchModal} />
-                        {/*</div>*/}
-                        {/*<div className={classes.second}>*/}
-                        <input type="date" name="calendar" disabled={!isState} value={valueDate}
-                            onChange={(e) => setValueDate(e.target.value)} />
+                        {valueDate && (<input type="date" name="calendar"  value={valueDate}
+                            onChange={(e) => setValueDate(e.target.value)} />)}
+
                     </div>
                 </div>
-                {/* )} */}
 
                 <div className={classes.body}>
-
-                    {isState ? (
                         <div className={classes.editorContainer}>
                             <MyEditor editorState={editorState} setEditorState={setEditorState} />
                         </div>
-                    ) : (
-                        <>
-                            <div className={classes.bodyContainer}>
-                                <div className={classes.left}> Выберите Стратегию:</div>
-                                <div className={classes.right}>
-                                    <ul className={classes.selectList}>
-                                        {organizations?.map((item) => (
-                                            <li key={item.id} onChange={(e) => setSelectedOrg(item.id)}>
-                                                {(selectedOrg == item.id) ?
-                                                    (<>
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={selectedOrg.includes(item.id)}
-                                                            readOnly
-
-                                                        />
-                                                        <div> {item.organizationName} </div>
-                                                    </>) : (
-                                                        <>
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={selectedOrg.includes(item.id)}
-                                                                readOnly
-                                                            />
-                                                            <div style={{ 'color': 'grey' }}> {item.organizationName} </div>
-                                                        </>
-                                                    )}
-                                            </li>
-                                        ))}
-                                    </ul>
-
-                                    {selectedOrg && (
-                                        <>
-                                            <div className="">Стратегии:</div>
-                                            <ul className={classes.selectList}>
-                                                {allStrategies?.strategies?.map((item, index) => (
-                                                    <li key={index} onChange={(e) => setSelectedStrategy(item?.id)}>
-                                                        {(selectedStrategy == item?.strategy?.id) ?
-                                                            (<>
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={selectedStrategy.includes(item?.id)}
-                                                                    readOnly
-
-                                                                />
-                                                                <div> Стратегия №{item?.strategyNumber} </div>
-                                                            </>) : (
-                                                                <>
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        checked={selectedStrategy.includes(item?.id)}
-                                                                        readOnly
-                                                                    />
-                                                                    <div style={{ 'color': 'grey' }}> Стратегия №{item.strategyNumber} </div>
-                                                                </>
-                                                            )}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </>
-                                    )}
-                                </div>
-                            </div>
-                        </>
-                    )}
-
                 </div>
 
 
@@ -391,9 +310,7 @@ const Strategy = () => {
                 // textError={ErrorStrategyMutation?.data?.errors[0]?.errors}
             ></HandlerMutation>
 
-            {isModalSearchOpen &&
-                <SearchModal setModalOpen={setModalSearchOpen} firstArray={allStrategies} firstTitle={'Стратегии'}
-                    setSelectedId={setSelectedId} componentName={'strategyNumber'}></SearchModal>}
+            
             {isModalOrgOpen && <CustomSelect setModalOpen={setModalOrgOpen} requestFunc={saveUpdateStrategy}
                 organizations={organizations} isToOrganizations={strategyToOrganizations}
                 setToOrganizations={setStrategyToOrganizations}></CustomSelect>}

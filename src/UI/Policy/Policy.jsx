@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import MyEditor from "../Custom/Editor/MyEditor";
 import backRow from './icon/icon _ back.svg'
 import menu from './icon/icon _ menu.svg'
@@ -18,42 +18,30 @@ import {
 import SearchModal from "../Custom/SearchModal/SearchModal";
 // import draftToHtml from "draftjs-to-html";
 import draftjs from 'draft-js';
-import {useNavigate, useParams} from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Header from "../Custom/Header/Header";
 import CustomSelect from "../Custom/CustomSelect/CustomSelect";
 import HandlerMutation from "../Custom/HandlerMutation";
 import PolicySearchModal from "./PolicySearchModal/PolicySearchModule"
+import AlertUpdateData from '../Custom/AlertUpdateData/AlertUpdateData';
 
 
 const Policy = () => {
 
-    const {userId} = useParams()
+    const { userId, policyId } = useParams()
     const navigate = useNavigate()
     const [editorState, setEditorState] = useState(EditorState.createEmpty());
-    const [valueType, setValueType] = useState('');
+    const [valueType, setValueType] = useState('')
+    const [policyState, setPolicyState] = useState('')
     const [isModalOpen, setModalOpen] = useState(false);
-    const [selectPolicyId, setSelectPolicyId] = useState('');
     const [inputValue, setInputValue] = useState('');
     const [htmlContent, setHtmlContent] = useState();
     const [policyToOrganizations, setPolicyToOrganizations] = useState([]);
     const [extractedOrganizations, setExtractedOrganizations] = useState([]);
     const [ModalOrgOpen, setModalOrgOpen] = useState(false);
+    const [openAlertModal, setOpenAlertModal] = useState(false)
+    const [disabled, setDisabled] = useState(false)
 
-    const {
-        instructions = [],
-        directives = [],
-        isLoadingGetPolicies,
-        isErrorGetPolicies,
-        isFetchingGetPolicies
-    } = useGetPoliciesQuery(userId, {
-        selectFromResult: ({ data, isLoading, isError, isFetching }) => ({
-            isLoadingGetPolicies: isLoading,
-            isErrorGetPolicies: isError,
-            isFetchingGetPolicies: isFetching,
-            instructions: data?.instructions || [],
-            directives: data?.directives || [],
-        }),
-    });
 
     const {
         currentPolicy = {},
@@ -62,7 +50,7 @@ const Policy = () => {
         isFetchingGetPoliciesId,
         isErrorGetPoliciesId,
     } = useGetPoliciesIdQuery(
-        { userId, policyId: selectPolicyId },
+        { userId, policyId },
         {
             selectFromResult: ({ data, isLoading, isError, isFetching }) => ({
                 currentPolicy: data?.currentPolicy || {},
@@ -71,7 +59,7 @@ const Policy = () => {
                 isErrorGetPoliciesId: isError,
                 isFetchingGetPoliciesId: isFetching,
             }),
-            skip: !selectPolicyId,
+            skip: !policyId,
         }
     );
     const [
@@ -84,31 +72,12 @@ const Policy = () => {
         },
     ] = useUpdatePoliciesMutation();
 
-
-
-    const saveUpdatePolicy = async () => {
-        console.log( userId,selectPolicyId,userId,currentPolicy.policyName,currentPolicy.state,currentPolicy.type,currentPolicy.policyToOrganizations)
-        await updatePolicy({
-            policyId: selectPolicyId,
-            userId: userId,
-            _id: selectPolicyId,
-            policyName: inputValue,
-            state: currentPolicy.state,
-            type: valueType,
-            content: htmlContent,
-            policyToOrganizations: policyToOrganizations,
-
-        })
-            .unwrap()
-            .catch((error) => {
-                console.error("Ошибка:", JSON.stringify(error, null, 2)); // выводим детализированную ошибку
-            });
-    };
-
     useEffect(() => {
         setInputValue(currentPolicy.policyName);
         currentPolicy.type === 'Инструкция' ? setValueType('Инструкция') : setValueType('Директива');
-    },[selectPolicyId,currentPolicy.policyName,currentPolicy.type])
+        setPolicyState(currentPolicy.state)
+        if (currentPolicy.state === 'Отменён') setDisabled(true)
+    }, [policyId, currentPolicy.policyName, currentPolicy.type, currentPolicy.state])
 
     useEffect(() => {
         setExtractedOrganizations(currentPolicy.policyToOrganizations?.map(item => item.organization))
@@ -116,16 +85,16 @@ const Policy = () => {
 
     useEffect(() => {
         setPolicyToOrganizations(extractedOrganizations?.map(item => item.id))
-    },[extractedOrganizations])
+    }, [extractedOrganizations])
 
-    useEffect(() => {
+    useEffect(() => {//Editor
         const rawContent = draftToHtml(
             convertToRaw(editorState.getCurrentContent())
         );
         setHtmlContent(rawContent);
     }, [editorState]);
 
-    useEffect(() => {
+    useEffect(() => {//Editor content
         if (currentPolicy.content) {
             const { contentBlocks, entityMap } = convertFromHTML(
                 currentPolicy.content
@@ -138,11 +107,31 @@ const Policy = () => {
             setEditorState(oldEditorState);
         }
     }, [currentPolicy.content]);
-
-    useEffect(() => {
-        const firstInstructionId = instructions.length > 0 ? instructions[0].id : null;
-        setSelectPolicyId(firstInstructionId);
-    }, [instructions]);
+    console.log(policyToOrganizations, currentPolicy.policyToOrganizations)
+    const saveUpdatePolicy = async () => {
+        const Data = {}
+        if (inputValue !== currentPolicy.policyName) Data.policyName = inputValue
+        if (policyState !== currentPolicy.state) Data.state = policyState
+        if (valueType !== currentPolicy.type) Data.type = valueType
+        if (htmlContent !== currentPolicy.content) Data.content = htmlContent
+        if (policyToOrganizations[0] !== currentPolicy.policyToOrganizations[0]?.organization?.id) Data.policyToOrganizations = policyToOrganizations
+        console.log(Data)
+        if (Object.keys(Data).length > 0) {
+            await updatePolicy({
+                policyId: policyId,
+                userId: userId,
+                _id: policyId,
+                ...Data,
+            })
+                .unwrap()
+                .catch((error) => {
+                    console.error("Ошибка:", JSON.stringify(error, null, 2)); // выводим детализированную ошибку
+                });
+        }
+        else {
+            setOpenAlertModal(true)
+        }
+    };
 
 
     const openModal = () => {
@@ -154,62 +143,71 @@ const Policy = () => {
     }
     return (
         <>
-        <div className={classes.wrapper}>
+            <div className={classes.wrapper}>
 
-            <>
-             <Header create={true} title={'Политики'}></Header>
-            </>
-
-            <div className={classes.inputRow1}>
-                <div className={classes.first}>
-                    <input value={inputValue} type={'text'} onChange={(e) => setInputValue(e.target.value)} />
-                    <img src={search} onClick={openModal}/>
-                </div>
-                <div className={classes.second}>
-                    <select value={valueType} onChange={(e) => setValueType(e.target.value)}>
-                        {/*<option value={''}></option>*/}
-                        <option value='Директива'> Директива</option>
-                        <option value='Инструкция'> Инструкция</option>
-                    </select>
-                </div>
-            </div>
-
-            <div className={classes.body}>
                 <>
-                    <MyEditor
-                        editorState={editorState}
-                        setEditorState={setEditorState}
-                        policyContent={true}
-                    />
+                    <Header create={false} title={'Политики'}></Header>
                 </>
-            </div>
 
-            <footer className={classes.inputContainer}>
-                <div className={classes.inputRow2}>
-                    <div></div>
-                    <div>
-                        <button onClick={() => openOrgModal()}> Отредактировать</button>
+                <div className={classes.inputRow1}>
+                    {/* <AlertUpdateData duration={2000}></AlertUpdateData> */}
+
+                    <div className={classes.first}>
+                        <input value={inputValue} disabled={disabled} type={'text'} onChange={(e) => setInputValue(e.target.value)} />
                     </div>
-                    <div>
-                        <img src={searchBlack} onClick={() => navigate('CreateDirectory')} />
-                        {/*<img src={policy} className={classes.image}/>*/}
-                        {/*<img src={stats}/>*/}
+                    <div className={classes.second}>
+                        <select value={valueType} disabled={disabled} onChange={(e) => setValueType(e.target.value)}>
+                            {/*<option value={''}></option>*/}
+                            <option value='Директива'> Директива</option>
+                            <option value='Инструкция'> Инструкция</option>
+                        </select>
+                        <select value={policyState} disabled={disabled} onChange={(e) => setPolicyState(e.target.value)}>
+                            {/*<option value={''}></option>*/}
+                            <option value='Черновик'>Черновик</option>
+                            <option value='Активный'> Активный</option>
+                            <option value='Отменён'> Отменён</option>
+                        </select>
                     </div>
                 </div>
-            </footer>
-        </div>
+
+                <div className={classes.body}>
+                    <>
+                        <MyEditor
+                            editorState={editorState}
+                            setEditorState={ disabled ? '' : setEditorState}
+                            policyContent={true}
+                        />
+                    </>
+                </div>
+
+                {!disabled && (
+
+                    <footer className={classes.inputContainer}>
+                        <div className={classes.inputRow2}>
+                            <div></div>
+                            <div>
+                                <button onClick={() => openOrgModal()}> Отредактировать</button>
+                            </div>
+                            <div>
+                                {/* <img src={searchBlack} onClick={() => navigate('CreateDirectory')} /> */}
+                                {/*<img src={policy} className={classes.image}/>*/}
+                                {/*<img src={stats}/>*/}
+                            </div>
+                        </div>
+                    </footer>
+                )}
+            </div>
             <HandlerMutation
                 Loading={isLoadingUpdatePoliciesMutation}
-                Error={isErrorGetPolicies}
+                Error={isErrorUpdatePoliciesMutation}
                 Success={isSuccessUpdatePoliciesMutation}
                 textSuccess={"Пост успешно создан."}
                 textError={ErrorUpdatePoliciesMutation?.data?.errors[0]?.errors}
             ></HandlerMutation>
-            {isModalOpen &&
-                <PolicySearchModal setSelectedId={setSelectPolicyId} setModalOpen={setModalOpen} firstTitle={'Инструкции'} firstArray={instructions} secondTitle={'Директивы'} secondArray={directives} componentName={'policyName'}  /> }
-            {ModalOrgOpen && <CustomSelect setModalOpen={setModalOrgOpen} organizations={organizations} requestFunc={saveUpdatePolicy} setToOrganizations={setPolicyToOrganizations} isToOrganizations={policyToOrganizations} ></CustomSelect> }
-</>
-);
+            {openAlertModal && <AlertUpdateData setModalOpen={setOpenAlertModal}></AlertUpdateData>}
+            {ModalOrgOpen && <CustomSelect setModalOpen={setModalOrgOpen} organizations={organizations} requestFunc={saveUpdatePolicy} setToOrganizations={setPolicyToOrganizations} isToOrganizations={policyToOrganizations} ></CustomSelect>}
+        </>
+    );
 };
 
 export default Policy;

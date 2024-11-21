@@ -11,10 +11,80 @@ export const policyApi = createApi({
         url: `${userId}/policies`,
       }),
 
-      transformResponse: (response) => ({
-        directives: response.directives || [],
-        instructions: response.instructions || [],
-      }),
+      transformResponse: (response) => {
+        const directivesDB = response.directives;
+        const instructionsDB = response.instructions
+
+        const activeAndDraftDirectives = directivesDB.filter(item => item.state !== 'Отменён')
+        const archiveDirectives = directivesDB.filter(item => item.state === 'Отменён')
+
+        const activeAndDraftInstructions = instructionsDB.filter(item => item.state !== 'Отменён')
+        const archiveInstructions = instructionsDB.filter(item => item.state === 'Отменён')
+
+        activeAndDraftDirectives?.sort((a, b) => {
+          const stateA = a.state || '';
+          const stateB = b.state || '';
+
+          if (stateA === 'Черновик' && stateB !== 'Черновик') return -1;
+          if (stateB === 'Черновик' && stateA !== 'Черновик') return 1;
+
+          if (stateA === 'Активный' && stateB !== 'Активный') return -1;
+          if (stateB === 'Активный' && stateA !== 'Активный') return 1;
+          
+          return 0;
+        });
+
+        activeAndDraftInstructions?.sort((a, b) => {
+          const stateA = a.state || '';
+          const stateB = b.state || '';
+
+          if (stateA === 'Черновик' && stateB !== 'Черновик') return -1;
+          if (stateB === 'Черновик' && stateA !== 'Черновик') return 1;
+
+          if (stateA === 'Активный' && stateB !== 'Активный') return -1;
+          if (stateB === 'Активный' && stateA !== 'Активный') return 1;
+          
+          return 0;
+        });
+
+        return {
+          activeAndDraftInstructions: activeAndDraftInstructions,
+          archiveInstructions: archiveInstructions,
+          activeAndDraftDirectives: activeAndDraftDirectives,
+          archiveDirectives: archiveDirectives,
+          
+        };
+
+      },
+
+      // transformResponse: (response) => {
+      //   const sortedStrategies = response?.strategies
+      //   sortedStrategies?.sort((a, b) => {
+      //       const stateA = a.state || '';
+      //       const stateB = b.state || '';
+            
+      //       if (stateA === 'Активный' && stateB !== 'Активный') return -1;
+      //       if (stateB === 'Активный' && stateA !== 'Активный') return 1;
+            
+      //       if (stateA === 'Черновик' && stateB !== 'Черновик') return -1;
+      //       if (stateB === 'Черновик' && stateA !== 'Черновик') return 1;
+            
+      //       return 0;
+      //     });
+      
+      //   const activeAndDraftStrategies = sortedStrategies.filter(strategy => 
+      //     strategy.state === 'Активный' || strategy.state === 'Черновик'
+      //   );
+      
+      //   const otherStrategies = sortedStrategies.filter(strategy => 
+      //     strategy.state !== 'Активный' && strategy.state !== 'Черновик'
+      //   );
+      
+      //   return {
+      //     activeAndDraftStrategies: activeAndDraftStrategies,
+      //     archiveStrategies: otherStrategies,  
+      //   };
+      // },
 
       providesTags: (result) =>
         result && Array.isArray(result)

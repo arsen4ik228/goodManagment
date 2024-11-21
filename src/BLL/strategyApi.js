@@ -10,14 +10,36 @@ export const strategyApi = createApi({
             query: ({userId, organizationId}) => ({
                 url: `${userId}/strategies/organization/${organizationId}`,
             }),
+            transformResponse: (response) => {
+                const sortedStrategies = response?.strategies
+                sortedStrategies?.sort((a, b) => {
+                    const stateA = a.state || '';
+                    const stateB = b.state || '';
+                    
+                    if (stateA === 'Активный' && stateB !== 'Активный') return -1;
+                    if (stateB === 'Активный' && stateA !== 'Активный') return 1;
+                    
+                    if (stateA === 'Черновик' && stateB !== 'Черновик') return -1;
+                    if (stateB === 'Черновик' && stateA !== 'Черновик') return 1;
+                    
+                    return 0;
+                  });
+              
+                const activeAndDraftStrategies = sortedStrategies.filter(strategy => 
+                  strategy.state === 'Активный' || strategy.state === 'Черновик'
+                );
+              
+                const otherStrategies = sortedStrategies.filter(strategy => 
+                  strategy.state !== 'Активный' && strategy.state !== 'Черновик'
+                );
+              
+                return {
+                  activeAndDraftStrategies: activeAndDraftStrategies,
+                  archiveStrategies: otherStrategies,  
+                };
+              },
 
-            providesTags: (result) =>
-                result && Array.isArray(result)
-                    ? [
-                        ...result.map(({ id }) => ({ type: "Strategy", id })),
-                        { type: "Strategy", id: "LIST" },
-                    ]
-                    : [{ type: "Strategy", id: "LIST" }],
+              providesTags: (result) => result ? [{ type: "Strateg", id: "LIST" }] : [],
         }),
 
         getStrategyId: build.query({
@@ -26,8 +48,7 @@ export const strategyApi = createApi({
             }),
 
             // Добавляем теги для этой query
-            providesTags: (result, error, { strategyId }) =>
-                result ? [{ type: "Strategy", id: strategyId }] : [],
+            providesTags: (result, error,  {strategyId}) => result ? [{type: "Strateg1", id: strategyId }]: []
         }),
         updateStrategy: build.mutation({
             query: ({ userId, strategyId, ...body }) => ({
@@ -36,9 +57,7 @@ export const strategyApi = createApi({
                 body,
             }),
             // Обновляем теги, чтобы перезагрузить getStrategiesId
-            invalidatesTags: (result, error, { strategyId }) => [
-                { type: "Strategy", id: strategyId },
-            ],
+            invalidatesTags: (result,  error,  {strategyId}) => result ? [{type: "Strateg1", id: strategyId},{ type: "Strateg", id: "LIST" }]: []
         }),
         postStrategy: build.mutation({
             query: ({ userId, ...body }) => ({
@@ -46,7 +65,7 @@ export const strategyApi = createApi({
                 method: "POST",
                 body,
             }),
-            invalidatesTags: [{ type: "Strategy", id: "LIST" }],
+            invalidatesTags: (result) => result ? [{type: "Strateg", id: "LIST" }] : []
         }),
         getStrategyNew: build.query({
             query: (userId = "") => ({
@@ -55,6 +74,7 @@ export const strategyApi = createApi({
             // transformResponse: (response) => ({
             //     organizations: response.organizations || [],
             // }),
+            providesTags: (result) => result ? [{ type: "Strateg", id: "LIST" }] : [],
         }),
     })
 })
