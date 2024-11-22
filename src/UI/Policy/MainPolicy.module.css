@@ -83,6 +83,8 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
     overflow-x: auto;
     overflow-y: hidden;
     font-size: 1.3em;
+    padding-bottom: 10px;
+    list-style-type: circle;
 
     li{
         display: flex;
@@ -90,10 +92,25 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
         padding: 0.4rem 0.8rem;
         justify-content: flex-start;
 
-        div {
+        >div {
             padding-left: 5px;
         }
     }
+
+    ol{
+        display: flex;
+        font-size: 1em;
+
+        /* width: 60vw; */
+        padding: 0.4rem 0.8rem 0.4rem 30px;
+        justify-content: flex-start;
+    }
+}
+
+.selectedDirectory{
+    color: #005475;
+    font-weight: 600;
+    text-decoration: underline;
 }
 
 .selectType{
@@ -259,4 +276,26 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
     /* font-size: 1rem; */
     border-radius: 15px;
     box-shadow: 0 0 2px black;
+}
+
+.directoryMenu{
+
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 10px;
+    border-radius: 15px;
+    margin: 0 10px;
+    box-shadow: 0 0 2px black;
+    max-width: 200px;
+
+    >span{
+        font-size: 20px;
+        font-style: italic;
+        color: grey;          
+    }
+    @media (max-width: 343px) {
+        span {
+          font-style: normal;
+        }
+      }
 }

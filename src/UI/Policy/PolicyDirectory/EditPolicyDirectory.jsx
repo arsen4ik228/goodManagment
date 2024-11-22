@@ -1,52 +1,70 @@
 import React, { useEffect, useState } from 'react'
 import Header from '../../Custom/Header/Header'
-import classes from "./CreatePolicyDirectory.module.css"
-import { useParams } from 'react-router-dom'
-import { useGetPolicyDirectoriesQuery, usePostPolicyDirectoriesMutation } from '../../../BLL/policyDirectoriesApi'
+import classes from "./EditPolicyDirectory.module.css"
+import { useNavigate, useParams } from 'react-router-dom'
+import { useDeletePolicyDirectoriesMutation, usePostPolicyDirectoryMutation, useUpdatePolicyDirectoriesMutation, useGetPolicyDirectoriesIdQuery } from '../../../BLL/policyDirectoriesApi'
 import { useGetPoliciesQuery } from '../../../BLL/policyApi'
+import iconDelete from '../../Custom/icon/icon _ delete _ red.svg'
 import HandlerMutation from '../../Custom/HandlerMutation'
 import SetPolicyDirectoryName from '../../Custom/SetPolicyDirectoyName/SetPolicyDirectoryName'
 
-export default function CreatePolicyDirectory() {
+export default function EditPolicyDirectories() {
 
-    const { userId } = useParams()
+    const { userId, policyDirectoryId } = useParams()
+    const navigate = useNavigate()
     const [selectedId, setSelectedId] = useState([])
     const [directoryName, setDirectoryName] = useState('')
-    const [openModal, setOpenModal] =useState(false)
-
+    const [openModal, setOpenModal] = useState(false)
 
     const {
         activeDirectives = [],
-        draftDirectives = [],
-        archiveDirectives = [],
         activeInstructions = [],
-        draftInstructions = [],
-        archiveInstructions = [],
-        isLoadingGetPolicies,
-        isErrorGetPolicies,
-        isFetchingGetPolicies
-    } = useGetPoliciesQuery(userId, {
+        policyDirectory = [],
+        data = [],
+        isLoadingGetPolicyDirectories,
+        isErrorGetPolicyDirectories,
+        isFetchingGetPolicyDirectories,
+    } = useGetPolicyDirectoriesIdQuery({ userId, policyDirectoryId }, {
         selectFromResult: ({ data, isLoading, isError, isFetching }) => ({
             activeDirectives: data?.activeDirectives || [],
-            draftDirectives: data?.draftDirectives || [],
-            archiveDirectives: data?.archiveDirectives || [],
             activeInstructions: data?.activeInstructions || [],
-            draftInstructions: data?.draftInstructions || [],
-            archiveInstructions: data?.archiveInstructions || [],
-            isLoadingGetPolicies: isLoading,
-            isErrorGetPolicies: isError,
-            isFetchingGetPolicies: isFetching,
+            policyDirectory: data?.policyDirectory || [],
+            data: data?.data || [],
+            isLoadingGetPolicyDirectories: isLoading,
+            isErrorGetPolicyDirectories: isError,
+            isFetchingGetPolicyDirectories: isFetching,
         }),
     });
+    console.warn(activeDirectives, policyDirectory)
+
     const [
-        postDirectory,
+        updatePolicyDirectories,
         {
-            isLoading: isLoadingUpdatePoliciesMutation,
-            isSuccess: isSuccessUpdatePoliciesMutation,
-            isError: isErrorUpdatePoliciesMutation,
-            error: ErrorUpdatePoliciesMutation,
+            isLoading: isLoadingUpdatePolicyDirectoriesMutation,
+            isSuccess: isSuccessUpdatePolicyDirectoriesMutation,
+            isError: isErrorUpdatePolicyDirectoriesMutation,
+            error: ErrorUpdateDirectories,
         },
-    ] = usePostPolicyDirectoriesMutation();
+    ] = useUpdatePolicyDirectoriesMutation();
+
+    const [
+        deletePolicyDirectories,
+        {
+            isLoading: isLoadingDeletePolicyDirectoriesMutation,
+            isSuccess: isSuccessDeletePolicyDirectoriesMutation,
+            isError: isErrorDeletePolicyDirectoriesMutation,
+            error: ErrorDeleteDirectories,
+        },
+    ] = useDeletePolicyDirectoriesMutation();
+
+    useEffect(() => {
+        setDirectoryName(policyDirectory.directoryName)
+        if (policyDirectory?.policies?.length>0) {
+            setSelectedId(prevSelectedId =>
+                [...prevSelectedId, ...policyDirectory?.policies?.map(item => item.id)]
+            );
+        }
+    }, [policyDirectory])
 
     const handleSelectItem = (id) => {
         setSelectedId(prevSelectedId =>
@@ -66,21 +84,40 @@ export default function CreatePolicyDirectory() {
         setOpenModal(false)
     }
 
-    const savePolicyDirectory = async () => {
-        await postDirectory({
+    const updatePolicyDirectory = async () => {
+        await updatePolicyDirectories({
             userId,
+            policyDirectoryId,
             directoryName,
             policyToPolicyDirectories: selectedId,
         })
             .unwrap()
             .then(() => {
-                reset();
+                setOpenModal(false)
             })
             .catch((error) => {
                 console.error("Ошибка:", JSON.stringify(error, null, 2)); // выводим детализированную ошибку
             });
     };
-    console.log(selectedId)
+
+    const deletePolicyDirectory = async () => {
+        await deletePolicyDirectories({
+            userId,
+            policyDirectoryId,
+        })
+            .unwrap()
+            .then(() => {
+                setTimeout(() => {
+                  navigate(-1);
+                }, 1000);
+              })
+              
+            .catch((error) => {
+                console.error("Ошибка:", JSON.stringify(error, null, 2)); // выводим детализированную ошибку
+            });
+    }
+
+    console.log(policyDirectory)
     return (
         <>
             <div className={classes.wrapper}>
@@ -185,34 +222,41 @@ export default function CreatePolicyDirectory() {
                                         ))}
                                     </ul>
                                 </>
-
-
-
-
-
                             </div>
                         </div>
                     </>
                 </div>
 
                 <footer className={classes.inputContainer}>
-                    <div className={classes.inputColumn}>
-                        <div className={classes.inputRow2}>
-                            <button onClick={() => setOpenModal(true)}>СОЗДАТЬ</button>
+                    <div className={classes.inputRow2}>
+                        <div></div>
+                        <div>
+                            <button onClick={() => setOpenModal(true)}>ОТРЕДАКТИРОВАТЬ</button>
+                        </div>
+                        <div>
+                            <img src={iconDelete}  onClick={() => deletePolicyDirectory()}/>
+                            {/* <img src={policy} className={classes.image}/> */}
                         </div>
                     </div>
                 </footer>
             </div>
 
             {openModal && (
-                <SetPolicyDirectoryName name={directoryName} setName={setDirectoryName} setModalOpen={setOpenModal} requestFunction={savePolicyDirectory}></SetPolicyDirectoryName>
+                <SetPolicyDirectoryName name={directoryName} setName={setDirectoryName} setModalOpen={setOpenModal} requestFunction={updatePolicyDirectory}></SetPolicyDirectoryName>
             )}
             <HandlerMutation
-                Loading={isLoadingUpdatePoliciesMutation}
-                Error={isErrorUpdatePoliciesMutation}
-                Success={isSuccessUpdatePoliciesMutation}
-                textSuccess={"Подборка политик успешко создана"}
-                textError={ErrorUpdatePoliciesMutation?.data?.errors[0]?.errors}
+                Loading={isLoadingDeletePolicyDirectoriesMutation}
+                Error={isErrorDeletePolicyDirectoriesMutation}
+                Success={isSuccessDeletePolicyDirectoriesMutation}
+                textSuccess={"Подборка политик успешно удалена"}
+                textError={ErrorDeleteDirectories?.data?.errors[0]?.errors}
+            ></HandlerMutation>
+            <HandlerMutation
+                Loading={isLoadingUpdatePolicyDirectoriesMutation}
+                Error={isErrorUpdatePolicyDirectoriesMutation}
+                Success={isSuccessUpdatePolicyDirectoriesMutation}
+                textSuccess={"Подборка политик успешно обновлена"}
+                textError={ErrorUpdateDirectories?.data?.errors[0]?.errors}
             ></HandlerMutation>
 
         </>

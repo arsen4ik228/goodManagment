@@ -7,7 +7,7 @@ import searchBlack from '../Custom/icon/icon _ black_search.svg'
 import add from '../Custom/icon/icon _ add2-b.svg'
 import share from '../Custom/icon/icon _ share.svg'
 import stats from '../Custom/icon/_icon _ stats.svg'
-import { useGetStrategyQuery, useGetStrategyIdQuery, useUpdateStrategyMutation, useGetStrategyNewQuery } from "../../BLL/strategyApi";
+import { useGetStrategyQuery, useGetStrategyIdQuery, useUpdateStrategyMutation, useGetStrategyNewQuery, usePostStrategyMutation } from "../../BLL/strategyApi";
 import { useNavigate, useParams } from "react-router-dom";
 import search from "../Custom/icon/icon _ search.svg";
 import SearchModal from "../Custom/SearchModal/SearchModal";
@@ -30,6 +30,7 @@ const MainStrategy = () => {
     const [inputValue, setInputValue] = useState('');
     const [valueDate, setValueDate] = useState('');
     const [selectedId, setSelectedId] = useState('');
+    const [newDraftId, setNewDraftId] = useState(null)
 
     const [isState, setIsState] = useState('');
     const [strategyToOrganizations, setStrategyToOrganizations] = useState([]);
@@ -78,6 +79,37 @@ const MainStrategy = () => {
         }
     );
 
+    const [
+        postStrategy,
+        {
+            isLoading: isLoadingPostStrategyMutation,
+            isSuccess: isSuccessPostStrategyMutation,
+            isError: isErrorPostStrategyMutation,
+            error: errorPostStrategyMutation,
+        },
+    ] = usePostStrategyMutation();
+
+    const saveNewStrategy = async () => {
+        await postStrategy({
+            userId,
+            content: ' ',
+            organizationId: selectedOrg,
+        })
+            .unwrap()
+            .then((result) => {
+                setNewDraftId(result?.id)
+
+            })
+            .catch((error) => {
+                console.error("Ошибка:", JSON.stringify(error, null, 2)); // выводим детализированную ошибку
+            });
+    }
+
+    useEffect(() => {
+        if (newDraftId !== null) {
+            navigate(newDraftId)
+        }
+    }, [newDraftId])
 
     const createNew = () => {
         const draftExists = activeAndDraftStrategies.some(strategy => strategy.state === 'Черновик')
@@ -85,7 +117,7 @@ const MainStrategy = () => {
             console.warn('Черновик уже существует')
             setModalOpen(true)
         }
-        else navigate(`new/${selectedOrg}`)
+        else saveNewStrategy()
     }
 
 

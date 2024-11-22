@@ -96,6 +96,16 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
     }
 }
 
+.organizationInfo{
+    justify-content: space-between;
+    font-size: 1.4rem;
+    padding: 10px 0.2em;
+    
+    >span{
+        color: grey;
+    }
+}
+
 .first{
     justify-content: flex-start;
     padding-bottom: 10px;

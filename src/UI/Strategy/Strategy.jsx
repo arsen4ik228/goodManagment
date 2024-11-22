@@ -283,9 +283,9 @@ const Strategy = () => {
                             <button onClick={() => save()}> ОТРЕДАКТИРОВАТЬ</button>
                         </div>
                         <div>
-                            {/* <img src={searchBlack} /> */}
-                            {/*<img src={policy} className={classes.image}/>*/}
-                            {/*<img src={stats}/>*/}
+                            <img src={searchBlack} />
+                            {/* <img src={policy} className={classes.image}/> */}
+                            <img src={stats}/>
                         </div>
                     </div>
                 </footer>

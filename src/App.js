@@ -7,6 +7,7 @@ import MainPolicy from './UI/Policy/MainPolicy.jsx'
 import Policy from './UI/Policy/Policy.jsx'
 import NewPolicy from "./UI/Policy/NewPolicy";
 import CreatePolicyDirectory from './UI/Policy/PolicyDirectory/CreatePolicyDirectory.jsx';
+import EditPolicyDirectories from './UI/Policy/PolicyDirectory/EditPolicyDirectory.jsx';
 import Posts from './UI/Posts/Posts'
 import NewPosts from "./UI/Posts/NewPosts";
 import MainStrategy from './UI/Strategy/MainStartegy.jsx';
@@ -40,6 +41,7 @@ function App() {
                                <Route path=":userId/Policy/:policyId" element={<Policy/>}/>
                                <Route path=":userId/Policy/new" element={<NewPolicy/>}/>
                                <Route path=":userId/Policy/CreateDirectory" element={<CreatePolicyDirectory/>}/>
+                               <Route path=":userId/Policy/EditDirectory/:policyDirectoryId" element={<EditPolicyDirectories/>}/>
 
                                <Route path=":userId/Posts" element={<Posts/>}/>
                                <Route path=":userId/Posts/new" element={<NewPosts/>}/>

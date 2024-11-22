@@ -150,11 +150,16 @@ const Policy = () => {
                 </>
 
                 <div className={classes.inputRow1}>
-                    {/* <AlertUpdateData duration={2000}></AlertUpdateData> */}
 
                     <div className={classes.first}>
                         <input value={inputValue} disabled={disabled} type={'text'} onChange={(e) => setInputValue(e.target.value)} />
                     </div>
+                    {disabled && (
+                        <div className={classes.organizationInfo}>
+                            {/* <div>Организация:</div> */}
+                            <span>Soplya firma</span>
+                        </div>
+                    )}
                     <div className={classes.second}>
                         <select value={valueType} disabled={disabled} onChange={(e) => setValueType(e.target.value)}>
                             {/*<option value={''}></option>*/}
@@ -174,14 +179,13 @@ const Policy = () => {
                     <>
                         <MyEditor
                             editorState={editorState}
-                            setEditorState={ disabled ? '' : setEditorState}
+                            setEditorState={disabled ? '' : setEditorState}
                             policyContent={true}
                         />
                     </>
                 </div>
 
                 {!disabled && (
-
                     <footer className={classes.inputContainer}>
                         <div className={classes.inputRow2}>
                             <div></div>

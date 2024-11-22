@@ -11,72 +11,81 @@ export const policyDirectoriesApi = createApi({
         url: `${userId}/policyDirectory`,
       }),
 
-    //   transformResponse: (response) => ({
-    //     directives: response.directives || [],
-    //     instructions: response.instructions || [],
-    //   }),
+      transformResponse: (response) => {
+        if (Array.isArray(response) && response.length > 0) {
+          const Data = response.map(item => ({
+            id: item.id,
+            directoryName: item.directoryName,
+            policies: item.policyToPolicyDirectories.flatMap(elem => elem.policy)
+          }));
+      
+          return Data || []
+        }
+        //  else []
+      },
+           
 
-      providesTags: (result) =>
-        result && Array.isArray(result)
-          ? [
-              ...result.map(({ id }) => ({ type: "PolicyDirectories", id })),
-              { type: "PolicyDirectories", id: "LIST" },
-            ]
-          : [{ type: "PolicyDirectories", id: "LIST" }],
+      providesTags: [{ type: "policyDirectories", id: "LIST" }],
     }),
 
-    postPolicyDirectory: build.mutation({
-      query: ({ userId, ...body }) => ({
+    postPolicyDirectories: build.mutation({
+      query: ({ userId = "", ...body }) => ({
         url: `${userId}/policyDirectory/new`,
         method: "POST",
         body,
-      }), 
-      invalidatesTags: [{ type: "PolicyDirectories", id: "LIST" }],
+      }),
+      invalidatesTags: (result) =>
+        result ? [{ type: "policyDirectories", id: "LIST"  }] : [],
     }),
 
-//     getPoliciesNew: build.query({
-//       query: (userId = "") => ({
-//         url: `${userId}/policies/new`,
-//       }),
-//       transformResponse: (response) => ({
-//         organizations: response.organizations || [],
-//       }),
-//     }),
+    getPolicyDirectoriesId: build.query({
+      query: ({ userId, policyDirectoryId }) => ({
+        url: `${userId}/PolicyDirectory/${policyDirectoryId}`,
+      }),
+      transformResponse: (response) => {
+          const Data = {
+            id: response?.policyDirectory?.id,
+            directoryName: response?.policyDirectory?.directoryName,
+            policies: response?.policyDirectory?.policyToPolicyDirectories?.flatMap(elem => elem.policy)
+      }
+      
+          return {
+            activeDirectives: response?.directives || [],
+            activeInstructions: response?.instructions || [],
+            policyDirectory: Data || [],
+            data: response || []
+          }
+        
+    
+      },
+      // Добавляем теги для этой query
+      providesTags: (result, error, { policyDirectoryId }) =>
+        result ? [{ type: "policyDirectories", id: policyDirectoryId }] : [],
+    }),
 
-//     getPoliciesId: build.query({
-//       query: ({ userId, policyId }) => ({
-//         url: `${userId}/policies/${policyId}`,
-//       }),
-//       transformResponse: (response) => {
-//         console.log(response); // Отладка ответа
-//         return {
-//           currentPolicy: response.currentPolicy || {},
-//           organizations: response.organizations || [],
-//         };
-//       },
-//       // Добавляем теги для этой query
-//       providesTags: (result, error, { policyId }) =>
-//         result ? [{ type: "PolicyDirectories", id: policyId }] : [],
-//     }),
+    updatePolicyDirectories: build.mutation({
+      query: ({userId, policyDirectoryId , ...body}) => ({
+        url: `${userId}/policyDirectory/${policyDirectoryId}/update`,
+        method: "PATCH",
+        body,
+      }),
+      invalidatesTags: (result) => result ?  [{ type: "policyDirectories", id: "LIST" }]: []
+    }), 
 
-//     updatePolicies: build.mutation({
-//       query: ({ userId, policyId, ...body }) => ({
-//         url: `${userId}/policies/${policyId}/update`,
-//         method: "PATCH",
-//         body,
-//       }),
-//       // Обновляем теги, чтобы перезагрузить getPoliciesId
-//       invalidatesTags: (result, error, { policyId }) => [
-//         { type: "PolicyDirectories", id: policyId },
-//       ],
-//     }),
+    deletePolicyDirectories: build.mutation({
+      query: ({userId, policyDirectoryId}) => ({
+        url: `${userId}/policyDirectory/${policyDirectoryId}/remove`,
+        method: "DELETE",
+      }),
+      invalidatesTags: [{ type: "policyDirectories", id: "LIST"  }],
+    }), 
   }),
 });
 
 export const {
-usePostPolicyDirectoryMutation,
-useGetPolicyDirectoriesQuery,
-//   useGetPoliciesNewQuery,
-//   useGetPoliciesIdQuery,
-//   useUpdatePoliciesMutation,
+  useGetPolicyDirectoriesQuery,
+  usePostPolicyDirectoriesMutation,
+  useDeletePolicyDirectoriesMutation,
+  useUpdatePolicyDirectoriesMutation,
+  useGetPolicyDirectoriesIdQuery
 } = policyDirectoriesApi;

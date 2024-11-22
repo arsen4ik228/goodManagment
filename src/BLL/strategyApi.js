@@ -65,6 +65,9 @@ export const strategyApi = createApi({
                 method: "POST",
                 body,
             }),
+            transformResponse: (response) => ({
+                id: response.id
+            }),
             invalidatesTags: (result) => result ? [{type: "Strateg", id: "LIST" }] : []
         }),
         getStrategyNew: build.query({

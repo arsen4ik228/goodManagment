@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import backRow from '../Custom/icon/icon _ back.svg'
 import menu from '../Custom/icon/icon _ menu.svg'
+import edit from '../Custom/icon/icon _ edit _ grey.svg'
 import classes from './MainPolicy.module.css'
 import searchBlack from '../Custom/icon/icon _ black_search.svg'
-import add from '../Custom/icon/icon _ add2-b.svg'
-import share from '../Custom/icon/icon _ share.svg'
+import add from '../Custom/icon/icon _ add _ 005476.svg'
 import stats from '../Custom/icon/_icon _ stats.svg'
 import { useNavigate, useParams } from "react-router-dom";
 import Header from "../Custom/Header/Header";
@@ -21,64 +21,71 @@ const MainStrategy = () => {
 
     const { userId } = useParams()
     const navigate = useNavigate()
-    const [openDirectories, setOpenDirectories] = useState(true)
+    const [openDirectories, setOpenDirectories] = useState()
     const [openInstruction, setOpenInstruction] = useState(false)
     const [openDirectives, setOpenDirectives] = useState(true)
     const [typeDisplayDirectives, setTypeDisplayDirectives] = useState(1)
-
-  
+    const [typeDisplayInstruction, setTypeDisplayInstruction] = useState(1)
 
 
     const {
-        activeAndDraftInstructions = [],
-        activeAndDraftDirectives = [],
-        archiveInstructions = [],
+        activeDirectives = [],
+        draftDirectives = [],
         archiveDirectives = [],
+        activeInstructions = [],
+        draftInstructions = [],
+        archiveInstructions = [],
         isLoadingGetPolicies,
         isErrorGetPolicies,
         isFetchingGetPolicies
     } = useGetPoliciesQuery(userId, {
         selectFromResult: ({ data, isLoading, isError, isFetching }) => ({
+            activeDirectives: data?.activeDirectives || [],
+            draftDirectives: data?.draftDirectives || [],
+            archiveDirectives: data?.archiveDirectives || [],
+            activeInstructions: data?.activeInstructions || [],
+            draftInstructions: data?.draftInstructions || [],
+            archiveInstructions: data?.archiveInstructions || [],
             isLoadingGetPolicies: isLoading,
             isErrorGetPolicies: isError,
             isFetchingGetPolicies: isFetching,
-            activeAndDraftInstructions: data?.activeAndDraftInstructions || [],
-            activeAndDraftDirectives: data?.activeAndDraftDirectives || [],
-            archiveInstructions: data?.archiveInstructions || [],
-            archiveDirectives: data?.archiveDirectives || [],
-        }),
-    });
-
-    const {
-        policyDirectory = [],
-        isLoadingNewSpeedGoal,
-        isErrorNewSpeedGoal,
-    } = useGetPolicyDirectoriesQuery(userId, {
-        selectFromResult: ({ data, isLoading, isError }) => ({
-            policyDirectory: data || [],
-            isLoadingNewSpeedGoal: isLoading,
-            isErrorNewSpeedGoal: isError,
         }),
     });
 
     const TYPE_DISPLAY = {
-        0: { type: 'Черновик', arrayDirectives: activeAndDraftDirectives, arrayInstruction: activeAndDraftInstructions},
-        1:  {type: 'Активный', arrayDirectives: archiveDirectives, arrayInstruction: activeAndDraftInstructions},
-        2: 'Отменён'
+        0: { type: 'Черновик', arrayDirectives: draftDirectives, arrayInstruction: draftInstructions },
+        1: { type: 'Активный', arrayDirectives: activeDirectives, arrayInstruction: activeInstructions },
+        2: { type: 'Отменён', arrayDirectives: archiveDirectives, arrayInstruction: archiveInstructions },
     }
     const displayDirectives = TYPE_DISPLAY[typeDisplayDirectives]
+    const displayInstruction = TYPE_DISPLAY[typeDisplayInstruction]
+
+    const {
+        policyDirectories = [],
+        isLoadingNewSpeedGoal,
+        isErrorNewSpeedGoal,
+    } = useGetPolicyDirectoriesQuery(userId, {
+        selectFromResult: ({ data, isLoading, isError }) => ({
+            policyDirectories: data || [],
+            isLoadingNewSpeedGoal: isLoading,
+            isErrorNewSpeedGoal: isError,
+        }),
+    });
+    console.log(policyDirectories)
 
     const switchDisplayType = (direction, type) => {
         const directionValue = direction === 'right' ? 1 : -1
         if (type === 'directives') {
             setTypeDisplayDirectives(prevState => {
                 const newValue = (prevState + directionValue + 3) % 3;
-                console.log(newValue)
                 return newValue;
             });
         }
         else if (type === 'instruction') {
-
+            setTypeDisplayInstruction(prevState => {
+                const newValue = (prevState + directionValue + 3) % 3;
+                return newValue;
+            });
         }
     }
 
@@ -104,20 +111,46 @@ const MainStrategy = () => {
                                     </div>
                                 </div>
                                 {openInstruction && (
-                                    <ul className={classes.selectList}>
-                                        {activeAndDraftInstructions.map((item, index) => (
-                                            <li
-                                                key={index}
-                                                style={{ color: item?.state === 'Активный' ? '#005475' : 'black' }}
-                                                onClick={() => navigate(item?.id)}
+                                    <>
+                                        <div className={classes.selectType}>
+                                            <div
+                                                className={classes.imageContainer}
+                                                onClick={() => switchDisplayType('left', 'instruction')}
                                             >
-                                                {item?.policyName}
-                                            </li>
-                                        ))}
-                                        {archiveInstructions.map((item, index) => (
-                                            <li key={index} style={{ color: 'grey' }}>{item?.policyName}</li>
-                                        ))}
-                                    </ul>
+                                                <img src={leftArrow} alt="leftarrow" />
+                                            </div>
+                                            <span
+                                            >
+                                                {/* {TYPE_DISPLAY[typeDisplayDirectives].type} */}
+                                                {displayInstruction.type}
+                                            </span>
+                                            <div
+                                                className={classes.imageContainer}
+                                                style={{ justifyContent: 'flex-end' }}
+                                                onClick={() => switchDisplayType('right', 'instruction')}
+                                            >
+                                                <img src={rightArrow} alt="rightarrow" />
+                                            </div>
+                                        </div>
+                                        <ul className={classes.selectList}>
+                                            {!displayInstruction.arrayInstruction.length > 0 && (
+                                                <li
+                                                    style={{ color: 'grey', fontStyle: 'italic' }}
+                                                >
+                                                    Политика отсутствует
+                                                </li>
+                                            )}
+                                            {displayInstruction.arrayInstruction.map((item, index) => (
+                                                <li
+                                                    key={index}
+                                                    style={{ color: item?.state === 'Активный' ? 'black' : 'grey' }}
+                                                    onClick={() => navigate(item?.id)}
+                                                >
+                                                    {item?.policyName}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </>
                                 )}
 
                                 <div
@@ -133,9 +166,9 @@ const MainStrategy = () => {
                                 {openDirectives && (
                                     <>
                                         <div className={classes.selectType}>
-                                            <div 
-                                            className={classes.imageContainer}
-                                            onClick={() => switchDisplayType('left','directives')}
+                                            <div
+                                                className={classes.imageContainer}
+                                                onClick={() => switchDisplayType('left', 'directives')}
                                             >
                                                 <img src={leftArrow} alt="leftarrow" />
                                             </div>
@@ -144,20 +177,30 @@ const MainStrategy = () => {
                                                 {/* {TYPE_DISPLAY[typeDisplayDirectives].type} */}
                                                 {displayDirectives.type}
                                             </span>
-                                            <div 
-                                            className={classes.imageContainer} 
-                                            style={{ justifyContent: 'flex-end' }}
-                                            onClick={() => switchDisplayType('right','directives')}
+                                            <div
+                                                className={classes.imageContainer}
+                                                style={{ justifyContent: 'flex-end' }}
+                                                onClick={() => switchDisplayType('right', 'directives')}
                                             >
                                                 <img src={rightArrow} alt="rightarrow" />
                                             </div>
                                         </div>
                                         <ul className={classes.selectList}>
+                                            {!displayDirectives.arrayDirectives.length > 0 && (
+                                                <li
+                                                    style={{ color: 'grey', fontStyle: 'italic' }}
+                                                >
+                                                    Политика отсутствует
+                                                </li>
+                                            )}
                                             {displayDirectives.arrayDirectives?.map((item, index) => (
-                                                <li key={index} style={{ color: item?.state === 'Активный' ? '#005475' : 'black' }}>{item?.policyName}</li>
-                                            ))}
-                                            {archiveDirectives.map((item, index) => (
-                                                <li key={index} style={{ color: 'grey' }}>{item?.policyName}</li>
+                                                <li
+                                                    key={index}
+                                                    style={{ color: item?.state === 'Активный' ? 'black' : 'grey' }}
+                                                    onClick={() => navigate(item?.id)}
+                                                >
+                                                    {item?.policyName}
+                                                </li>
                                             ))}
                                         </ul>
                                     </>
@@ -165,33 +208,55 @@ const MainStrategy = () => {
 
                                 <div
                                     className={classes.title}
-                                    onClick={() => setOpenDirectories(!openDirectories)}
+                                // onClick={() => setOpenDirectories(!openDirectories)}
                                 >
                                     <div>
                                         <span>Подборки</span>
-                                        <img src={sublist} alt='sublist' style={{ transform: !openDirectories ? 'rotate(90deg)' : 'none' }} />
+                                        <img
+                                            src={add}
+                                            alt='add'
+                                            style={{ width: '20px', height: '20px' }}
+                                            onClick={() => navigate('createDirectory')}
+                                        />
                                     </div>
                                 </div>
-                                {openDirectories && (
-                                    <ul className={classes.selectList}>
-                                        {policyDirectory.map((item, index) => (
-                                            <>
-                                                <li
-                                                    key={index}
-                                                // onClick={() => openDiretory(item.id)}
-                                                >
-                                                    {item?.directoryName}
-                                                </li>
-                                            </>
-                                        ))}
-                                    </ul>
-                                )}
+                                <ul className={classes.selectList}>
+                                    {policyDirectories.map((item, index) => (
+                                        <>
+                                            <li
+                                                key={index}
+                                                className={item?.id === openDirectories ? `${classes.selectedDirectory}` : ''}
+                                                onClick={() => setOpenDirectories(item.id)}
+                                            >
+                                                {item?.directoryName}
+                                            </li>
+
+                                            {item?.id === openDirectories && (
+                                                <>
+                                                    <div
+                                                        className={classes.directoryMenu}
+                                                        onClick={() => navigate(`EditDirectory/${item.id}`)}
+                                                    >
+                                                        <span>Редактировать</span>
+                                                        <img src={edit} alt="edit" />
+                                                    </div>
+                                                    {item?.policies?.map((item, index) => (
+                                                        <ol
+                                                            onClick={() => navigate(item?.id)}
+                                                        >
+                                                            {item?.policyName}
+                                                        </ol>
+                                                    ))}
+                                                </>
+                                            )}
+
+                                        </>
+                                    ))}
+                                </ul>
 
                             </div>
                         </div>
                     </>
-
-
                 </div>
             </div>
 
