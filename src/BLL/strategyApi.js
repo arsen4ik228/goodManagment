@@ -15,13 +15,13 @@ export const strategyApi = createApi({
                 sortedStrategies?.sort((a, b) => {
                     const stateA = a.state || '';
                     const stateB = b.state || '';
-                    
-                    if (stateA === 'Активный' && stateB !== 'Активный') return -1;
-                    if (stateB === 'Активный' && stateA !== 'Активный') return 1;
-                    
+
                     if (stateA === 'Черновик' && stateB !== 'Черновик') return -1;
                     if (stateB === 'Черновик' && stateA !== 'Черновик') return 1;
-                    
+
+                    if (stateA === 'Активный' && stateB !== 'Активный') return -1;
+                    if (stateB === 'Активный' && stateA !== 'Активный') return 1;
+
                     return 0;
                   });
               
@@ -82,7 +82,8 @@ export const strategyApi = createApi({
     })
 })
 
-export const {useGetStrategyQuery,
+export const {
+    useGetStrategyQuery,
     useGetStrategyIdQuery,
     useUpdateStrategyMutation,
     useGetStrategyNewQuery,

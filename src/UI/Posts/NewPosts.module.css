@@ -23,69 +23,6 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: 400;}
     font-family: "'Montserrat', sans-serif'";
 }
 
-.headContainer {
-    box-shadow: 0px 0px 10px black;
-    background-color: white;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-
-}
-
-.headRow{
-    display: flex;
-    align-items: flex-start;
-    height: 50px;
-    width: 100%;
-    flex-direction: column;
-    /*img{*/
-    /*    display: inline-block;*/
-    /*    margin-right: 15px;*/
-    /*}*/
-}
-.blueLine{
-    display: block;
-    height: 10px;
-    width: 100%;
-    background-color: #005475;
-}
-.whiteLine{
-    display: flex;
-    flex-direction: row;
-    flex: 1 1 auto;
-    width: 100%;
-    justify-content: space-between;
-}
-.headElem{
-    display: flex;
-    flex: 0 1 auto;
-    padding: 0 0 0 1px;
-    align-items: center;
-    justify-content: flex-start;
-}
-.menu{
-    display: flex;
-    padding: 0 10px 0 0;
-    align-items: center;
-}
-.icon{
-    margin: 0 15px;
-}
-.txt{
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    align-items: flex-start;
-    background: url("../Custom/icon/messendger _ avatar.svg") 0 40% no-repeat;
-    padding: 0 0 0 30px;
-}
-.headText{
-    color: #005475;
-    font-size: 20px;
-    font-weight: 600;
-
-}
 .sectionName{
     color: #005475;
     font-size: 14px;
@@ -93,7 +30,7 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: 400;}
     text-transform: uppercase;
 }
 
-.body{
+.body {
     display: flex;
     flex: 1 1 auto;
     flex-direction: column;
@@ -101,50 +38,71 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: 400;}
     margin-top: 57px;
     overflow: auto;
     max-height: calc(100vh - 124px);
-    height: 100px;
-    @media screen and (max-height: 580px){
+    /* height: 100px; */
+    /* border: #005475 1px solid; */
+
+    /* @media screen and (max-height: 580px) {
         max-height: calc(100vh - 144px);
-    }
+    } */
 }
 
-.bodyContainer{
+.bodyContainer {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    padding: 2rem 2rem;
-    height: 50px;
-    /*border-bottom: #005475 solid 1px;*/
+    padding: 10px 20px;
+    /* height: 20px; */
+    /* border: #005475 solid 1px; */
 }
 
-.name{
+.name {
     font-size: 1.25rem;
     width: 50%;
-    /*border: black solid 1px;*/
+    /* border: black solid 1px; */
 }
 
-.selectSection{
+.first {
+    /* >input { */
+        padding: 0 0.5em 0 0.5em;
+        /* height: 1.5rem; */
+        width: 100%;
+        font-size: 1.6rem;
+        font-style: italic;
+        /* text-decoration: underline; */
+        color: #005475;
+        text-transform: uppercase;
+        border-bottom: #005475 2px solid;
+    /* } */
+}
+
+
+.selectSection {
     display: flex;
     font-size: 1.2rem;
     width: 50%;
-    /*border: black solid 1px;*/
+    /* border: black solid 1px; */
 
-    select{
-        font-size: 1rem;
-        font-family:"'Montserrat', sans-serif'";
+    >select {
+        font-size: 1.2rem;
+        font-family: "'Montserrat', sans-serif'";
         border-bottom: #005475 1px solid;
         height: 30px;
         width: 100%;
+        text-align: center;
     }
 
-    input{
-        font-size: 1rem;
+    >input {
+        font-size: 1.2rem;
+        /* height: 30px; */
         height: 30px;
         font-family: "'Montserrat', sans-serif";
         border-bottom: #005475 1px solid;
         padding-left: 10px;
         width: 100%;
     }
+
+
 }
 .burger{
     display: flex;
@@ -246,8 +204,8 @@ textarea::placeholder {
 }
 
 .post {
-    height: 5vh;
-    width: 70%;
+    height: 7vh;
+    width: 85%;
     margin-top: 15px;
     display: flex;
     flex-direction: row;
@@ -272,7 +230,7 @@ textarea::placeholder {
 }
 
 .nameButton {
-    font-size: 12px;
+    font-size: 16px;
     font-family: 'Montserrat';
     color: #3A3A3A;
     font-weight: 400;

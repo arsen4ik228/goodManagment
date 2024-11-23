@@ -63,7 +63,7 @@ export default function CreatePolicyDirectory() {
     const reset = () => {
         setDirectoryName('')
         setSelectedId([])
-        setOpenModal(false)
+        // setOpenModal(false)
     }
 
     const savePolicyDirectory = async () => {
@@ -90,6 +90,9 @@ export default function CreatePolicyDirectory() {
 
                 <div className={classes.body}>
                     <>
+                    <div className={classes.first}>
+                            <input type={'text'} value={directoryName} onChange={(e) => setDirectoryName(e.target.value)} />
+                        </div>
                         <div className={classes.element_srch}>
 
                             <input type="search" placeholder="Поиск" />
@@ -198,7 +201,7 @@ export default function CreatePolicyDirectory() {
                 <footer className={classes.inputContainer}>
                     <div className={classes.inputColumn}>
                         <div className={classes.inputRow2}>
-                            <button onClick={() => setOpenModal(true)}>СОЗДАТЬ</button>
+                            <button onClick={() => savePolicyDirectory()}>СОЗДАТЬ</button>
                         </div>
                     </div>
                 </footer>

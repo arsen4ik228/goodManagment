@@ -131,7 +131,7 @@ const MainStrategy = () => {
                 <div className={classes.body}>
                     <>
                         <div className={classes.bodyContainer}>
-                            <div className={classes.left}> Выберите Организацию:</div>
+                            <div className={classes.left}> {selectedOrg ? 'Выберите Стратегию:' : 'Выберите Организацию:'} </div>
                             <div className={classes.right}>
                                 <ul className={classes.selectList}>
                                     {organizations?.map((item) => (

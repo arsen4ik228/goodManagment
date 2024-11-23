@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import backRow from './icon/icon _ back.svg'
 import menu from './icon/icon _ menu.svg'
@@ -14,7 +14,7 @@ import {
     useGetPostsQuery,
     useUpdatePostsMutation,
 } from "../../BLL/postApi";
-import {useNavigate, useParams} from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import HandlerMutation from "../Custom/HandlerMutation";
 import HandlerQeury from "../Custom/HandlerQeury.jsx";
 import Header from "../Custom/Header/Header";
@@ -23,7 +23,7 @@ import Header from "../Custom/Header/Header";
 const Posts = () => {
 
     const navigate = useNavigate();
-    const {userId} = useParams();
+    const { userId, postId } = useParams();
 
     const [postName, setPostName] = useState(null);
     const [postNameChanges, setPostNameChanges] = useState(false);
@@ -45,7 +45,7 @@ const Posts = () => {
         isLoadingGetPosts,
         isErrorGetPosts,
     } = useGetPostsQuery(userId, {
-        selectFromResult: ({data, isLoading, isError}) => ({
+        selectFromResult: ({ data, isLoading, isError }) => ({
             data: data || [],
             isLoadingGetPosts: isLoading,
             isErrorGetPosts: isError,
@@ -62,9 +62,9 @@ const Posts = () => {
         isErrorGetPostId,
         isFetchingGetPostId,
     } = useGetPostIdQuery(
-        {userId, postId: selectedPostId},
+        { userId, postId: postId },
         {
-            selectFromResult: ({data, isLoading, isError, isFetching}) => ({
+            selectFromResult: ({ data, isLoading, isError, isFetching }) => ({
                 currentPost: data?.currentPost || {},
                 workers: data?.workers || [],
                 organizations: data?.organizations || [],
@@ -74,7 +74,6 @@ const Posts = () => {
                 isErrorGetPostId: isError,
                 isFetchingGetPostId: isFetching,
             }),
-            skip: !selectedPostId,
         }
     );
 
@@ -130,16 +129,15 @@ const Posts = () => {
         if (Object.keys(updatedData).length > 0) {
             await updatePost({
                 userId,
-                postId: selectedPostId,
-                _id: selectedPostId,
+                postId: postId,
+                _id: postId,
                 ...updatedData, // отправляем только измененные поля
             })
                 .unwrap()
                 .then(() => {
                     setManualSuccessReset(false);
                     setManualErrorReset(false);
-                    // После успешного обновления сбрасываем состояние
-                    reset();
+                    // reset();
                 })
                 .catch((error) => {
                     reset();
@@ -161,7 +159,7 @@ const Posts = () => {
                 </>
 
                 <div className={classes.body}>
-                    <div className={classes.bodyContainer} style={{"borderBottom": "1px solid grey"}}>
+                    {/* <div className={classes.bodyContainer} style={{ "borderBottom": "1px solid grey" }}>
                         <div className={classes.name}>
                             Пост
                         </div>
@@ -181,123 +179,133 @@ const Posts = () => {
                                 })}
                             </select>
                         </div>
-                    </div>
+                    </div> */}
 
-                    <div className={classes.burger} onClick={() => setOpenList(!openList)}>
+                    {/* <div className={classes.burger} onClick={() => setOpenList(!openList)}>
                         <div className={classes.textBurger}></div>
                         {!openList && (<div className={classes.textBurger}> Развернуть</div>)}
                         <div className={classes.imgBurger}>
                             <img src={sublist} alt="icon" style={{transform: openList ? 'none' : 'rotate(90deg)'}}/>
                         </div>
-                    </div>
+                    </div> */}
 
 
-                    {openList &&
-                        (
-                            <>
-                                <div className={classes.bodyContainer} style={{"paddingTop": "15px"}}>
-                                    <div className={classes.name}>
-                                        Название поста <span style={{color: "red"}}>*</span>
-                                    </div>
-                                    <div className={classes.selectSection}>
-                                        <input
-                                            type="text"
-                                            value={postNameChanges ? postName : (postName || currentPost.postName)}
-                                            onChange={(e) => {
-                                                setPostName(e.target.value);
-                                                setPostNameChanges(true);
-                                            }}
-                                        />
-                                    </div>
-                                </div>
 
-                                <div className={classes.bodyContainer}>
-                                    <div className={classes.name}>
-                                        Название подразделения 
-                                    </div>
-                                    <div className={classes.selectSection}>
-                                        <input
-                                            type="text"
-                                            value={divisionName || currentPost.divisionName}
-                                            onChange={(e) => {
-                                                setDivisionName(e.target.value);
-                                            }}
-                                            disabled={parentPost?.divisionName}
-                                        />
-                                    </div>
-                                </div>
+                    <>
+                        <div className={classes.bodyContainer}>
+                            <input
+                                className={classes.first}
+                                type={'text'}
+                                value={postNameChanges ? postName : (postName || currentPost.postName)}
+                                onChange={(e) => {
+                                    setPostName(e.target.value);
+                                    setPostNameChanges(true);
+                                }}
+                            />
+                        </div>
+                        {/* <div className={classes.bodyContainer}>
+                            <div className={classes.name}>
+                                Название поста <span style={{ color: "red" }}>*</span>
+                            </div>
+                            <div className={classes.selectSection}>
+                                <input
+                                    type="text"
+                                    value={postNameChanges ? postName : (postName || currentPost.postName)}
+                                    onChange={(e) => {
+                                        setPostName(e.target.value);
+                                        setPostNameChanges(true);
+                                    }}
+                                />
+                            </div>
+                        </div> */}
 
-                                <div className={classes.bodyContainer}>
-                                    <div className={classes.name}>
-                                        Руководствующий пост
-                                    </div>
-                                    <div className={classes.selectSection}>
-                                        <input type="text" value={parentPost?.divisionName} disabled/>
-                                    </div>
-                                </div>
+                        <div className={classes.bodyContainer}>
+                            <div className={classes.name}>
+                                Подразделение
+                            </div>
+                            <div className={classes.selectSection}>
+                                <input
+                                    type="text"
+                                    value={divisionName || currentPost.divisionName}
+                                    onChange={(e) => {
+                                        setDivisionName(e.target.value);
+                                    }}
+                                    disabled={parentPost?.divisionName}
+                                />
+                            </div>
+                        </div>
 
-                                <div className={classes.bodyContainer}>
-                                    <div className={classes.name}>
-                                        Руководитель поста <span style={{color: "red"}}>*</span>
-                                    </div>
-                                    <div className={classes.selectSection}>
-                                        <select
-                                            name="mySelect"
-                                            className={classes.select}
-                                            value={worker || currentPost?.user?.id}
-                                            onChange={(e) => {
-                                                setWorker(e.target.value);
-                                            }}
-                                        >
-                                            <option value="" disabled>
-                                                Выберите опцию
+                        <div className={classes.bodyContainer}>
+                            <div className={classes.name}>
+                                Руководитель
+                            </div>
+                            <div className={classes.selectSection}>
+                                <input type="text" value={parentPost?.divisionName} disabled />
+                            </div>
+                        </div>
+
+                        <div className={classes.bodyContainer}>
+                            <div className={classes.name}>
+                                Сотрудник
+                            </div>
+                            <div className={classes.selectSection}>
+                                <select
+                                    name="mySelect"
+                                    className={classes.select}
+                                    value={worker || currentPost?.user?.id}
+                                    onChange={(e) => {
+                                        setWorker(e.target.value);
+                                    }}
+                                >
+                                    <option value="" disabled>
+                                        Выберите опцию
+                                    </option>
+                                    {workers?.map((item) => {
+                                        return (
+                                            <option key={item.id} value={item.id}>
+                                                {`${item.firstName} ${item.lastName}`}
                                             </option>
-                                            {workers?.map((item) => {
-                                                return (
-                                                    <option key={item.id} value={item.id}>
-                                                        {`${item.firstName} ${item.lastName}`}
-                                                    </option>
-                                                );
-                                            })}
-                                        </select>
-                                    </div>
-                                </div>
+                                        );
+                                    })}
+                                </select>
+                            </div>
+                        </div>
 
-                                <div className={classes.bodyContainer}>
-                                    <div className={classes.name}>
-                                        Организация <span style={{color: "red"}}>*</span>
-                                    </div>
-                                    <div className={classes.selectSection}>
-                                        <select
-                                            name="mySelect"
-                                            className={classes.select}
-                                            disabled={parentPost?.divisionName}
-                                            value={organization || currentPost?.organization?.id}
-                                            onChange={(e) => {
-                                                setOrganization(e.target.value);
-                                            }}
-                                        >
-                                            <option value="">Выберите опцию</option>
-                                            {organizations?.map((item) => {
-                                                return (
-                                                    <option key={item.id}
-                                                            value={item.id}>{item.organizationName}</option>
-                                                );
-                                            })}
-                                        </select>
-                                    </div>
-                                </div>
+                        <div className={classes.bodyContainer}>
+                            <div className={classes.name}>
+                                Организация <span style={{ color: "red" }}>*</span>
+                            </div>
+                            <div className={classes.selectSection}>
+                                <select
+                                    name="mySelect"
+                                    className={classes.select}
+                                    disabled={parentPost?.divisionName}
+                                    value={organization || currentPost?.organization?.id}
+                                    onChange={(e) => {
+                                        setOrganization(e.target.value);
+                                    }}
+                                >
+                                    {/* <option value="">Выберите опцию</option> */}
+                                    {organizations?.map((item) => {
+                                        return (
+                                            <option key={item.id}
+                                                value={item.id}>{item.organizationName}</option>
+                                        );
+                                    })}
+                                </select>
+                            </div>
+                        </div>
 
-                                <div className={classes.bodyContainer}>
+                        {/* <div className={classes.bodyContainer}>
                                     <div className={classes.name}>
                                         Прикрепить политику
                                     </div>
                                     <div className={classes.selectSection}>
                                         <input type="text" value={policyGet?.policyName} disabled/>
                                     </div>
-                                </div>
-                            </>
-                        )}
+                                </div> */}
+                    </>
+
 
                     <div className={classes.main}>
                         {isErrorGetPosts ? (
@@ -324,35 +332,35 @@ const Posts = () => {
                                                 {currentPost.id ? (
                                                     <>
                                                         <div className={classes.productTeaxtaera}>
-                                        <textarea
-                                            className={classes.Teaxtaera}
-                                            placeholder="описание продукта поста"
-                                            value={isProductChanges ? product : (product || currentPost.product)}
-                                            onChange={(e) => {
-                                                setProduct(e.target.value);
-                                                setIsProductChanges(true);
-                                            }}
-                                        />
+                                                            <textarea
+                                                                className={classes.Teaxtaera}
+                                                                placeholder="описание продукта поста"
+                                                                value={isProductChanges ? product : (product || currentPost.product)}
+                                                                onChange={(e) => {
+                                                                    setProduct(e.target.value);
+                                                                    setIsProductChanges(true);
+                                                                }}
+                                                            />
                                                         </div>
 
                                                         <div className={classes.destinyTeaxtaera}>
-                                        <textarea
-                                            className={classes.Teaxtaera}
-                                            placeholder="описнаие предназначения поста"
-                                            value={isPurposeChanges ? purpose : (purpose || currentPost.purpose)}
-                                            onChange={(e) => {
-                                                setPurpose(e.target.value);
-                                                setIsPurposeChanges(true);
-                                            }}
-                                        />
+                                                            <textarea
+                                                                className={classes.Teaxtaera}
+                                                                placeholder="описнаие предназначения поста"
+                                                                value={isPurposeChanges ? purpose : (purpose || currentPost.purpose)}
+                                                                onChange={(e) => {
+                                                                    setPurpose(e.target.value);
+                                                                    setIsPurposeChanges(true);
+                                                                }}
+                                                            />
                                                         </div>
 
                                                         <div className={classes.post}>
-                                                            <img src={share} alt="blackStatistic"/>
+                                                            <img src={share} alt="blackStatistic" />
                                                             <div>
-                                          <span className={classes.nameButton}>
-                                            Выбрать или создать статистику для поста
-                                          </span>
+                                                                <span className={classes.nameButton}>
+                                                                    Выбрать или создать статистику для поста
+                                                                </span>
                                                             </div>
                                                         </div>
 
@@ -383,10 +391,10 @@ const Posts = () => {
                     <div className={classes.inputRow2}>
                         <div></div>
                         <div>
-                            <button onClick={() => saveUpdatePost()}> Отредактировать</button>
+                            <button onClick={() => saveUpdatePost()}> Сохранить</button>
                         </div>
                         <div>
-                            <img src={searchBlack}/>
+                            {/* <img src={searchBlack}/> */}
                             {/*<img src={policy} className={classes.image}/>*/}
                             {/*<img src={stats}/>*/}
                         </div>

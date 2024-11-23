@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import backRow from '../Custom/icon/icon _ back.svg'
+import iconAdd from '../Custom/icon/icon _ add _ blue.svg'
 import menu from '../Custom/icon/icon _ menu.svg'
 import edit from '../Custom/icon/icon _ edit _ grey.svg'
 import classes from './MainPolicy.module.css'
@@ -9,11 +10,13 @@ import add from '../Custom/icon/icon _ add _ 005476.svg'
 import stats from '../Custom/icon/_icon _ stats.svg'
 import { useNavigate, useParams } from "react-router-dom";
 import Header from "../Custom/Header/Header";
-import { useGetPoliciesQuery } from '../../BLL/policyApi';
+import { useGetPoliciesQuery, usePostPoliciesMutation } from '../../BLL/policyApi';
 import { useGetPolicyDirectoriesQuery } from '../../BLL/policyDirectoriesApi';
+import { useGetOrganizationsQuery } from '../../BLL/organizationsApi';
 import sublist from '../Custom/icon/icon _ sublist.svg'
 import leftArrow from '../Custom/icon/icon _ leftarrow.svg'
 import rightArrow from '../Custom/icon/icon _ rightarrow.svg'
+import CustomSelect from '../Custom/CustomSelect/CustomSelect';
 
 
 
@@ -26,6 +29,9 @@ const MainStrategy = () => {
     const [openDirectives, setOpenDirectives] = useState(true)
     const [typeDisplayDirectives, setTypeDisplayDirectives] = useState(1)
     const [typeDisplayInstruction, setTypeDisplayInstruction] = useState(1)
+    const [newPolicyDraftId, setNewPolicyDraftId] = useState(null)
+    const [openModal, setOpenModal] = useState(false)
+    const [selectedOrganization, setSelectedOrganization] = useState([])
 
 
     const {
@@ -71,7 +77,48 @@ const MainStrategy = () => {
             isErrorNewSpeedGoal: isError,
         }),
     });
-    console.log(policyDirectories)
+
+    const {
+        organizations = []
+    } = useGetOrganizationsQuery(userId, {
+        selectFromResult: ({ data }) => ({
+            organizations: data?.organizations || []
+        })
+    })
+
+    const [
+        postPolicy,
+        {
+            isLoading: isLoadingPostPoliciesMutation,
+            isSuccess: isSuccessPostPoliciesMutation,
+            isError: isErrorPostPoliciesMutation,
+            error: ErrorPostPoliciesMutation,
+        },
+    ] = usePostPoliciesMutation();
+    console.log(selectedOrganization[0])
+    const savePolicy = async () => {
+        await postPolicy({
+            userId,
+            policyName: 'Директива',
+            state: "Черновик",
+            type: 'Директива',
+            content: ' ',
+            organizationId: selectedOrganization[0],
+        })
+            .unwrap()
+            .then((result) => {
+                setNewPolicyDraftId(result?.id)
+            })
+            .catch((error) => {
+                console.error("Ошибка:", JSON.stringify(error, null, 2)); // выводим детализированную ошибку
+            });
+    };
+
+    useEffect(() => {
+        if (newPolicyDraftId !== null) {
+            navigate(newPolicyDraftId)
+        }
+    }, [newPolicyDraftId])
 
     const switchDisplayType = (direction, type) => {
         const directionValue = direction === 'right' ? 1 : -1
@@ -94,6 +141,9 @@ const MainStrategy = () => {
             <div className={classes.wrapper}>
                 <>
                     <Header create={false} title={'Политики'}></Header>
+                    <div className={classes.iconAdd}>
+                        <img src={iconAdd} alt="" onClick={() => setOpenModal(true)} />
+                    </div>
                 </>
 
                 <div className={classes.body}>
@@ -259,7 +309,16 @@ const MainStrategy = () => {
                     </>
                 </div>
             </div>
+            {openModal &&
 
+                <CustomSelect
+                    organizations={organizations}
+                    isToOrganizations={selectedOrganization}
+                    setToOrganizations={setSelectedOrganization}
+                    setModalOpen={setOpenModal}
+                    requestFunc={savePolicy}
+                ></CustomSelect>
+            }
         </>
     );
 };

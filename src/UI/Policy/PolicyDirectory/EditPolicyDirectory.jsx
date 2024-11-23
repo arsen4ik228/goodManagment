@@ -59,7 +59,7 @@ export default function EditPolicyDirectories() {
 
     useEffect(() => {
         setDirectoryName(policyDirectory.directoryName)
-        if (policyDirectory?.policies?.length>0) {
+        if (policyDirectory?.policies?.length > 0) {
             setSelectedId(prevSelectedId =>
                 [...prevSelectedId, ...policyDirectory?.policies?.map(item => item.id)]
             );
@@ -83,7 +83,7 @@ export default function EditPolicyDirectories() {
         setSelectedId([])
         setOpenModal(false)
     }
-
+    console.log(selectedId)
     const updatePolicyDirectory = async () => {
         await updatePolicyDirectories({
             userId,
@@ -93,7 +93,7 @@ export default function EditPolicyDirectories() {
         })
             .unwrap()
             .then(() => {
-                setOpenModal(false)
+
             })
             .catch((error) => {
                 console.error("Ошибка:", JSON.stringify(error, null, 2)); // выводим детализированную ошибку
@@ -108,10 +108,10 @@ export default function EditPolicyDirectories() {
             .unwrap()
             .then(() => {
                 setTimeout(() => {
-                  navigate(-1);
+                    navigate(-1);
                 }, 1000);
-              })
-              
+            })
+
             .catch((error) => {
                 console.error("Ошибка:", JSON.stringify(error, null, 2)); // выводим детализированную ошибку
             });
@@ -127,6 +127,9 @@ export default function EditPolicyDirectories() {
 
                 <div className={classes.body}>
                     <>
+                        <div className={classes.first}>
+                            <input type={'text'} value={directoryName} onChange={(e) => setDirectoryName(e.target.value)} />
+                        </div>
                         <div className={classes.element_srch}>
 
                             <input type="search" placeholder="Поиск" />
@@ -229,21 +232,17 @@ export default function EditPolicyDirectories() {
 
                 <footer className={classes.inputContainer}>
                     <div className={classes.inputRow2}>
-                        <div></div>
                         <div>
-                            <button onClick={() => setOpenModal(true)}>ОТРЕДАКТИРОВАТЬ</button>
+                            <button className={classes.addButton} onClick={() => updatePolicyDirectory()}>CОХРАНИТЬ</button>
                         </div>
                         <div>
-                            <img src={iconDelete}  onClick={() => deletePolicyDirectory()}/>
-                            {/* <img src={policy} className={classes.image}/> */}
+                            <button className={classes.deleteButton} onClick={() => deletePolicyDirectory()}>УДАЛИТЬ</button>
                         </div>
                     </div>
                 </footer>
             </div>
 
-            {openModal && (
-                <SetPolicyDirectoryName name={directoryName} setName={setDirectoryName} setModalOpen={setOpenModal} requestFunction={updatePolicyDirectory}></SetPolicyDirectoryName>
-            )}
+
             <HandlerMutation
                 Loading={isLoadingDeletePolicyDirectoriesMutation}
                 Error={isErrorDeletePolicyDirectoriesMutation}

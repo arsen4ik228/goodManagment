@@ -60,6 +60,9 @@ export const policyApi = createApi({
         method: "POST",
         body,
       }), 
+      transformResponse: (response) => ({
+        id: response.id
+    }),
       invalidatesTags: [{ type: "Policy", id: "LIST" }],
     }),
 

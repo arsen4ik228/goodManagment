@@ -31,8 +31,9 @@ export const postApi = createApi({
         return {
           workers: response?.workers || [],
           policies: response?.policies || [],
-          postsWithoutParentId: response?.postsWithoutParentId || [],
+          posts: response?.posts || [],
           organizations: response?.organizations || [],
+          maxDivisionNumber: response?.maxDivisionNumber || null
         };
       },
       providesTags: (result, error, userId) => [{ type: "PostNew", id: "NEW" }],
