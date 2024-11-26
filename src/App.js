@@ -11,6 +11,7 @@ import EditPolicyDirectories from './UI/Policy/PolicyDirectory/EditPolicyDirecto
 import MainPost from './UI/Posts/MainPost.jsx'
 import Posts from './UI/Posts/Posts'
 import NewPosts from "./UI/Posts/NewPosts";
+import AttachStatistics from './UI/Posts/AttachStatistics/AttachStatistics.jsx';
 import MainStrategy from './UI/Strategy/MainStartegy.jsx';
 import Strategy from "./UI/Strategy/Strategy";
 import NewStrategy from "./UI/Strategy/NewStrategy";
@@ -46,7 +47,7 @@ function App() {
 
                                <Route path=":userId/Posts" element={<MainPost/>}/>
                                <Route path=":userId/Posts/:postId" element={<Posts/>}/>
-                               <Route path=":userId/Posts/new" element={<NewPosts/>}/>
+                               <Route path=":userId/Posts/new" element={<AttachStatistics/>}/>
 
 
                                <Route path=":userId/Strategy" element={<MainStrategy/>}/>

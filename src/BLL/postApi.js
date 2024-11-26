@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import {baseUrl} from "./constans";
+import { baseUrl } from "./constans";
 
 export const postApi = createApi({
   reducerPath: "postApi",
@@ -18,6 +18,9 @@ export const postApi = createApi({
         url: `${userId}/posts/new?addPolicyId=${addPolicyId}`,
         method: "POST",
         body,
+      }),
+      transformResponse: (response) => ({
+        id: response.id
       }),
       invalidatesTags: [{ type: "Post", id: "LIST" }, { type: "PostNew", id: "NEW" }],
     }),
@@ -40,16 +43,18 @@ export const postApi = createApi({
     }),
 
     getPostId: build.query({
-      query: ({userId, postId}) => ({
+      query: ({ userId, postId }) => ({
         url: `${userId}/posts/${postId}`,
       }),
       providesTags: (result, error, { postId }) => [{ type: 'Post', id: postId }],
       transformResponse: (response) => {
+        const currentPostId = response?.currentPost?.id
         console.log(response); // Отладка ответа
         return {
           currentPost: response?.currentPost || {},
           parentPost: response?.parentPost || {},
-          policyGet: response?.currentPost?.policy || {},
+          policiesActive: response?.policiesActive || [],
+          posts: response?.posts.filter(post => post.id !== currentPostId) || [],
           workers: response?.workers || [],
           organizations: response?.organizations || [],
         };

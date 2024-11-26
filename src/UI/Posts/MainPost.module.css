@@ -91,7 +91,7 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
         /* width: 60vw; */
         padding: 0.4rem 0.8rem;
         justify-content: flex-start;
-
+        text-transform: uppercase;
         >div {
             padding-left: 5px;
         }

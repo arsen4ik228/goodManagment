@@ -18,6 +18,9 @@ import HandlerMutation from "../Custom/HandlerMutation";
 import HandlerQeury from "../Custom/HandlerQeury.jsx";
 import Header from "../Custom/Header/Header";
 import blackStatistic from "../Custom/icon/blackStatistic.svg";
+import AttachPolicy from '../Custom/AttachPolicy/AttachPolicy.jsx';
+import AlertSavePost from '../Custom/AlertSavePost/AlertSavePost.jsx';
+import { current } from '@reduxjs/toolkit';
 
 
 const Posts = () => {
@@ -31,20 +34,15 @@ const Posts = () => {
     const [displayOrganizationName, setDisplayOrganizationName] = useState('')
     const [product, setProduct] = useState()
     const [purpose, setPurpose] = useState()
-    const [policy, setPolicy] = useState();
+    const [policy, setPolicy] = useState(null);
     const [worker, setWorker] = useState("")
     const [parentId, setParentId] = useState('');
     const [organization, setOrganization] = useState('')
     const [openList, setOpenList] = useState(true);
+    const [currentPolicyName, setCurrentPolicyName] = useState(null)
 
-    const [divisionOrg, setDivisionOrg] = useState('')
-    const [divisionChapter, setDivisionChapter] = useState('')
-
-
-    useEffect(() => {
-        setWorker(divisionChapter)
-        setParentId(divisionOrg)
-    }, [divisionChapter, divisionOrg])
+    const [modalPolicyOpen, setModalPolicyOpen] = useState(false)
+    const [modalStatisticsOpen, setModalStatisticsOpen] = useState(false)
 
     const {
         workers = [],
@@ -61,7 +59,7 @@ const Posts = () => {
             policies: data?.policies || [],
             posts: data?.posts || [],
             organizations: data?.organizations || [],
-            maxDivisionNumber: data?.maxDivisionNumber || undefined,
+            maxDivisionNumber: data?.maxDivisionNumber + 1 || undefined,
             isLoadingGetNew: isLoading,
             isErrorGetNew: isError,
             data: data,
@@ -83,6 +81,11 @@ const Posts = () => {
         if (divisionName == '' && maxDivisionNumber)
             setDivisionName(`Подразделение №${maxDivisionNumber}`)
     }, [maxDivisionNumber])
+
+    useEffect(() => {
+        const foundPolicy = policies?.find(item => item.id === policy);
+        setCurrentPolicyName(foundPolicy ? foundPolicy?.policyName : null);
+    }, [policy]);
 
     const reset = () => {
         setPostName("");
@@ -110,22 +113,32 @@ const Posts = () => {
         }
         else setOrganization('')
     }
-    console.log(organization)
+
     const savePosts = async () => {
+        const Data = {}
+        if (parentId) {
+            Data.parentId = parentId
+        }
+        if (worker) {
+            Data.responsibleUserId = worker
+        }
+        if (policy !== null) {
+            Data.addPolicyId = policy
+        }
         await postPosts({
             userId: userId,
-            addPolicyId: policy,
+            // addPolicyId: policy,
             postName: postName,
             divisionName: divisionName,
-            parentId: parentId === "null" ? null : parentId,
             product: product,
             purpose: purpose,
-            responsibleUserId: worker,
             organizationId: organization,
+            ...Data
         })
             .unwrap()
-            .then(() => {
+            .then((result) => {
                 // reset();
+                navigate(`/${userId}/Posts/${result?.id}`)
             })
             .catch((error) => {
                 console.error("Ошибка:", JSON.stringify(error, null, 2)); // выводим детализированную ошибку
@@ -158,7 +171,7 @@ const Posts = () => {
 
                                 <div className={classes.bodyContainer}>{/* Подразделение divisionName */}
                                     <div className={classes.name}>
-                                        Подразделение
+                                        Подразделение <span style={{ color: "red" }}>*</span>
                                     </div>
                                     <div className={classes.selectSection}>
                                         <input
@@ -299,7 +312,7 @@ const Posts = () => {
                                         <div className={classes.productTeaxtaera}>
                                             <textarea
                                                 className={classes.Teaxtaera}
-                                                placeholder="описание продукта поста"
+                                                placeholder="Описание продукта поста"
                                                 value={product}
                                                 onChange={(e) => {
                                                     setProduct(e.target.value);
@@ -310,7 +323,7 @@ const Posts = () => {
                                         <div className={classes.destinyTeaxtaera}>
                                             <textarea
                                                 className={classes.Teaxtaera}
-                                                placeholder="описнаие предназначения поста"
+                                                placeholder="Описнаие предназначения поста"
                                                 value={purpose}
                                                 onChange={(e) => {
                                                     setPurpose(e.target.value);
@@ -318,7 +331,28 @@ const Posts = () => {
                                             />
                                         </div>
 
-                                        <div className={classes.post}>
+                                        <div
+                                            className={classes.post}
+                                            onClick={() => setModalPolicyOpen(true)}
+
+                                        >
+                                            <img src={blackStatistic} alt="blackStatistic" />
+                                            <div>
+                                                {policy ? (
+                                                    <span className={classes.nameButton}>
+                                                        Прикреплено: {currentPolicyName}
+                                                    </span>
+                                                ) : (
+                                                    <span className={classes.nameButton}>
+                                                        Прикрепить политику
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div
+                                            className={classes.post}
+                                            onClick={() => setModalStatisticsOpen(true)}
+                                        >
                                             <img src={blackStatistic} alt="blackStatistic" />
                                             <div>
                                                 <span className={classes.nameButton}>
@@ -355,6 +389,22 @@ const Posts = () => {
                     </div>
                 </footer>
             </div>
+            {modalPolicyOpen &&
+                <AttachPolicy
+                    setModalOpen={setModalPolicyOpen}
+                    title={'Политики'}
+                    firstArray={policies}
+                    componentName={'policyName'}
+                    id={policy}
+                    setIds={setPolicy}
+                >
+                </AttachPolicy>}
+            {modalStatisticsOpen &&
+                <AlertSavePost
+                    requestFunc={savePosts}
+                    setModalOpen={setModalStatisticsOpen}
+                >
+                </AlertSavePost>}
         </>
     );
 };

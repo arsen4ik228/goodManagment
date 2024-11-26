@@ -135,8 +135,8 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: 400;}
     /*flex-grow: 1;*/
     /*flex-shrink: 1;*/
     width: 100%;
-    min-height: calc(100vh - 255px);
-    overflow-y: auto;
+    /* min-height: calc(100vh - 255px); */
+    /* overflow: hidden; */
     background-color: #F0F0F0;
     padding-top: 2%;
     padding-bottom: 2%;
@@ -156,7 +156,7 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: 400;}
     justify-content: center;
 }
 
-.productTeaxtaera:before {
+/* .productTeaxtaera:before {
     content: 'Продукт поста';
     position: absolute;
     color: black;
@@ -164,7 +164,7 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: 400;}
     font-family: 'Montserrat';
     font-size: 12px;
     left: 15%;
-}
+} */
 
 .destinyTeaxtaera {
     width: 100%;
@@ -175,7 +175,7 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: 400;}
     justify-content: center;
 }
 
-.destinyTeaxtaera:before {
+/* .destinyTeaxtaera:before {
     content: 'Предназначение поста';
     position: absolute;
     color: black;
@@ -183,24 +183,25 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: 400;}
     font-family: 'Montserrat';
     font-size: 12px;
     left: 15%;
-}
+} */
 
 .Teaxtaera {
     width: 95%;
     min-height: 27vh;
     background-color: #FFFFFF;
     padding: 4%;
-    font-size: 1rem;
+    font-size: 1.25rem;
     resize: vertical;
+    border-radius: 15px;
 }
 
 textarea::placeholder {
     color: #B4B4B4;
     font-style: italic;
-    font-size: 12px;
+    font-size: 1.4rem;
     font-family: 'Montserrat';
-    padding-top: 2%;
-    padding-left: 1%;
+    /* padding-top: 2%;
+    padding-left: 1%; */
 }
 
 .post {

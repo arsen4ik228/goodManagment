@@ -18,6 +18,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import HandlerMutation from "../Custom/HandlerMutation";
 import HandlerQeury from "../Custom/HandlerQeury.jsx";
 import Header from "../Custom/Header/Header";
+import AttachPolicy from '../Custom/AttachPolicy/AttachPolicy.jsx';
 
 
 const Posts = () => {
@@ -28,6 +29,9 @@ const Posts = () => {
     const [postName, setPostName] = useState(null);
     const [postNameChanges, setPostNameChanges] = useState(false);
     const [divisionName, setDivisionName] = useState(null);
+    const [parentDivisionName, setParentDivisionName] = useState(null)
+    const [parentId, setParentId] = useState(null)
+    const [displayOrganizationName, setDisplayOrganizationName] = useState('')
     const [product, setProduct] = useState(null);
     const [isProductChanges, setIsProductChanges] = useState(false);
     const [purpose, setPurpose] = useState(null);
@@ -35,29 +39,23 @@ const Posts = () => {
     const [worker, setWorker] = useState(null);
     const [organization, setOrganization] = useState(null);
     const [selectedPostId, setSelectedPostId] = useState(null);
+    const [policy, setPolicy] = useState(null)
+
+    const [currentPolicyName, setCurrentPolicyName] = useState(null)
+    const [modalPolicyOpen, setModalPolicyOpen] = useState(false)
+
     // Добавляем флаги для управления ручным сбросом состояния успеха и ошибки
     const [manualSuccessReset, setManualSuccessReset] = useState(false);
     const [manualErrorReset, setManualErrorReset] = useState(false);
     const [openList, setOpenList] = useState(false);
 
     const {
-        data = [],
-        isLoadingGetPosts,
-        isErrorGetPosts,
-    } = useGetPostsQuery(userId, {
-        selectFromResult: ({ data, isLoading, isError }) => ({
-            data: data || [],
-            isLoadingGetPosts: isLoading,
-            isErrorGetPosts: isError,
-        }),
-    });
-
-    const {
         currentPost = {},
         workers = [],
         organizations = [],
-        policyGet = {},
+        posts = [],
         parentPost = {},
+        policiesActive = [],
         isLoadingGetPostId,
         isErrorGetPostId,
         isFetchingGetPostId,
@@ -69,13 +67,39 @@ const Posts = () => {
                 workers: data?.workers || [],
                 organizations: data?.organizations || [],
                 parentPost: data?.parentPost || {},
-                policyGet: data?.policyGet || {},
+                posts: data?.posts || [],
+                policiesActive: data?.policiesActive || [],
                 isLoadingGetPostId: isLoading,
                 isErrorGetPostId: isError,
                 isFetchingGetPostId: isFetching,
             }),
         }
     );
+    console.log(currentPost)
+
+    useEffect(() => {
+        if (currentPost && Object.keys(currentPost).length > 0) {
+            setPostName(currentPost?.postName);
+            setDivisionName(currentPost?.divisionName);
+            setWorker(currentPost?.user?.id);
+            setOrganization(currentPost?.organization?.id);
+            setParentId(currentPost?.parentId);
+            setPolicy(currentPost?.policy?.id);
+        }
+    }, [currentPost]);
+
+    useEffect(() => {
+        const foundPolicy = policiesActive?.find(item => item.id === policy);
+        if (foundPolicy) setCurrentPolicyName(foundPolicy)
+        else setPolicy(null)
+    }, [policy]);
+
+    useEffect(() => {
+        if (parentPost && Object.keys(parentPost).length > 0) {
+            setParentDivisionName(parentPost?.divisionName)
+            setDisplayOrganizationName(parentPost?.organization?.organizationName)
+        }
+    }, [parentPost])
 
     const [
         updatePost,
@@ -93,11 +117,28 @@ const Posts = () => {
         setProduct(null);
         setPurpose(null);
         setWorker(null);
+        setParentId(null)
+        setPolicy(null)
         setOrganization(null);
         setIsProductChanges(false);
         setIsPurposeChanges(false);
         setPostNameChanges(false);
+        setDisplayOrganizationName('')
     }
+
+    const selectedParentPost = (id) => {
+        setParentId(id);
+        if (id) {
+            const obj = posts.find(
+                (item) => item.id === id
+            );
+            setOrganization(obj?.organization?.id)
+            setParentDivisionName(obj?.divisionName)
+            setDisplayOrganizationName(obj?.organization?.organizationName)
+        }
+        else setOrganization('')
+    }
+
     const saveUpdatePost = async () => {
         // Создаем объект с измененными полями
         const updatedData = {};
@@ -115,7 +156,7 @@ const Posts = () => {
         if (isPurposeChanges || (purpose !== currentPost.purpose && purpose !== null)) {
             updatedData.purpose = purpose;
         }
-        if (worker !== currentPost?.user?.id && worker !== null) {
+        if (worker !== currentPost?.user?.id) {
             updatedData.responsibleUserId = worker;
         }
         if (
@@ -123,6 +164,12 @@ const Posts = () => {
             organization !== null
         ) {
             updatedData.organizationId = organization;
+        }
+        if (parentId !== currentPost?.parentId) {
+            updatedData.parentId = parentId
+        }
+        if (policy !== currentPost?.policyId) {
+            updatedData.policyId = policy
         }
         console.log(JSON.stringify(updatedData));
         // Проверяем, если есть данные для обновления
@@ -134,7 +181,7 @@ const Posts = () => {
                 ...updatedData, // отправляем только измененные поля
             })
                 .unwrap()
-                .then(() => {
+                .then((result) => {
                     setManualSuccessReset(false);
                     setManualErrorReset(false);
                     // reset();
@@ -149,13 +196,12 @@ const Posts = () => {
         }
     };
 
-
     return (
         <>
             <div className={classes.wrapper}>
 
                 <>
-                    <Header title={'Посты'} create={true}></Header>
+                    <Header title={'Редактировать Пост'} create={false}></Header>
                 </>
 
                 <div className={classes.body}>
@@ -196,10 +242,9 @@ const Posts = () => {
                             <input
                                 className={classes.first}
                                 type={'text'}
-                                value={postNameChanges ? postName : (postName || currentPost.postName)}
+                                value={postName}
                                 onChange={(e) => {
                                     setPostName(e.target.value);
-                                    setPostNameChanges(true);
                                 }}
                             />
                         </div>
@@ -223,16 +268,28 @@ const Posts = () => {
                             <div className={classes.name}>
                                 Подразделение
                             </div>
-                            <div className={classes.selectSection}>
-                                <input
-                                    type="text"
-                                    value={divisionName || currentPost.divisionName}
-                                    onChange={(e) => {
-                                        setDivisionName(e.target.value);
-                                    }}
-                                    disabled={parentPost?.divisionName}
-                                />
-                            </div>
+                            {(parentId && !currentPost.isHasChildPost) ?
+                                (
+                                    <div className={classes.selectSection}>
+                                        <input
+                                            type="text"
+                                            value={parentDivisionName}
+                                            disabled
+                                        />
+                                    </div>
+
+                                ) : (
+                                    <div className={classes.selectSection}>
+                                        <input
+                                            type="text"
+                                            value={divisionName}
+                                            onChange={(e) => {
+                                                setDivisionName(e.target.value);
+                                            }}
+                                        />
+                                    </div>
+                                )
+                            }
                         </div>
 
                         <div className={classes.bodyContainer}>
@@ -240,7 +297,25 @@ const Posts = () => {
                                 Руководитель
                             </div>
                             <div className={classes.selectSection}>
-                                <input type="text" value={parentPost?.divisionName} disabled />
+                                <select
+                                    name="mySelect"
+                                    className={classes.select}
+                                    value={parentId}
+                                    onChange={(e) => {
+                                        selectedParentPost(e.target.value === '' ? null : e.target.value);
+                                    }}
+                                >
+                                    <option value='' >
+                                        Выберите опцию
+                                    </option>
+                                    {posts?.map((item) => {
+                                        return (
+                                            <option key={item.id} value={item.id}>
+                                                {item.postName}
+                                            </option>
+                                        );
+                                    })}
+                                </select>
                             </div>
                         </div>
 
@@ -252,12 +327,12 @@ const Posts = () => {
                                 <select
                                     name="mySelect"
                                     className={classes.select}
-                                    value={worker || currentPost?.user?.id}
+                                    value={worker}
                                     onChange={(e) => {
-                                        setWorker(e.target.value);
+                                        setWorker(e.target.value === '' ? null : e.target.value);
                                     }}
                                 >
-                                    <option value="" disabled>
+                                    <option value=''>
                                         Выберите опцию
                                     </option>
                                     {workers?.map((item) => {
@@ -275,25 +350,36 @@ const Posts = () => {
                             <div className={classes.name}>
                                 Организация <span style={{ color: "red" }}>*</span>
                             </div>
-                            <div className={classes.selectSection}>
-                                <select
-                                    name="mySelect"
-                                    className={classes.select}
-                                    disabled={parentPost?.divisionName}
-                                    value={organization || currentPost?.organization?.id}
-                                    onChange={(e) => {
-                                        setOrganization(e.target.value);
-                                    }}
-                                >
-                                    {/* <option value="">Выберите опцию</option> */}
-                                    {organizations?.map((item) => {
-                                        return (
-                                            <option key={item.id}
-                                                value={item.id}>{item.organizationName}</option>
-                                        );
-                                    })}
-                                </select>
-                            </div>
+                            {!parentId ? (
+                                <div className={classes.selectSection}>
+                                    <select
+                                        name="mySelect"
+                                        className={classes.select}
+                                        value={organization}
+                                        disabled={parentId}
+
+                                        onChange={(e) => {
+                                            setOrganization(e.target.value);
+                                        }}
+                                    >
+                                        <option value="" disabled>Выберите опцию</option>
+                                        {organizations?.map((item) => {
+                                            return (
+                                                <option key={item.id}
+                                                    value={item.id}>{item.organizationName}</option>
+                                            );
+                                        })}
+                                    </select>
+                                </div>
+                            ) : (
+                                <div className={classes.selectSection}>
+                                    <input
+                                        type="text"
+                                        value={displayOrganizationName}
+                                        disabled={parentId}
+                                    />
+                                </div>
+                            )}
                         </div>
 
                         {/* <div className={classes.bodyContainer}>
@@ -308,19 +394,11 @@ const Posts = () => {
 
 
                     <div className={classes.main}>
-                        {isErrorGetPosts ? (
-                            <>
-                                <HandlerQeury Error={isErrorGetPosts}></HandlerQeury>
-                            </>
-                        ) : (
                             <>
                                 {isErrorGetPostId ? (
                                     <HandlerQeury Error={isErrorGetPostId}></HandlerQeury>
                                 ) : (
                                     <>
-                                        <HandlerQeury
-                                            Loading={isLoadingGetPosts}
-                                        ></HandlerQeury>
 
                                         {isLoadingGetPostId || isFetchingGetPostId ? (
                                             <HandlerQeury
@@ -334,7 +412,7 @@ const Posts = () => {
                                                         <div className={classes.productTeaxtaera}>
                                                             <textarea
                                                                 className={classes.Teaxtaera}
-                                                                placeholder="описание продукта поста"
+                                                                placeholder="Описание продукта поста"
                                                                 value={isProductChanges ? product : (product || currentPost.product)}
                                                                 onChange={(e) => {
                                                                     setProduct(e.target.value);
@@ -346,7 +424,7 @@ const Posts = () => {
                                                         <div className={classes.destinyTeaxtaera}>
                                                             <textarea
                                                                 className={classes.Teaxtaera}
-                                                                placeholder="описнаие предназначения поста"
+                                                                placeholder="Описнаие предназначения поста"
                                                                 value={isPurposeChanges ? purpose : (purpose || currentPost.purpose)}
                                                                 onChange={(e) => {
                                                                     setPurpose(e.target.value);
@@ -355,6 +433,24 @@ const Posts = () => {
                                                             />
                                                         </div>
 
+                                                        <div
+                                                            className={classes.post}
+                                                            onClick={() => setModalPolicyOpen(true)}
+                                                        >
+                                                            <img src={share} alt="blackStatistic" />
+                                                            <div>
+                                                                {policy !== null ?
+                                                                    (
+                                                                        <span className={classes.nameButton}>
+                                                                            Прикреплено: {currentPolicyName}
+                                                                        </span>
+                                                                    ) : (
+                                                                        <span className={classes.nameButton}>
+                                                                            Прикрепить политику
+                                                                        </span>
+                                                                    )}
+                                                            </div>
+                                                        </div>
                                                         <div className={classes.post}>
                                                             <img src={share} alt="blackStatistic" />
                                                             <div>
@@ -363,7 +459,6 @@ const Posts = () => {
                                                                 </span>
                                                             </div>
                                                         </div>
-
                                                         <HandlerMutation
                                                             Loading={isLoadingUpdatePostMutation}
                                                             Error={isErrorUpdatePostMutation && !manualErrorReset} // Учитываем ручной сброс
@@ -382,7 +477,7 @@ const Posts = () => {
                                     </>
                                 )}
                             </>
-                        )}
+                        
                     </div>
 
                 </div>
@@ -401,6 +496,18 @@ const Posts = () => {
                     </div>
                 </footer>
             </div>
+
+            {modalPolicyOpen &&
+                <AttachPolicy
+                    setModalOpen={setModalPolicyOpen}
+                    title={'Политики'}
+                    firstArray={policiesActive}
+                    componentName={'policyName'}
+                    id={policy}
+                    setIds={setPolicy}
+                >
+                </AttachPolicy>}
+
         </>
     );
 };
