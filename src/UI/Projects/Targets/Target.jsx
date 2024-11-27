@@ -5,7 +5,7 @@ import ConfirmRemoveModal from "../../Custom/ConfirmRemoveModal/ConfirmRemoveMod
 import { formattedDate, resizeTextarea } from "../../../BLL/constans";
 
 function Target({ contentSender, workersList, setSelectedWorker, setDeadlineDate, isNew, edit, item, setTargetState }) {
-  const [textareaHeight, setTextareaHeight] = useState(50);
+  const textareaHeight = 50;
   const [content, setContent] = useState('')
 
   const [openConfirmRemoveModal, setOpenConfirmRemoveModal] = useState(false)
@@ -24,14 +24,18 @@ function Target({ contentSender, workersList, setSelectedWorker, setDeadlineDate
     }
   }, [item, isNew])
 
-  useEffect(() => {
-    resizeTextarea(item?.type + item?.orderNumber)
-  }, [content])
+  // useEffect(() => {
+  //   resizeTextarea(item?.type + item?.orderNumber)
+  // }, [content])
 
   useEffect(() => {
     resizeTextarea(item?.type + item?.orderNumber)
     contentSender(content)
   }, [content])
+
+  const completeTarget = () => {
+    setTargetState(targetStatus === 'Активная' ? 'Завершена' : 'Активная')
+  }
 
   return (
     <>
@@ -52,8 +56,23 @@ function Target({ contentSender, workersList, setSelectedWorker, setDeadlineDate
             </div>
           )}
         </div>
-        {!isNew ?
+        {isNew ?
           (
+            <div className={classes.content}>
+              <textarea
+                name="content"
+                placeholder="Введите текст задачи..."
+                id={item?.type + item?.orderNumber}
+                value={content}
+                style={{ height: `${textareaHeight}px` }}
+                onChange={(e) => {
+                  setContent(e.target.value)
+                  setTimeout(resizeTextarea(item?.type + item?.orderNumber), 0)
+                }}
+              />
+            </div>
+          ) : (
+            
             <div className={classes.content}>
               <textarea
                 name="content"
@@ -65,20 +84,6 @@ function Target({ contentSender, workersList, setSelectedWorker, setDeadlineDate
                 onChange={(e) => {
                   setContent(e.target.value)
                   setTimeout(resizeTextarea(item.type + item.orderNumber), 0)
-                }}
-              />
-            </div>
-          ) : (
-            <div className={classes.content}>
-              <textarea
-                name="content"
-                placeholder="Введите текст задачи..."
-                id={item?.type + item?.orderNumber}
-                value={content}
-                style={{ height: `${textareaHeight}px` }}
-                onChange={(e) => {
-                  setContent(e.target.value)
-                  setTimeout(resizeTextarea(item?.type + item?.orderNumber), 0)
                 }}
               />
             </div>

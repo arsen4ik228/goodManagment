@@ -124,16 +124,18 @@ export default function NewProject() {
   }, [isSuccessUpdateProjectMutation])
 
   useEffect(() => { // фильтр Стратегий по организации
-    if (strategies.length > 0 && !filtredStrategies.length > 0) {
+    if (strategies.length > 0) {
       const filter = strategies.filter(strategy => strategy?.organization?.id === selectedOrg)
       setFilterStrategies(filter)
+      setSelectedStrategy('')
     }
-  }, [strategies,])
+  }, [strategies, selectedOrg])
 
   useEffect(() => { // фильтр Программ по организации
-    if (programs.length > 0 && !filtredPrograms.length > 0) {
+    if (programs.length > 0) {
       const filtredPrograms = programs.filter(program => program?.organization?.id === selectedOrg)
       setFilterPrograms(filtredPrograms)
+      setSelectedProgram('')
     }
   }, [programs, selectedOrg])
 
@@ -165,6 +167,8 @@ export default function NewProject() {
           case 'Статистика':
             setStatisticsArray((prevState) => ([...prevState, item]))
             break;
+            default:
+              break
         }
       })
     }
