@@ -46,17 +46,17 @@ export const postApi = createApi({
       query: ({ userId, postId }) => ({
         url: `${userId}/posts/${postId}`,
       }),
-      providesTags: (result, error, { postId }) => [{ type: 'Post', id: postId }],
+      providesTags: (result, error, { postId }) => [{ type: 'Post', id: postId },{type: "Statistics", id: "LIST" }],
       transformResponse: (response) => {
-        const currentPostId = response?.currentPost?.id
         console.log(response); // Отладка ответа
         return {
           currentPost: response?.currentPost || {},
           parentPost: response?.parentPost || {},
           policiesActive: response?.policiesActive || [],
-          posts: response?.posts.filter(post => post.id !== currentPostId) || [],
+          posts: response?.posts || [],
           workers: response?.workers || [],
           organizations: response?.organizations || [],
+          statisticsIncludedPost: response?.currentPost?.statistics || [],
         };
       },
     }),
@@ -72,7 +72,16 @@ export const postApi = createApi({
         { type: "Post", id: postId },  // Инвалидация конкретного поста
       ],
     }),
+
+    updateStatisticsToPostId: build.mutation({
+      query: ({userId, postId , ...body}) => ({
+        url: `${userId}/statistics/${postId}/updateBulk`,
+        method: "PATCH",
+        body,
+      }),
+      invalidatesTags: (result) => result ? [{type: "Statistics", id: "LIST" }] : []
+    }),
   }),
 });
 
-export const { useGetPostsQuery, useGetPostNewQuery, usePostPostsMutation, useGetPostIdQuery, useUpdatePostsMutation } = postApi;
+export const { useGetPostsQuery, useGetPostNewQuery, usePostPostsMutation, useGetPostIdQuery, useUpdatePostsMutation , useUpdateStatisticsToPostIdMutation} = postApi;

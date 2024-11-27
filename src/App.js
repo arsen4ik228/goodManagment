@@ -47,8 +47,8 @@ function App() {
 
                                <Route path=":userId/Posts" element={<MainPost/>}/>
                                <Route path=":userId/Posts/:postId" element={<Posts/>}/>
-                               <Route path=":userId/Posts/new" element={<AttachStatistics/>}/>
-
+                               <Route path=":userId/Posts/new" element={<NewPosts/>}/>
+                               <Route path=":userId/Posts/:postId/attachStatistics" element={<AttachStatistics/>}/>
 
                                <Route path=":userId/Strategy" element={<MainStrategy/>}/>
                                <Route path=":userId/Strategy/new/:organizationId" element={<NewStrategy/>}/>

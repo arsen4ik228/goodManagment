@@ -7,6 +7,7 @@ import { strategyApi } from "./strategyApi";
 import { speedGoalApi } from "./speedGoalApi";
 import { projectApi } from './projectApi';
 import { organizationsApi } from './organizationsApi';
+import { statisticsApi } from './statisticsApi';
 import strategReducer from "./strategSlice";
 
 export const store = configureStore({
@@ -19,6 +20,7 @@ export const store = configureStore({
         [policyDirectoriesApi.reducerPath]: policyDirectoriesApi.reducer,
         [projectApi.reducerPath]: projectApi.reducer,
         [organizationsApi.reducerPath]: organizationsApi.reducer,
+        [statisticsApi.reducerPath]: statisticsApi.reducer,
         strateg: strategReducer,
     },
     middleware: (getDefaultMiddleware) =>
@@ -30,6 +32,7 @@ export const store = configureStore({
           .concat(speedGoalApi.middleware)
           .concat(policyDirectoriesApi.middleware)
           .concat(projectApi.middleware)
-          .concat(organizationsApi.middleware),
+          .concat(organizationsApi.middleware)
+          .concat(statisticsApi.middleware)
       });
 export default store;

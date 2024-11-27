@@ -19,6 +19,7 @@ import HandlerMutation from "../Custom/HandlerMutation";
 import HandlerQeury from "../Custom/HandlerQeury.jsx";
 import Header from "../Custom/Header/Header";
 import AttachPolicy from '../Custom/AttachPolicy/AttachPolicy.jsx';
+import AttachStatistics from './AttachStatistics/AttachStatistics.jsx';
 
 
 const Posts = () => {
@@ -56,6 +57,7 @@ const Posts = () => {
         posts = [],
         parentPost = {},
         policiesActive = [],
+        statisticsIncludedPost = [],
         isLoadingGetPostId,
         isErrorGetPostId,
         isFetchingGetPostId,
@@ -69,6 +71,7 @@ const Posts = () => {
                 parentPost: data?.parentPost || {},
                 posts: data?.posts || [],
                 policiesActive: data?.policiesActive || [],
+                statisticsIncludedPost: data?.statisticsIncludedPost || [],
                 isLoadingGetPostId: isLoading,
                 isErrorGetPostId: isError,
                 isFetchingGetPostId: isFetching,
@@ -394,90 +397,109 @@ const Posts = () => {
 
 
                     <div className={classes.main}>
-                            <>
-                                {isErrorGetPostId ? (
-                                    <HandlerQeury Error={isErrorGetPostId}></HandlerQeury>
-                                ) : (
-                                    <>
+                        <>
+                            {isErrorGetPostId ? (
+                                <HandlerQeury Error={isErrorGetPostId}></HandlerQeury>
+                            ) : (
+                                <>
 
-                                        {isLoadingGetPostId || isFetchingGetPostId ? (
-                                            <HandlerQeury
-                                                Loading={isLoadingGetPostId}
-                                                Fetching={isFetchingGetPostId}
-                                            ></HandlerQeury>
-                                        ) : (
-                                            <>
-                                                {currentPost.id ? (
-                                                    <>
-                                                        <div className={classes.productTeaxtaera}>
-                                                            <textarea
-                                                                className={classes.Teaxtaera}
-                                                                placeholder="Описание продукта поста"
-                                                                value={isProductChanges ? product : (product || currentPost.product)}
-                                                                onChange={(e) => {
-                                                                    setProduct(e.target.value);
-                                                                    setIsProductChanges(true);
-                                                                }}
-                                                            />
-                                                        </div>
+                                    {isLoadingGetPostId || isFetchingGetPostId ? (
+                                        <HandlerQeury
+                                            Loading={isLoadingGetPostId}
+                                            Fetching={isFetchingGetPostId}
+                                        ></HandlerQeury>
+                                    ) : (
+                                        <>
+                                            {currentPost.id ? (
+                                                <>
+                                                    <div className={classes.productTeaxtaera}>
+                                                        <textarea
+                                                            className={classes.Teaxtaera}
+                                                            placeholder="Описание продукта поста"
+                                                            value={isProductChanges ? product : (product || currentPost.product)}
+                                                            onChange={(e) => {
+                                                                setProduct(e.target.value);
+                                                                setIsProductChanges(true);
+                                                            }}
+                                                        />
+                                                    </div>
 
-                                                        <div className={classes.destinyTeaxtaera}>
-                                                            <textarea
-                                                                className={classes.Teaxtaera}
-                                                                placeholder="Описнаие предназначения поста"
-                                                                value={isPurposeChanges ? purpose : (purpose || currentPost.purpose)}
-                                                                onChange={(e) => {
-                                                                    setPurpose(e.target.value);
-                                                                    setIsPurposeChanges(true);
-                                                                }}
-                                                            />
-                                                        </div>
+                                                    <div className={classes.destinyTeaxtaera}>
+                                                        <textarea
+                                                            className={classes.Teaxtaera}
+                                                            placeholder="Описнаие предназначения поста"
+                                                            value={isPurposeChanges ? purpose : (purpose || currentPost.purpose)}
+                                                            onChange={(e) => {
+                                                                setPurpose(e.target.value);
+                                                                setIsPurposeChanges(true);
+                                                            }}
+                                                        />
+                                                    </div>
 
-                                                        <div
-                                                            className={classes.post}
-                                                            onClick={() => setModalPolicyOpen(true)}
-                                                        >
-                                                            <img src={share} alt="blackStatistic" />
-                                                            <div>
-                                                                {policy !== null ?
-                                                                    (
-                                                                        <span className={classes.nameButton}>
-                                                                            Прикреплено: {currentPolicyName}
-                                                                        </span>
-                                                                    ) : (
-                                                                        <span className={classes.nameButton}>
-                                                                            Прикрепить политику
-                                                                        </span>
-                                                                    )}
-                                                            </div>
+                                                    <div
+                                                        className={classes.post}
+                                                        onClick={() => setModalPolicyOpen(true)}
+                                                    >
+                                                        <img src={share} alt="blackStatistic" />
+                                                        <div>
+                                                            {policy !== null ?
+                                                                (
+                                                                    <span className={classes.nameButton}>
+                                                                        Прикреплено: {currentPolicyName}
+                                                                    </span>
+                                                                ) : (
+                                                                    <span className={classes.nameButton}>
+                                                                        Прикрепить политику
+                                                                    </span>
+                                                                )}
                                                         </div>
-                                                        <div className={classes.post}>
-                                                            <img src={share} alt="blackStatistic" />
-                                                            <div>
-                                                                <span className={classes.nameButton}>
-                                                                    Выбрать или создать статистику для поста
-                                                                </span>
-                                                            </div>
+                                                    </div>
+                                                    <div
+                                                        className={classes.post}
+                                                        onClick={() => navigate('attachStatistics')}
+                                                    >
+                                                        <img src={share} alt="blackStatistic" />
+                                                        <div>
+                                                            {statisticsIncludedPost.length > 0 ?
+                                                                (
+                                                                    <span className={classes.nameButton}>
+                                                                        Статистика: {' '} {statisticsIncludedPost[0]?.name}
+                                                                        {statisticsIncludedPost.length > 1 ?
+                                                                            (
+                                                                                <span>
+                                                                                   {' '} и ещё ({statisticsIncludedPost.length-1})
+                                                                                </span>
+                                                                            ) : (
+                                                                                <></>
+                                                                            )}
+                                                                    </span>
+                                                                ) : (
+                                                                    <span className={classes.nameButton}>
+                                                                        Выбрать или создать статистику для поста
+                                                                    </span>
+                                                                )}
+
                                                         </div>
-                                                        <HandlerMutation
-                                                            Loading={isLoadingUpdatePostMutation}
-                                                            Error={isErrorUpdatePostMutation && !manualErrorReset} // Учитываем ручной сброс
-                                                            Success={
-                                                                isSuccessUpdatePostMutation && !manualSuccessReset
-                                                            } // Учитываем ручной сброс
-                                                            textSuccess={"Пост обновлен"}
-                                                            textError={ErrorUpdatePostMutation?.data?.errors[0]?.errors}
-                                                        ></HandlerMutation>
-                                                    </>
-                                                ) : (
-                                                    <> Выберите пост </>
-                                                )}
-                                            </>
-                                        )}
-                                    </>
-                                )}
-                            </>
-                        
+                                                    </div>
+                                                    <HandlerMutation
+                                                        Loading={isLoadingUpdatePostMutation}
+                                                        Error={isErrorUpdatePostMutation && !manualErrorReset} // Учитываем ручной сброс
+                                                        Success={
+                                                            isSuccessUpdatePostMutation && !manualSuccessReset
+                                                        } // Учитываем ручной сброс
+                                                        textSuccess={"Пост обновлен"}
+                                                        textError={ErrorUpdatePostMutation?.data?.errors[0]?.errors}
+                                                    ></HandlerMutation>
+                                                </>
+                                            ) : (
+                                                <> Выберите пост </>
+                                            )}
+                                        </>
+                                    )}
+                                </>
+                            )}
+                        </>
+
                     </div>
 
                 </div>
