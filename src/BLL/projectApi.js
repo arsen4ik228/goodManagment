@@ -8,7 +8,7 @@ export const projectApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: baseUrl }),
   endpoints: (build) => ({
     getProject: build.query({
-      query: ({userId, organizationId}) => ({
+      query: ({ userId, organizationId }) => ({
         url: `${userId}/projects/${organizationId}/projects`,
       }),
       transformResponse: (response) => {
@@ -44,7 +44,7 @@ export const projectApi = createApi({
             }
             return true; // Если targets отсутствует или не массив, возвращаем элемент по умолчанию
           }) || [],
-          
+
           archivesProjectsWithProgram: response?.filter(item => {
             if (item.type !== 'Проект' || item.programId === null) return false;
 
@@ -101,6 +101,9 @@ export const projectApi = createApi({
         method: "POST",
         body,
       }),
+      transformResponse: (response) => ({
+        id: response.id
+      }),
       invalidatesTags: (result) => result ? [{ type: 'Project', id: "LIST" }] : [],
     }),
 
@@ -124,11 +127,14 @@ export const projectApi = createApi({
       query: ({ userId, projectId }) => ({
         url: `${userId}/projects/${projectId}`,
       }),
-      transformResponse: (response) => ({
-        currentProject: response.project || {},
-        targets: response?.project?.targets || [],
-        strategies: response?.strategies || []
-      }),
+      transformResponse: (response) => {
+        console.log('getProjectId   ', response)
+        return {
+          currentProject: response.project || {},
+          targets: response?.project?.targets?.filter(item => item.targetState !== 'Отменена') || [],
+          strategies: response?.strategies || []
+        }
+      },
       providesTags: (result, error, { projectId }) => result ? [{ type: "Project1", id: projectId }] : []
     }),
 

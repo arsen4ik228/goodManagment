@@ -14,7 +14,6 @@ export default function ConfirmRemoveModal({ setTargetState, setOpenModal, item 
         }
     }, [item])
 
-
     const buttonClick = (flag) => {
         setTargetState('Отменена')
         setOpenModal(false)

@@ -8,7 +8,7 @@ import deleteIcon from '../Custom//icon/icon _ delete.svg'
 import Header from "../Custom/Header/Header"
 import HandlerMutation from "../Custom/HandlerMutation"
 import { formattedDate, resizeTextarea, transformArraiesForUpdate } from "../../BLL/constans"
-import editIcon from '../Custom/icon/icon _ save.svg'
+import editIcon from '../Custom/icon/icon _ edit.svg'
 
 export default function NewProject() {
   const { userId, projectId } = useParams();
@@ -113,25 +113,25 @@ export default function NewProject() {
   ] = useUpdateProjectMutation()
 
   const reset = () => {
-      
-      
+
+
   }
 
   useEffect(() => {
-    if(isSuccessUpdateProjectMutation) {
-      setTimeout(window.location.reload() , 1000)
+    if (isSuccessUpdateProjectMutation) {
+      setTimeout(window.location.reload(), 1000)
     }
   }, [isSuccessUpdateProjectMutation])
 
   useEffect(() => { // фильтр Стратегий по организации
-    if (strategies.length>0 && !filtredStrategies.length>0) {
+    if (strategies.length > 0 && !filtredStrategies.length > 0) {
       const filter = strategies.filter(strategy => strategy?.organization?.id === selectedOrg)
       setFilterStrategies(filter)
     }
-  }, [strategies, ])
+  }, [strategies,])
 
   useEffect(() => { // фильтр Программ по организации
-    if (programs.length>0 && !filtredPrograms.length>0) {
+    if (programs.length > 0 && !filtredPrograms.length > 0) {
       const filtredPrograms = programs.filter(program => program?.organization?.id === selectedOrg)
       setFilterPrograms(filtredPrograms)
     }
@@ -204,12 +204,13 @@ export default function NewProject() {
   }, [targetContent]);
 
   useEffect(() => {
-    if (targetType) {
+    if (targetType && deadlineDate !== null) {
       const { array, setFunction } = ADD_TARGET[targetType];
       const updatedArray = [...array]
       const updatedItem = { ...updatedArray[targetIndex], deadline: deadlineDate }
       updatedArray[targetIndex] = updatedItem
       setFunction(updatedArray)
+      setDeadlineDate(null)
     }
   }, [deadlineDate])
 
@@ -282,6 +283,8 @@ export default function NewProject() {
     const updatedStatistics = transformArraiesForUpdate(statisticsArray)
     const updatedSimple = transformArraiesForUpdate(simpleArray)
 
+    // if (!updatedSimple.some(item => item.targetState === 'Активная' || item.targetState === 'Завершена') && !simpleList?.length>0) return console.error('Должны существовать задачи')
+
     const Data = {}
 
     Data._id = projectId
@@ -322,25 +325,25 @@ export default function NewProject() {
     ]
 
     console.log(Data)
-      await updateProject({
-        userId,
-        projectId,
-        ...Data,
+    await updateProject({
+      userId,
+      projectId,
+      ...Data,
+    })
+      .unwrap()
+      .then(() => {
+        reset();
       })
-        .unwrap()
-        .then(() => {
-          reset();
-        })
-        .catch((error) => {
-          console.error("Ошибка:", JSON.stringify(error, null, 2));
-        });
+      .catch((error) => {
+        console.error("Ошибка:", JSON.stringify(error, null, 2));
+      });
   }
 
   return (
     <>
       <div className={classes.wrapper}>
         <>
-          <Header create={false} title={'Создание новой программы'}></Header>
+          <Header create={false} title={'Редактировать проект'}></Header>
         </>
         <div className={classes.body}>
           <>
@@ -351,7 +354,6 @@ export default function NewProject() {
 
             <div
               className={classes.bodyContainer}
-              style={{ borderBottom: "1px solid grey" }}
             >
               <div className={classes.name}>Организация</div>
               {edit ? (
@@ -374,7 +376,6 @@ export default function NewProject() {
               (
                 <div
                   className={classes.bodyContainer}
-                  style={{ borderBottom: "1px solid grey" }}
                 >
                   <div className={classes.name}>Программа</div>
                   {edit ? (
@@ -397,7 +398,6 @@ export default function NewProject() {
             {(edit || currentProject?.strategy?.id) && (
               <div
                 className={classes.bodyContainer}
-                style={{ borderBottom: "1px solid grey" }}
               >
                 <div className={classes.name}>Стратегия</div>
                 {edit ? (
@@ -417,275 +417,276 @@ export default function NewProject() {
               </div>
             )}
           </>
-        </div>
-        <>
-          <div className={classes.targetsContainer}>
+          <>
+            <div className={classes.targetsContainer}>
 
-            {(currentProject?.content || edit) && (
-              <>
-                <div className={classes.sectionName}>Описание</div>
-                <div className={classes.targetsFlex}>
-                  <div className={classes.descriptionFlex}>
-                    <div className={classes.descriptionContainer}>
-                      <textarea
-                        name="description"
-                        id="1"
-                        disabled={!edit}
-                        placeholder="Введите описание проекта..."
-                        value={descriptionProject}
-                        onChange={(e) => {
-                          setDescriptionProject(e.target.value)
-                          setTimeout(resizeTextarea('1'), 0)
-                        }}
-                      >
-                      </textarea>
+              {(currentProject?.content || edit) && (
+                <>
+                  <div className={classes.sectionName}>Описание</div>
+                  <div className={classes.targetsFlex}>
+                    <div className={classes.descriptionFlex}>
+                      <div className={classes.descriptionContainer}>
+                        <textarea
+                          name="description"
+                          id="1"
+                          disabled={!edit}
+                          placeholder="Введите описание проекта..."
+                          value={descriptionProject}
+                          onChange={(e) => {
+                            setDescriptionProject(e.target.value)
+                            setTimeout(resizeTextarea('1'), 0)
+                          }}
+                        >
+                        </textarea>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </>
-            )}
+                </>
+              )}
 
-            {(productsArray.length > 0 || edit) && (
-              <>
-                <div className={classes.sectionName} data-section-id={edit ? "1" : "none"} onClick={() => addTarget('ПродуктNEW')}>Продукт</div>
-                <div className={classes.targetsFlex}>
-                  {productsArray.filter(item => item.targetState !== 'Отменена').map((item, index) => (
-                    <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Продукт')}>
-                      <Target
-                        id={item.id}
-                        item={item}
-                        isNew={false}
-                        edit={edit ? true : false}
-                        contentSender={setTargetContent}
-                        workersList={workers}
-                        setSelectedWorker={setSelectedWorker}
-                        setDeadlineDate={setDeadlineDate}
-                        targetsList={targets}
-                        selectedWorker={selectedWorker}
-                        deadlineDate={deadlineDate}
-                        setTargetState={setTargetState}
-                      >
-                      </Target>
-                    </div>
-                  ))}
-                  {edit && (
-                    <>
-                      {productsList.map((item, index) => (
-                        <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'ПродуктNEW')}>
-                          <Target
-                            item={item}
-                            isNew={true}
-                            contentSender={setTargetContent}
-                            workersList={workers}
-                            setSelectedWorker={setSelectedWorker}
-                            setDeadlineDate={setDeadlineDate}
-                          ></Target>
-                        </div>
-                      ))}
-                      {productsList.length > 0 && (
-                        <div className={classes.deleteContainer} onClick={() => deleteTarget(productsList)}>
-                          Удалить
-                          <img src={deleteIcon} alt="delete" />
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
-              </>
-            )}
-            {(eventArray.length > 0 || edit) && (
-              <>
-                <div className={classes.sectionName} data-section-id={edit ? "1" : "none"} onClick={() => addTarget('Организационные мероприятияNEW')}>Организационные мероприятия</div>
-                <div className={classes.targetsFlex}>
-                  {eventArray.filter(item => item.targetState !== 'Отменена').map((item, index) => (
-                    <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Организационные мероприятия')}>
-                      <Target id={item.id}
-                        item={item}
-                        isNew={false}
-                        edit={edit ? true : false}
-                        contentSender={setTargetContent}
-                        workersList={workers}
-                        setSelectedWorker={setSelectedWorker}
-                        setDeadlineDate={setDeadlineDate}
-                        targetsList={targets}
-                        selectedWorker={selectedWorker}
-                        deadlineDate={deadlineDate}
-                        setTargetState={setTargetState}>
-                      </Target>
-                    </div>
-                  ))}
-                  {edit && (
-                    <>
-                      {eventList.map((item, index) => (
-                        <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Организационные мероприятияNEW')}>
-                          <Target
-                            item={item}
-                            isNew={true}
-                            contentSender={setTargetContent}
-                            workersList={workers}
-                            setSelectedWorker={setSelectedWorker}
-                            setDeadlineDate={setDeadlineDate}
-                          ></Target>
-                        </div>
-                      ))}
-                      {eventList.length > 0 && (
-                        <div className={classes.deleteContainer} onClick={() => deleteTarget(eventList)}>
-                          Удалить
-                          <img src={deleteIcon} alt="delete" />
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
-              </>
-            )}
+              {(productsArray.length > 0 || edit) && (
+                <>
+                  <div className={classes.sectionName}  >Продукт</div>
+                  <div className={classes.targetsFlex}>
+                    {productsArray.filter(item => item.targetState !== 'Отменена').map((item, index) => (
+                      <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Продукт')}>
+                        <Target
+                          id={item.id}
+                          item={item}
+                          isNew={false}
+                          edit={edit ? true : false}
+                          contentSender={setTargetContent}
+                          workersList={workers}
+                          setSelectedWorker={setSelectedWorker}
+                          setDeadlineDate={setDeadlineDate}
+                          targetsList={targets}
+                          selectedWorker={selectedWorker}
+                          deadlineDate={deadlineDate}
+                          setTargetState={setTargetState}
+                        >
+                        </Target>
+                      </div>
+                    ))}
+                    {edit && (
+                      <>
+                        {productsList.map((item, index) => (
+                          <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'ПродуктNEW')}>
+                            <Target
+                              item={item}
+                              isNew={true}
+                              contentSender={setTargetContent}
+                              workersList={workers}
+                              setSelectedWorker={setSelectedWorker}
+                              setDeadlineDate={setDeadlineDate}
+                            ></Target>
+                          </div>
+                        ))}
+                        {productsList.length > 0 && (
+                          <div className={classes.deleteContainer} onClick={() => deleteTarget(productsList)}>
+                            Удалить
+                            <img src={deleteIcon} alt="delete" />
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </>
+              )}
+              {(eventArray.length > 0 || edit) && (
+                <>
+                  <div className={classes.sectionName} data-section-id={edit ? "1" : "none"} onClick={() => addTarget('Организационные мероприятияNEW')}>Организационные мероприятия</div>
+                  <div className={classes.targetsFlex}>
+                    {eventArray.filter(item => item.targetState !== 'Отменена').map((item, index) => (
+                      <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Организационные мероприятия')}>
+                        <Target id={item.id}
+                          item={item}
+                          isNew={false}
+                          edit={edit ? true : false}
+                          contentSender={setTargetContent}
+                          workersList={workers}
+                          setSelectedWorker={setSelectedWorker}
+                          setDeadlineDate={setDeadlineDate}
+                          targetsList={targets}
+                          selectedWorker={selectedWorker}
+                          deadlineDate={deadlineDate}
+                          setTargetState={setTargetState}>
+                        </Target>
+                      </div>
+                    ))}
+                    {edit && (
+                      <>
+                        {eventList.map((item, index) => (
+                          <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Организационные мероприятияNEW')}>
+                            <Target
+                              item={item}
+                              isNew={true}
+                              contentSender={setTargetContent}
+                              workersList={workers}
+                              setSelectedWorker={setSelectedWorker}
+                              setDeadlineDate={setDeadlineDate}
+                            ></Target>
+                          </div>
+                        ))}
+                        {eventList.length > 0 && (
+                          <div className={classes.deleteContainer} onClick={() => deleteTarget(eventList)}>
+                            Удалить
+                            <img src={deleteIcon} alt="delete" />
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </>
+              )}
 
-            {(rulesArray.length > 0 || edit) && (
-              <>
-                <div className={classes.sectionName} data-section-id={edit ? "1" : "none"} onClick={() => addTarget('ПравилаNEW')}>Правила</div>
-                <div className={classes.targetsFlex}>
-                  {rulesArray.filter(item => item.targetState !== 'Отменена').map((item, index) => (
-                    <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Правила')}>
-                      <Target id={item.id}
-                        item={item}
-                        isNew={false}
-                        edit={edit ? true : false}
-                        contentSender={setTargetContent}
-                        workersList={workers}
-                        setSelectedWorker={setSelectedWorker}
-                        setDeadlineDate={setDeadlineDate}
-                        targetsList={targets}
-                        selectedWorker={selectedWorker}
-                        deadlineDate={deadlineDate}
-                        setTargetState={setTargetState}>
-                      </Target>
-                    </div>
-                  ))}
-                  {edit && (
-                    <>
-                      {rulesList.map((item, index) => (
-                        <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'ПравилаNEW')}>
-                          <Target
-                            item={item}
-                            isNew={true}
-                            contentSender={setTargetContent}
-                            workersList={workers}
-                            setSelectedWorker={setSelectedWorker}
-                            setDeadlineDate={setDeadlineDate}
-                          ></Target>
-                        </div>
-                      ))}
-                      {rulesList.length > 0 && (
-                        <div className={classes.deleteContainer} onClick={() => deleteTarget(rulesList)}>
-                          Удалить
-                          <img src={deleteIcon} alt="delete" />
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
-              </>
-            )}
-
-
-            {(simpleArray.length > 0 || edit) && (
-              <>
-                <div className={classes.sectionName} data-section-id={edit ? "1" : "none"} onClick={() => addTarget('ОбычнаяNEW')}>Задачи</div>
-                <div className={classes.targetsFlex}>
-                  {simpleArray.filter(item => item.targetState !== 'Отменена').map((item, index) => (
-                    <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Обычная')}>
-                      <Target id={item.id}
-                        item={item}
-                        isNew={false}
-                        edit={edit ? true : false}
-                        contentSender={setTargetContent}
-                        workersList={workers}
-                        setSelectedWorker={setSelectedWorker}
-                        setDeadlineDate={setDeadlineDate}
-                        targetsList={targets}
-                        selectedWorker={selectedWorker}
-                        deadlineDate={deadlineDate}
-                        setTargetState={setTargetState}>
-                      </Target>
-                    </div>
-                  ))}
-                  {edit && (
-                    <>
-                      {simpleList.map((item, index) => (
-                        <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'ОбычнаяNEW')}>
-                          <Target
-                            item={item}
-                            isNew={true}
-                            contentSender={setTargetContent}
-                            workersList={workers}
-                            setSelectedWorker={setSelectedWorker}
-                            setDeadlineDate={setDeadlineDate}
-                          ></Target>
-                        </div>
-                      ))}
-                      {simpleList.length > 0 && (
-                        <div className={classes.deleteContainer} onClick={() => deleteTarget(simpleList)}>
-                          Удалить
-                          <img src={deleteIcon} alt="delete" />
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
-              </>
-            )}
+              {(rulesArray.length > 0 || edit) && (
+                <>
+                  <div className={classes.sectionName} data-section-id={edit ? "1" : "none"} onClick={() => addTarget('ПравилаNEW')}>Правила</div>
+                  <div className={classes.targetsFlex}>
+                    {rulesArray.filter(item => item.targetState !== 'Отменена').map((item, index) => (
+                      <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Правила')}>
+                        <Target id={item.id}
+                          item={item}
+                          isNew={false}
+                          edit={edit ? true : false}
+                          contentSender={setTargetContent}
+                          workersList={workers}
+                          setSelectedWorker={setSelectedWorker}
+                          setDeadlineDate={setDeadlineDate}
+                          targetsList={targets}
+                          selectedWorker={selectedWorker}
+                          deadlineDate={deadlineDate}
+                          setTargetState={setTargetState}>
+                        </Target>
+                      </div>
+                    ))}
+                    {edit && (
+                      <>
+                        {rulesList.map((item, index) => (
+                          <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'ПравилаNEW')}>
+                            <Target
+                              item={item}
+                              isNew={true}
+                              contentSender={setTargetContent}
+                              workersList={workers}
+                              setSelectedWorker={setSelectedWorker}
+                              setDeadlineDate={setDeadlineDate}
+                            ></Target>
+                          </div>
+                        ))}
+                        {rulesList.length > 0 && (
+                          <div className={classes.deleteContainer} onClick={() => deleteTarget(rulesList)}>
+                            Удалить
+                            <img src={deleteIcon} alt="delete" />
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </>
+              )}
 
 
-            {(statisticsArray.length > 0 || edit) && (
-              <>
-                <div className={classes.sectionName} data-section-id={edit ? "1" : "none"} onClick={() => addTarget('СтатистикаNEW')}> Метрика</div>
-                <div className={classes.targetsFlex}>
-                  {statisticsArray.filter(item => item.targetState !== 'Отменена').filter(item => item.targetState !== 'Отменена').map((item, index) => (
-                    <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Статистика')}>
-                      <Target
-                        id={item.id}
-                        item={item}
-                        isNew={false}
-                        edit={edit ? true : false}
-                        contentSender={setTargetContent}
-                        workersList={workers}
-                        setSelectedWorker={setSelectedWorker}
-                        setDeadlineDate={setDeadlineDate}
-                        targetsList={targets}
-                        selectedWorker={selectedWorker}
-                        deadlineDate={deadlineDate}
-                        setTargetState={setTargetState}
-                      >
-                      </Target>
-                    </div>
-                  ))}
-                  {edit && (
-                    <>
-                      {statisticsList.map((item, index) => (
-                        <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'СтатистикаNEW')}>
-                          <Target
-                            item={item}
-                            isNew={true}
-                            contentSender={setTargetContent}
-                            workersList={workers}
-                            setSelectedWorker={setSelectedWorker}
-                            setDeadlineDate={setDeadlineDate}
-                          ></Target>
-                        </div>
-                      ))}
-                      {statisticsList.length > 0 && (
-                        <div className={classes.deleteContainer} onClick={() => deleteTarget(statisticsList)}>
-                          Удалить
-                          <img src={deleteIcon} alt="delete" />
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
-              </>
-            )}
-          </div>
-        </>
+              {(simpleArray.length > 0 || edit) && (
+                <>
+                  <div className={classes.sectionName} data-section-id={edit ? "1" : "none"} onClick={() => addTarget('ОбычнаяNEW')}>Задачи</div>
+                  <div className={classes.targetsFlex}>
+                    {simpleArray.filter(item => item.targetState !== 'Отменена').map((item, index) => (
+                      <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Обычная')}>
+                        <Target id={item.id}
+                          item={item}
+                          isNew={false}
+                          edit={edit ? true : false}
+                          contentSender={setTargetContent}
+                          workersList={workers}
+                          setSelectedWorker={setSelectedWorker}
+                          setDeadlineDate={setDeadlineDate}
+                          selectedWorker={selectedWorker}
+                          deadlineDate={deadlineDate}
+                          setTargetState={setTargetState}>
+                        </Target>
+                      </div>
+                    ))}
+                    {edit && (
+                      <>
+                        {simpleList.map((item, index) => (
+                          <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'ОбычнаяNEW')}>
+                            <Target
+                              item={item}
+                              isNew={true}
+                              contentSender={setTargetContent}
+                              workersList={workers}
+                              setSelectedWorker={setSelectedWorker}
+                              setDeadlineDate={setDeadlineDate}
+                            ></Target>
+                          </div>
+                        ))}
+                        {simpleList.length > 0 && (
+                          <div className={classes.deleteContainer} onClick={() => deleteTarget(simpleList)}>
+                            Удалить
+                            <img src={deleteIcon} alt="delete" />
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </>
+              )}
+
+
+              {(statisticsArray.length > 0 || edit) && (
+                <>
+                  <div className={classes.sectionName} data-section-id={edit ? "1" : "none"} onClick={() => addTarget('СтатистикаNEW')}> Метрика</div>
+                  <div className={classes.targetsFlex}>
+                    {statisticsArray.filter(item => item.targetState !== 'Отменена').filter(item => item.targetState !== 'Отменена').map((item, index) => (
+                      <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Статистика')}>
+                        <Target
+                          id={item.id}
+                          item={item}
+                          isNew={false}
+                          edit={edit ? true : false}
+                          contentSender={setTargetContent}
+                          workersList={workers}
+                          setSelectedWorker={setSelectedWorker}
+                          setDeadlineDate={setDeadlineDate}
+                          targetsList={targets}
+                          selectedWorker={selectedWorker}
+                          deadlineDate={deadlineDate}
+                          setTargetState={setTargetState}
+                        >
+                        </Target>
+                      </div>
+                    ))}
+                    {edit && (
+                      <>
+                        {statisticsList.map((item, index) => (
+                          <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'СтатистикаNEW')}>
+                            <Target
+                              item={item}
+                              isNew={true}
+                              contentSender={setTargetContent}
+                              workersList={workers}
+                              setSelectedWorker={setSelectedWorker}
+                              setDeadlineDate={setDeadlineDate}
+                            ></Target>
+                          </div>
+                        ))}
+                        {statisticsList.length > 0 && (
+                          <div className={classes.deleteContainer} onClick={() => deleteTarget(statisticsList)}>
+                            Удалить
+                            <img src={deleteIcon} alt="delete" />
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+          </>
+
+        </div>
+
 
         <>
           <footer className={classes.inputContainer}>

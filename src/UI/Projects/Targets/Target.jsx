@@ -4,7 +4,7 @@ import remove from "../../Custom/icon/icon _ remove.svg"
 import ConfirmRemoveModal from "../../Custom/ConfirmRemoveModal/ConfirmRemoveModal";
 import { formattedDate, resizeTextarea } from "../../../BLL/constans";
 
-function Target({ id, contentSender, workersList, setSelectedWorker, setDeadlineDate, isNew, edit, targetsList, item, setTargetState }) {
+function Target({ contentSender, workersList, setSelectedWorker, setDeadlineDate, isNew, edit, item, setTargetState }) {
   const [textareaHeight, setTextareaHeight] = useState(50);
   const [content, setContent] = useState('')
 
@@ -13,7 +13,7 @@ function Target({ id, contentSender, workersList, setSelectedWorker, setDeadline
   const [deadline, setDeadline] = useState()
   const [targetStatus, setTargetStatus] = useState()
 
-
+  console.log(item)
   useEffect(() => {
     if (!isNew) {
       setContent(item?.content)
@@ -122,7 +122,12 @@ function Target({ id, contentSender, workersList, setSelectedWorker, setDeadline
         </div>
 
       </div>
-      {openConfirmRemoveModal && <ConfirmRemoveModal setTargetState={setTargetState} setOpenModal={setOpenConfirmRemoveModal} item={item}></ConfirmRemoveModal>}
+      {openConfirmRemoveModal && <ConfirmRemoveModal
+        setTargetState={setTargetState}
+        setOpenModal={setOpenConfirmRemoveModal}
+        item={item}
+      >
+      </ConfirmRemoveModal>}
     </>
   );
 }

@@ -20,6 +20,7 @@ export const resizeTextarea = (id) => {
       deadline: item?.deadline,
       holderUserId: item?.holderUserId,
       targetState: item?.targetState,
+      type: item?.type
     }))
         // setFunction(updatedArray);
 

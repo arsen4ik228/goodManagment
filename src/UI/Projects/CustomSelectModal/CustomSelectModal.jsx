@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import classes from "./CustomSelectModal.module.css"
 import close from "../../Custom/SearchModal/icon/icon _ add.svg"
+import { formattedDate } from '../../../BLL/constans';
 
 export default function CustomSelectModal({ setModalOpen, projects, workers, selectedProject, setSelectedProject, setParentFilteredProjects }) {
 
     const [filteredProjects, setFilteredProjects] = useState([]);
-
     const selectProject = (id) => {
         setSelectedProject(prevSelectedProject =>
             prevSelectedProject.includes(id)
@@ -64,13 +64,17 @@ export default function CustomSelectModal({ setModalOpen, projects, workers, sel
                     </div>
 
                     <div className={classes.body}>
+                        {!filteredProjects.length>0 && 
+                        (
+                            <div> Нет проектов </div>
+                        )}
                         {filteredProjects.map((item, index) => (
                             <div key={index} className={classes.projectContainer} style={{boxShadow: selectedProject.includes(item.id) ? '0px 0px 2px 1px rgba(0, 84, 117, 1)' : '0px 0px 1px 0px rgba(0, 0, 0, 1)'}} onClick={() => selectProject(item.id)}>
                                 <div className={classes.content}>
                                     <div className={classes.title}>{item.nameProject}</div>
                                     <div className={classes.worker}>{item?.product}</div>
                                     <div className={classes.worker}>{item?.worker}</div>
-                                    <div className={classes.data}>{item?.deadline?.slice(0, 10)}</div>
+                                    <div className={classes.data}>{formattedDate(item?.deadline)}</div>
                                 </div>
                                 <div className={classes.checkBox}>
                                     <input type="checkbox" checked={selectedProject.includes(item.id)} />

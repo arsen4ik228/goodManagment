@@ -27,6 +27,11 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 .body{
     /* flex: 1 1 auto; */
     margin-top: 57px;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    height: calc(100vh - 115px);
+    min-height: calc(100vh - 115px);
 }
 
 .Type{
@@ -52,47 +57,47 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
     text-decoration: underline;
 }
 
-.bodyContainer{
+.bodyContainer {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    padding: 10px 25px;
+    padding: 10px 20px;
     /* height: 20px; */
-    /*border-bottom: #005475 solid 1px;*/
+    /* border: #005475 solid 1px; */
 }
 
-.name{
+.name {
     font-size: 1.25rem;
     width: 50%;
-    /*border: black solid 1px;*/
+    /* border: black solid 1px; */
 }
 
-.selectSection{
+.selectSection {
     display: flex;
     font-size: 1.2rem;
     width: 50%;
-    /*border: black solid 1px;*/
+    /* border: black solid 1px; */
 
-    >select{
+    >select {
         font-size: 1.2rem;
-        font-family:"'Montserrat', sans-serif'";
+        font-family: "'Montserrat', sans-serif'";
         border-bottom: #005475 1px solid;
         height: 30px;
         width: 100%;
         text-align: center;
     }
 
-    >input{
+    >input {
         font-size: 1.2rem;
         /* height: 30px; */
+        height: 30px;
         font-family: "'Montserrat', sans-serif";
         border-bottom: #005475 1px solid;
         padding-left: 10px;
         width: 100%;
     }
 
-  
 }
 
 .OrgSection{
@@ -123,10 +128,18 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 }
 
 .targetsContainer{
-    flex: 1 1 auto;
+    flex: 1;
     background-color: #f0f8ff;
-    overflow: auto;
-    padding-bottom: 10px;
+    padding-bottom: 15px;
+    /* height: 100px; */
+    /* height: 100%; */
+}
+
+.alertInfo{
+    padding-top: 40px;
+    font-size: 1.8rem;
+    text-align: center;
+    text-transform: uppercase;
 }
 
 .deleteContainer{
@@ -207,10 +220,10 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 }
 
 .inputContainer{
-    /* position: fixed; */
-    /* bottom: 0;
+    position: fixed;
+    bottom: 0;
     left: 0;
-    right: 0; */
+    right: 0;
     background-color: white;
     border-top: #005475 solid 2px;
 }
