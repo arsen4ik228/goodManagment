@@ -15,6 +15,7 @@ export default function NewProject() {
   const [edit, setEdit] = useState(false)
   const [dummyKey, setDummyKey] = useState(0)
 
+  const [projectName, setProjectName] = useState('')
   const [selectedOrg, setSelectedOrg] = useState()
   const [selectedStrategy, setSelectedStrategy] = useState('')
   const [selectedProgram, setSelectedProgram] = useState('')
@@ -167,8 +168,8 @@ export default function NewProject() {
           case 'Статистика':
             setStatisticsArray((prevState) => ([...prevState, item]))
             break;
-            default:
-              break
+          default:
+            break
         }
       })
     }
@@ -176,6 +177,9 @@ export default function NewProject() {
 
   console.log('массивчики   ', productsArray, rulesArray, eventArray, simpleArray, statisticsArray)
   useEffect(() => { // предустановка значений при загрузке страницы
+    if (currentProject.projectName) {
+      setProjectName(currentProject.projectName)
+    }
     if (currentProject?.organization?.id) {
       setSelectedOrg(currentProject?.organization.id)
     }
@@ -287,51 +291,64 @@ export default function NewProject() {
     const updatedStatistics = transformArraiesForUpdate(statisticsArray)
     const updatedSimple = transformArraiesForUpdate(simpleArray)
 
-    // if (!updatedSimple.some(item => item.targetState === 'Активная' || item.targetState === 'Завершена') && !simpleList?.length>0) return console.error('Должны существовать задачи')
 
     const Data = {}
 
-    Data._id = projectId
+    if (!edit) {
+      Data.targetUpdateDtos = [
+        ...updatedSimple,
+        ...updatedProducts,
+        ...updatedEvent,
+        ...updatedRules,
+        ...updatedStatistics
+      ]
+    }
+    else {
+      if((projectName !== currentProject.projectName) && projectName) {
+        Data.projectName = projectName
+      }
+      if ((selectedOrg !== currentProject?.organization?.id) && selectedOrg) {
+        Data.organizationId = selectedOrg
+      }
+      if ((selectedProgram !== currentProject?.programId) && selectedProgram) {
+        Data.programId = selectedProgram
+      }
+      if ((selectedStrategy !== currentProject?.strategy?.id) && selectedStrategy) {
+        Data.strategyId = selectedStrategy
+      }
+      if ((descriptionProject !== currentProject?.content) && descriptionProject) {
+        Data.content = descriptionProject
+      }
+      if (
+        rulesList.length > 0 ||
+        productsList.length > 0 ||
+        statisticsList.length > 0 ||
+        simpleList.length > 0 ||
+        eventList.length > 0
+      ) {
+        Data.targetCreateDtos = [
+          ...rulesList,
+          ...productsList,
+          ...statisticsList,
+          ...simpleList,
+          ...eventList,
+        ];
+      }
+      Data.targetUpdateDtos = [
+        ...updatedSimple,
+        ...updatedProducts,
+        ...updatedEvent,
+        ...updatedRules,
+        ...updatedStatistics
+      ]
+    }
 
-    if ((selectedOrg !== currentProject?.organization?.id) && selectedOrg) {
-      Data.organizationId = selectedOrg
-    }
-    if ((selectedProgram !== currentProject?.programId) && selectedProgram) {
-      Data.programId = selectedProgram
-    }
-    if ((selectedStrategy !== currentProject?.strategy?.id) && selectedStrategy) {
-      Data.strategyId = selectedStrategy
-    }
-    if ((descriptionProject !== currentProject?.content) && descriptionProject) {
-      Data.content = descriptionProject
-    }
-    if (
-      rulesList.length > 0 ||
-      productsList.length > 0 ||
-      statisticsList.length > 0 ||
-      simpleList.length > 0 ||
-      eventList.length > 0
-    ) {
-      Data.targetCreateDtos = [
-        ...rulesList,
-        ...productsList,
-        ...statisticsList,
-        ...simpleList,
-        ...eventList,
-      ];
-    }
-    Data.targetUpdateDtos = [
-      ...updatedSimple,
-      ...updatedProducts,
-      ...updatedEvent,
-      ...updatedRules,
-      ...updatedStatistics
-    ]
 
     console.log(Data)
     await updateProject({
       userId,
       projectId,
+      _id: projectId,
       ...Data,
     })
       .unwrap()
@@ -342,7 +359,7 @@ export default function NewProject() {
         console.error("Ошибка:", JSON.stringify(error, null, 2));
       });
   }
-
+  console.log(currentProject)
   return (
     <>
       <div className={classes.wrapper}>
@@ -352,7 +369,17 @@ export default function NewProject() {
         <div className={classes.body}>
           <>
             <div className={classes.selectedType}>
-              {currentProject.projectName}
+              {edit ? (
+                <input
+                  type="text"
+                  value={projectName}
+                  onChange={e => setProjectName(e.target.value)}
+                />
+              ) : (
+                <>
+                  {currentProject.projectName}
+                </>
+              )}
               <img src={editIcon} alt="" onClick={() => setEdit(!edit)} />
             </div>
 
@@ -595,7 +622,7 @@ export default function NewProject() {
                 <>
                   <div className={classes.sectionName} data-section-id={edit ? "1" : "none"} onClick={() => addTarget('ОбычнаяNEW')}>Задачи</div>
                   <div className={classes.targetsFlex}>
-                    {simpleArray.filter(item => item.targetState !== 'Отменена').map((item, index) => (
+                    {simpleArray.map((item, index) => (
                       <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Обычная')}>
                         <Target id={item.id}
                           item={item}

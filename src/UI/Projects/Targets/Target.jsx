@@ -3,17 +3,18 @@ import classes from "./Target.module.css";
 import remove from "../../Custom/icon/icon _ remove.svg"
 import ConfirmRemoveModal from "../../Custom/ConfirmRemoveModal/ConfirmRemoveModal";
 import { formattedDate, resizeTextarea } from "../../../BLL/constans";
+import ConfirmCompleteModal from "../../Custom/ConfirmCompleteModal/ConfirmCompleteModal";
 
 function Target({ contentSender, workersList, setSelectedWorker, setDeadlineDate, isNew, edit, item, setTargetState }) {
   const textareaHeight = 50;
   const [content, setContent] = useState('')
 
   const [openConfirmRemoveModal, setOpenConfirmRemoveModal] = useState(false)
+  const [openConfirmCompleteModal, setOpenConfirmCompleteModal] = useState(false)
   const [worker, SetWorker] = useState()
   const [deadline, setDeadline] = useState()
   const [targetStatus, setTargetStatus] = useState()
 
-  console.log(item)
   useEffect(() => {
     if (!isNew) {
       setContent(item?.content)
@@ -34,7 +35,13 @@ function Target({ contentSender, workersList, setSelectedWorker, setDeadlineDate
   }, [content])
 
   const completeTarget = () => {
-    setTargetState(targetStatus === 'Активная' ? 'Завершена' : 'Активная')
+    if (targetStatus === 'Завершена') return
+    setOpenConfirmCompleteModal(true)
+  }
+  const removeTarget = () => {
+    console.log('item:  ', item)
+
+    setOpenConfirmRemoveModal(true)
   }
 
   return (
@@ -43,8 +50,8 @@ function Target({ contentSender, workersList, setSelectedWorker, setDeadlineDate
         <div className={classes.header}>
           {(!isNew && !edit && !item?.isExpired) &&
             (
-              <div className={classes.confirm} onClick={() => setTargetState(targetStatus === 'Активная' ? 'Завершена' : 'Активная')}>
-                Завершить задачу
+              <div className={classes.confirm} onClick={() => completeTarget()}>
+                {targetStatus === 'Завершена' ? 'Задача завершена' : "Завершить задачу"}
                 <input type="checkbox"
                   checked={targetStatus === 'Завершена'}
                 />
@@ -52,7 +59,7 @@ function Target({ contentSender, workersList, setSelectedWorker, setDeadlineDate
             )}
           {(edit && !isNew) && (
             <div className={classes.remove}>
-              <img src={remove} alt="" onClick={() => setOpenConfirmRemoveModal(true)} />
+              <img src={remove} alt="" onClick={removeTarget} />
             </div>
           )}
         </div>
@@ -72,7 +79,7 @@ function Target({ contentSender, workersList, setSelectedWorker, setDeadlineDate
               />
             </div>
           ) : (
-            
+
             <div className={classes.content}>
               <textarea
                 name="content"
@@ -118,9 +125,18 @@ function Target({ contentSender, workersList, setSelectedWorker, setDeadlineDate
                     <span> Просрочено {formattedDate(deadline)} </span>
                   </div>
                 ) : (
-                  <div className={classes.deadline}>
-                    <input type="date" value={deadline} disabled={!edit} onChange={(e) => setDeadlineDate(e.target.value)} />
-                  </div>
+                  targetStatus === 'Отменена' ?
+                    (
+                      <div className={classes.deadline}>
+                      {/* <input type="date" value={deadline} disabled={!edit} onChange={(e) => setDeadlineDate(e.target.value)} /> */}
+                      <span> Отменена</span>
+                    </div>
+                    ) : (
+
+                      <div className={classes.deadline}>
+                        <input type="date" value={deadline} disabled={!edit} onChange={(e) => setDeadlineDate(e.target.value)} />
+                      </div>
+                    )
                 )}
             </>
           )}
@@ -133,6 +149,12 @@ function Target({ contentSender, workersList, setSelectedWorker, setDeadlineDate
         item={item}
       >
       </ConfirmRemoveModal>}
+      {openConfirmCompleteModal && <ConfirmCompleteModal
+        setOpenModal={setOpenConfirmCompleteModal}
+        item={item}
+        setTargetState={setTargetState}
+      >
+      </ConfirmCompleteModal>}
     </>
   );
 }

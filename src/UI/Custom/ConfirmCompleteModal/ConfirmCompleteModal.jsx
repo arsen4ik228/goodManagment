@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import classes from './ConfirmRemoveModal.module.css'
+import classes from './ConfirmCompleteModal.module.css'
 import { useNavigate } from 'react-router-dom'
 import close from "../SearchModal/icon/icon _ add.svg";
 
-export default function ConfirmRemoveModal({ setTargetState, setOpenModal, item }) {
+export default function ConfirmCompleteModal({ setTargetState, setOpenModal, item }) {
 
     const navigate = useNavigate()
     const [targetIsProduct, setTargetIsProduct] = useState(false)
@@ -15,9 +15,9 @@ export default function ConfirmRemoveModal({ setTargetState, setOpenModal, item 
     }, [item])
 
     const buttonClick = (flag) => {
-        setTargetState('Отменена')
+        setTargetState('Завершена')
         setOpenModal(false)
-        //flag && navigate(-1)
+        // flag && navigate(-1)
     }
 
     return (
@@ -28,14 +28,14 @@ export default function ConfirmRemoveModal({ setTargetState, setOpenModal, item 
                         <img src={close} />
                     </div>
                     {targetIsProduct ? (
-                        <div className={classes.title}>Данное действие <span>нельзя отменить</span>, отменить проект?</div>
+                        <div className={classes.title}>Данное действие <span>нельзя отменить</span>, завершить проект?</div>
 
                     ) : (
-                        <div className={classes.title}>Данное действие <span>нельзя отменить</span>, отменить задачу?</div>
+                        <div className={classes.title}>Данное действие <span>нельзя отменить</span>, завершить задачу?</div>
                     )}
 
                     <div className={classes.btn}>
-                        <button onClick={() => buttonClick(targetIsProduct)}> Отменить</button>
+                        <button onClick={() => buttonClick(targetIsProduct)}> Завершить</button>
                     </div>
                 </div>
             </div >
