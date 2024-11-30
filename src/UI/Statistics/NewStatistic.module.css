@@ -102,7 +102,20 @@ h6 {
 
 .header {
     margin-bottom: 57px;
+}
 
+.saveIcon{
+    position: relative;
+    z-index: 1000;
+    width: 100%;
+    >img{
+        z-index: 1000;
+        position: absolute;
+        float: left;
+        top: 17px;
+        right: 10px;
+        cursor: pointer;
+    }
 }
 
 .body {
@@ -239,8 +252,8 @@ h6 {
     width: 100%;
     flex: 1 1 auto;
     display: flex;
-    flex-direction: column-reverse;
-    justify-content: flex-end;
+    flex-direction: column;
+    justify-content: flex-start;
     align-items: center;
     padding: 0 10px 15px 10px;
 
@@ -262,4 +275,33 @@ h6 {
         font-size: 1.5rem;
         background-color: #f0f8ff;
     }
+}
+
+.tableButton {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.addedBtn {
+    background-color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    box-shadow: 0 0 2px black;
+    color: #005475;
+    width: 120px;
+    text-align: center;
+
+}
+
+.removeBtn {
+    background-color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    box-shadow: 0 0 2px black;
+    color: red;
+    width: 100px;
+    text-align: center;
+
 }

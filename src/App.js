@@ -27,6 +27,7 @@ import Programs from './UI/Projects/Programs.jsx';
 import ProjectArchive from './UI/Projects/Archive/ProjectArchive.jsx';
 import MainStatistics from './UI/Statistics/MainStatistics.jsx';
 import Statistics from './UI/Statistics/Statistics.jsx';
+import NewStatistic from './UI/Statistics/NewStatistic.jsx';
 
 function App() {
     return (
@@ -71,6 +72,7 @@ function App() {
 
                             <Route path=":userId/Statistics" element={<MainStatistics />} />
                             <Route path=":userId/Statistics/:statisticId" element={<Statistics />} />
+                            <Route path=":userId/Statistics/new" element={<NewStatistic />} />
 
 
 
