@@ -29,9 +29,21 @@ export const organizationsApi = createApi({
           : [{ type: "Organizations", id: "LIST" }],
     }),
 
+    updateOrganizations: build.mutation({
+      query: ({userId, organizationId , ...body}) => ({
+        url: `${userId}/organizations/${organizationId}/update`,
+        method: "PATCH",
+        body,
+      }),
+      invalidatesTags: (result, error) => result ? [{type: "Organization", id: "LIST" }] : []
+    }),
+    
+
+
   }),
 });
 
 export const {
   useGetOrganizationsQuery,
+  useUpdateOrganizationsMutation
 } = organizationsApi;

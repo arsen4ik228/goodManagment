@@ -1,13 +1,38 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import classes from "./Graphic.module.css";
+import { useWindowSize } from 'react-window-size';
 
 const Graphic = ({ data, name, setName, typeGraphic, type }) => {
   const svgRef = useRef();
   const [nameStatistics, setNameStatistics] = useState(name);
 
   const [width, setWidth] = useState(880);
-  const [height, setHeight] = useState(600);
+  const [height, setHeight] = useState(400); // Начальное значение
+
+  useEffect(() => {
+    const handleResize = () => {
+      const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+      const windowWidth = window.innerWidth || document.documentElement.clientWidth;
+
+      const newHeight = windowHeight - 180;
+      const newWidth = windowWidth + 40;
+
+      console.log(newHeight)
+      setWidth(newWidth)
+      setHeight(newHeight);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    // Вызываем функцию один раз при монтировании компонента
+    handleResize();
+
+    // Очищаем слушатель при размонтировании компонента
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     setNameStatistics(name);
@@ -40,17 +65,17 @@ const Graphic = ({ data, name, setName, typeGraphic, type }) => {
             newHeight = 400;
           } 
         }else{
-          if (window.innerWidth > 1400) {
+          if (window.innerWidth > 600) {
             newWidth = 500;
             newHeight = 600;
-          } else if (window.innerWidth > 800) {
-            newWidth = 400;
-            newHeight = 400;
+          } else if (window.innerWidth > 320) {
+            newWidth = 360;
+            // newHeight = 250;
           } 
         }        
       }
-      setWidth(newWidth);
-      setHeight(newHeight);
+      // setWidth(newWidth);
+      // setHeight(newHeight);
     };
 
     // Устанавливаем начальные значения и добавляем слушатель события resize

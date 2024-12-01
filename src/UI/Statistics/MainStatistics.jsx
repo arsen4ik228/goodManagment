@@ -30,8 +30,9 @@ const MainStatistics = () => {
     const { userId } = useParams()
     const navigate = useNavigate()
 
-    const [selectedOrg, setSelectedOrg] = useState('')
+    const [selectedOrg, setSelectedOrg] = useState()
     const [selectedStrategy, setSelectedStrategy] = useState('')
+    const [filtredStatistics, setFiltredStatistics] = useState([])
 
     const {
         statistics = [],
@@ -53,14 +54,20 @@ const MainStatistics = () => {
         isFetchingGetOrganizations,
         isErrorGetOrganizations,
     } = useGetOrganizationsQuery(userId, {
-        selectFromResult: ({data, isLoading, isFetching, isError}) => ({
+        selectFromResult: ({ data, isLoading, isFetching, isError }) => ({
             organizations: data?.transformOrganizations || [],
             isLoadindGetOrganizations: isLoading,
             isFetchingGetOrganizations: isFetching,
             isErrorGetOrganizations: isError
         })
     })
-    console.log(organizations)
+
+    useEffect(() => {
+        const sortStatistics = () => {
+            if (selectedOrg) return
+            setFiltredStatistics(statistics.filter(item => item?.organization.id === selectedOrg))
+        }
+    }, [selectedOrg])
 
     return (
         <>
@@ -81,7 +88,7 @@ const MainStatistics = () => {
                                                 (<>
                                                     <input
                                                         type="checkbox"
-                                                        checked={selectedOrg.includes(item.id)}
+                                                        checked={item?.id === selectedOrg}
                                                         readOnly
 
                                                     />
@@ -90,7 +97,7 @@ const MainStatistics = () => {
                                                     <>
                                                         <input
                                                             type="checkbox"
-                                                            checked={selectedOrg.includes(item.id)}
+                                                            checked={item?.id === selectedOrg}
                                                             readOnly
                                                         />
                                                         <div style={{ 'color': 'grey' }}> {item.organizationName} </div>
@@ -102,7 +109,7 @@ const MainStatistics = () => {
 
                                 {selectedOrg && (
                                     <>
-                                        <div className={classes.titleStrategy}>Статитстику:</div>
+                                        <div className={classes.titleStrategy}>Статитстики:</div>
                                         <ul className={classes.selectList}>
                                             {statistics?.map((item, index) => (
                                                 <li key={index}

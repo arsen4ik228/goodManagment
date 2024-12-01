@@ -98,6 +98,7 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 .right{
     height: 98%;
     overflow: auto;
+    width: 55vw;
 }
 
 
