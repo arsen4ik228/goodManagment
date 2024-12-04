@@ -127,7 +127,7 @@ export default function MainProject() {
                     </li>
                   ))}
                 </ol>
-                <ol className={classes.ListOfProjects}>
+                {/* <ol className={classes.ListOfProjects}>
                   {projectsWithProgram.map((item, index) => (
                     <li
                       key={index}
@@ -137,7 +137,7 @@ export default function MainProject() {
                       {item.projectName}
                     </li>
                   ))}
-                </ol>
+                </ol> */}
               </div>
             )}
             <div
@@ -243,7 +243,7 @@ export default function MainProject() {
                       </li>
                     ))}
                   </ol>
-                  <ol className={classes.ListOfProjects}>
+                  {/* <ol className={classes.ListOfProjects}>
                     {archivesProjectsWithProgram.map((item, index) => (
                       <li
                         key={index}
@@ -254,7 +254,7 @@ export default function MainProject() {
                         {item.projectName}
                       </li>
                     ))}
-                  </ol>
+                  </ol> */}
                 </div>
               </>
             )}

@@ -1,7 +1,7 @@
 import './App.css';
 import React from 'react';
 import { Navigate, Route, Routes } from "react-router-dom";
-import AuthorizationPage from './UI/Authorization/AuthorizationPage.jsx';
+// import AuthorizationPage from './UI/Authorization/AuthorizationPage.jsx';
 import Main from './UI/Main/Main.jsx'
 import Chat from './UI/Chat/Chat.jsx'
 import MainPolicy from './UI/Policy/MainPolicy.jsx'
@@ -34,8 +34,8 @@ function App() {
     return (
         <>
             <Routes>
-                {/* <Route path={'/'} element={<Navigate replace to="Main" />}></Route> */}
-                <Route path={'/'} element={<AuthorizationPage/>}></Route>
+                <Route path={'/'} element={<Navigate replace to="Main" />}></Route>
+                {/* <Route path={'/'} element={<AuthorizationPage/>}></Route> */}
                 <Route path="/*"
                     element={
                         <Routes>

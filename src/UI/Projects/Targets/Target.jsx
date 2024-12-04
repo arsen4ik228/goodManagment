@@ -5,7 +5,7 @@ import ConfirmRemoveModal from "../../Custom/ConfirmRemoveModal/ConfirmRemoveMod
 import { formattedDate, resizeTextarea } from "../../../BLL/constans";
 import ConfirmCompleteModal from "../../Custom/ConfirmCompleteModal/ConfirmCompleteModal";
 
-function Target({ contentSender, workersList, setSelectedWorker, setDeadlineDate, isNew, edit, item, setTargetState, requestFunc }) {
+function Target({ contentSender, workersList, setSelectedWorker, setDeadlineDate, isNew, edit, item, setTargetState, requestFunc, isArchive }) {
   const textareaHeight = 50;
   const [content, setContent] = useState('')
 
@@ -47,7 +47,8 @@ function Target({ contentSender, workersList, setSelectedWorker, setDeadlineDate
   return (
     <>
       <div className={classes.cardContainer}>
-        <div className={classes.header}>
+        {!isArchive && (
+          <div className={classes.header}>
           {(!isNew && !edit && !item?.isExpired) &&
             (
               <div className={classes.confirm} onClick={() => completeTarget()}>
@@ -63,6 +64,7 @@ function Target({ contentSender, workersList, setSelectedWorker, setDeadlineDate
             </div>
           )}
         </div>
+      )}
         {isNew ?
           (
             <div className={classes.content}>

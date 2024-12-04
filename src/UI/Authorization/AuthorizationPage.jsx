@@ -7,11 +7,12 @@ import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { baseUrl } from "../../BLL/constans";
 
 //5000
-const socket = io(`http://localhost:5002/auth`, {
+const socket = io(`${baseUrl}auth`, {
   cors: {
     credentials: true
   },transports : ['websocket']
-}); // Подключение к сокету
+}); 
+// Подключение к сокету
 
 export default function AuthorizationPage() {
 
@@ -56,7 +57,7 @@ export default function AuthorizationPage() {
       });
 
     // Запрос к серверу для получения токена
-    fetch(`http://localhost:5002/`, {
+    fetch(`${baseUrl}`, {
       method: "GET",
       headers: {
         "User-Agent": userAgent, // Отправляем User-Agent в заголовке

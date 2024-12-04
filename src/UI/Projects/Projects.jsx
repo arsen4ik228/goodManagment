@@ -92,6 +92,7 @@ export default function NewProject() {
       targets: data?.targets,
     })
   })
+
   const {
     organizations = [],
     programs = [],
@@ -130,15 +131,15 @@ export default function NewProject() {
     if (strategies.length > 0) {
       const filter = strategies.filter(strategy => strategy?.organization?.id === selectedOrg)
       setFilterStrategies(filter)
-      setSelectedStrategy('')
+      // setSelectedStrategy('')
     }
-  }, [selectedOrg])
+  }, [strategies, selectedOrg])
 
   useEffect(() => { // фильтр Программ по организации
     if (programs.length > 0) {
       const filtredPrograms = programs.filter(program => program?.organization?.id === selectedOrg)
       setFilterPrograms(filtredPrograms)
-      setSelectedProgram('')
+      // setSelectedProgram('')
     }
   }, [programs, selectedOrg])
 
@@ -196,18 +197,14 @@ export default function NewProject() {
     }
   }, [currentProject])
 
+
   useEffect(() => {
     if (targetType) {
       const { array, setFunction } = ADD_TARGET[targetType];
       if (targetIndex < array.length) {
-        // Создаем копию массива и объекта для обновления
         const updatedArray = [...array];
         const updatedItem = { ...updatedArray[targetIndex], content: targetContent };
-
-        // Обновляем элемент в массиве
         updatedArray[targetIndex] = updatedItem;
-
-        // Обновляем массив с помощью setFunction
         setFunction(updatedArray);
       }
     }
@@ -288,6 +285,8 @@ export default function NewProject() {
     console.log(currentStrategy)
     if (currentStrategy)
       setSelectedStrategy(currentStrategy.strategy.id)
+    else
+      setSelectedStrategy('')
   }
 
   useEffect(() => {
@@ -295,8 +294,6 @@ export default function NewProject() {
       saveProject()
     }
   }, [isRemoveProject])
-
-  console.log(selectedStrategy)
 
   const saveProject = async () => {
 
@@ -322,13 +319,13 @@ export default function NewProject() {
       if ((projectName !== currentProject.projectName) && projectName) {
         Data.projectName = projectName
       }
-      if ((selectedOrg !== currentProject?.organization?.id) && selectedOrg) {
-        Data.organizationId = selectedOrg
-      }
-      if ((selectedProgram !== currentProject?.programId) && selectedProgram) {
+      // if ((selectedOrg !== currentProject?.organization?.id) && selectedOrg) {
+      //   Data.organizationId = selectedOrg
+      // }
+      if ((selectedProgram !== currentProject?.programId) && selectedProgram !== null) {
         Data.programId = selectedProgram
       }
-      if ((selectedStrategy !== currentProject?.strategy?.id) && selectedStrategy) {
+      if ((selectedStrategy !== currentProject?.strategy?.id) && selectedStrategy !== null) {
         Data.strategyId = selectedStrategy
       }
       if ((descriptionProject !== currentProject?.content) && descriptionProject) {
@@ -359,20 +356,20 @@ export default function NewProject() {
     }
     console.log(Data)
 
-    // console.log(Data)
-    // await updateProject({
-    //   userId,
-    //   projectId,
-    //   _id: projectId,
-    //   ...Data,
-    // })
-    //   .unwrap()
-    //   .then(() => {
-    //     reset();
-    //   })
-    //   .catch((error) => {
-    //     console.error("Ошибка:", JSON.stringify(error, null, 2));
-    //   });
+    console.log(Data)
+    await updateProject({
+      userId,
+      projectId,
+      _id: projectId,
+      ...Data,
+    })
+      .unwrap()
+      .then(() => {
+        reset();
+      })
+      .catch((error) => {
+        console.error("Ошибка:", JSON.stringify(error, null, 2));
+      });
   }
   // console.log(currentProject)
   return (
@@ -413,9 +410,9 @@ export default function NewProject() {
                   </select>
                 </div>
               ) : ( */}
-                <div className={classes.title}>
-                  {currentProject?.organization?.organizationName}
-                </div>
+              <div className={classes.title}>
+                {currentProject?.organization?.organizationName}
+              </div>
               {/* )} */}
             </div>
             {(edit || currentProject.programId) &&
@@ -427,15 +424,15 @@ export default function NewProject() {
                   {edit ? (
                     <div className={classes.selectSection}>
                       <select name="selectProgram" value={selectedProgram} onChange={(e) => setProgaramForProject(e.target.value)}>
-                        <option value=''>-</option>
+                        <option value={null}>-</option>
                         {filtredPrograms.map((item, index) => (
-                          <option value={item.id}>{item.projectName}</option>
+                          <option key={index} value={item.id}>{item.projectName}</option>
                         ))}
                       </select>
                     </div>
                   ) : (
                     <div className={classes.title}>
-                      {currentProject?.projectName}
+                      Программа №{currentProject?.programNumber}
                     </div>
                   )}
                 </div>
@@ -449,7 +446,7 @@ export default function NewProject() {
                 {edit ? (
                   <div className={classes.selectSection}>
                     <select name="selectProgram" value={selectedStrategy} onChange={(e) => setSelectedStrategy(e.target.value)}>
-                      <option value="">-</option>
+                      <option value={null}>-</option>
                       {filtredStrategies.map((item, index) => (
                         <option value={item.id}> Стратегия №{item.strategyNumber}</option>
                       ))}
@@ -514,29 +511,29 @@ export default function NewProject() {
                         </Target>
                       </div>
                     ))}
-                    {edit && 
-                    (
-                      <>
-                        {productsList.map((item, index) => (
-                          <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'ПродуктNEW')}>
-                            <Target
-                              item={item}
-                              isNew={true}
-                              contentSender={setTargetContent}
-                              workersList={workers}
-                              setSelectedWorker={setSelectedWorker}
-                              setDeadlineDate={setDeadlineDate}
-                            ></Target>
-                          </div>
-                        ))}
-                        {productsList.length > 0 && (
-                          <div className={classes.deleteContainer} onClick={() => deleteTarget(productsList)}>
-                            Удалить
-                            <img src={deleteIcon} alt="delete" />
-                          </div>
-                        )}
-                      </>
-                    )}
+                    {edit &&
+                      (
+                        <>
+                          {productsList.map((item, index) => (
+                            <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'ПродуктNEW')}>
+                              <Target
+                                item={item}
+                                isNew={true}
+                                contentSender={setTargetContent}
+                                workersList={workers}
+                                setSelectedWorker={setSelectedWorker}
+                                setDeadlineDate={setDeadlineDate}
+                              ></Target>
+                            </div>
+                          ))}
+                          {productsList.length > 0 && (
+                            <div className={classes.deleteContainer} onClick={() => deleteTarget(productsList)}>
+                              Удалить
+                              <img src={deleteIcon} alt="delete" />
+                            </div>
+                          )}
+                        </>
+                      )}
                   </div>
                 </>
               )}
@@ -546,7 +543,7 @@ export default function NewProject() {
                   <div className={classes.targetsFlex}>
                     {eventArray.filter(item => item.targetState !== 'Отменена').map((item, index) => (
                       <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Организационные мероприятия')}>
-                        <Target 
+                        <Target
                           id={item.id}
                           item={item}
                           isNew={false}

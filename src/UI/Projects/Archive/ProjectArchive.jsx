@@ -113,25 +113,25 @@ export default function ProjectArchive() {
   ] = useUpdateProjectMutation()
 
   const reset = () => {
-      
-      
+
+
   }
 
   useEffect(() => {
-    if(isSuccessUpdateProjectMutation) {
-      setTimeout(window.location.reload() , 1000)
+    if (isSuccessUpdateProjectMutation) {
+      setTimeout(window.location.reload(), 1000)
     }
   }, [isSuccessUpdateProjectMutation])
 
   useEffect(() => { // фильтр Стратегий по организации
-    if (strategies.length>0 && !filtredStrategies.length>0) {
+    if (strategies.length > 0 && !filtredStrategies.length > 0) {
       const filter = strategies.filter(strategy => strategy?.organization?.id === selectedOrg)
       setFilterStrategies(filter)
     }
-  }, [strategies, ])
+  }, [strategies,])
 
   useEffect(() => { // фильтр Программ по организации
-    if (programs.length>0 && !filtredPrograms.length>0) {
+    if (programs.length > 0 && !filtredPrograms.length > 0) {
       const filtredPrograms = programs.filter(program => program?.organization?.id === selectedOrg)
       setFilterPrograms(filtredPrograms)
     }
@@ -227,6 +227,7 @@ export default function ProjectArchive() {
     resizeTextarea('1')
   }, [descriptionProject])
 
+
   useEffect(() => {
     if (targetType) {
       const { array, setFunction } = ADD_TARGET[targetType];
@@ -272,75 +273,11 @@ export default function ProjectArchive() {
   }
 
 
-
-
-  const saveProject = async () => {
-
-    const updatedProducts = transformArraiesForUpdate(productsArray)
-    const updatedRules = transformArraiesForUpdate(rulesArray)
-    const updatedEvent = transformArraiesForUpdate(eventArray)
-    const updatedStatistics = transformArraiesForUpdate(statisticsArray)
-    const updatedSimple = transformArraiesForUpdate(simpleArray)
-
-    const Data = {}
-
-    Data._id = projectId
-
-    if ((selectedOrg !== currentProject?.organization?.id) && selectedOrg) {
-      Data.organizationId = selectedOrg
-    }
-    if ((selectedProgram !== currentProject?.programId) && selectedProgram) {
-      Data.programId = selectedProgram
-    }
-    if ((selectedStrategy !== currentProject?.strategy?.id) && selectedStrategy) {
-      Data.strategyId = selectedStrategy
-    }
-    if ((descriptionProject !== currentProject?.content) && descriptionProject) {
-      Data.content = descriptionProject
-    }
-    if (
-      rulesList.length > 0 ||
-      productsList.length > 0 ||
-      statisticsList.length > 0 ||
-      simpleList.length > 0 ||
-      eventList.length > 0
-    ) {
-      Data.targetCreateDtos = [
-        ...rulesList,
-        ...productsList,
-        ...statisticsList,
-        ...simpleList,
-        ...eventList,
-      ];
-    }
-    Data.targetUpdateDtos = [
-      ...updatedSimple,
-      ...updatedProducts,
-      ...updatedEvent,
-      ...updatedRules,
-      ...updatedStatistics
-    ]
-
-    console.log(Data)
-      await updateProject({
-        userId,
-        projectId,
-        ...Data,
-      })
-        .unwrap()
-        .then(() => {
-          reset();
-        })
-        .catch((error) => {
-          console.error("Ошибка:", JSON.stringify(error, null, 2));
-        });
-  }
-
   return (
     <>
       <div className={classes.wrapper}>
         <>
-          <Header create={false} title={'Создание новой программы'}></Header>
+          <Header create={false} title={'Завершённый проект'}></Header>
         </>
         <div className={classes.body}>
           <>
@@ -451,8 +388,7 @@ export default function ProjectArchive() {
                 <div className={classes.targetsFlex}>
                   {productsArray.filter(item => item.targetState !== 'Отменена').map((item, index) => (
                     <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Продукт')}>
-                      <Target
-                        id={item.id}
+                      <Target id={item.id}
                         item={item}
                         isNew={false}
                         edit={edit ? true : false}
@@ -464,32 +400,12 @@ export default function ProjectArchive() {
                         selectedWorker={selectedWorker}
                         deadlineDate={deadlineDate}
                         setTargetState={setTargetState}
+                        isArchive={true}
                       >
                       </Target>
                     </div>
                   ))}
-                  {edit && (
-                    <>
-                      {productsList.map((item, index) => (
-                        <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'ПродуктNEW')}>
-                          <Target
-                            item={item}
-                            isNew={true}
-                            contentSender={setTargetContent}
-                            workersList={workers}
-                            setSelectedWorker={setSelectedWorker}
-                            setDeadlineDate={setDeadlineDate}
-                          ></Target>
-                        </div>
-                      ))}
-                      {productsList.length > 0 && (
-                        <div className={classes.deleteContainer} onClick={() => deleteTarget(productsList)}>
-                          Удалить
-                          <img src={deleteIcon} alt="delete" />
-                        </div>
-                      )}
-                    </>
-                  )}
+
                 </div>
               </>
             )}
@@ -510,32 +426,13 @@ export default function ProjectArchive() {
                         targetsList={targets}
                         selectedWorker={selectedWorker}
                         deadlineDate={deadlineDate}
-                        setTargetState={setTargetState}>
+                        setTargetState={setTargetState}
+                        isArchive={true}
+                      >
                       </Target>
                     </div>
                   ))}
-                  {edit && (
-                    <>
-                      {eventList.map((item, index) => (
-                        <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Организационные мероприятияNEW')}>
-                          <Target
-                            item={item}
-                            isNew={true}
-                            contentSender={setTargetContent}
-                            workersList={workers}
-                            setSelectedWorker={setSelectedWorker}
-                            setDeadlineDate={setDeadlineDate}
-                          ></Target>
-                        </div>
-                      ))}
-                      {eventList.length > 0 && (
-                        <div className={classes.deleteContainer} onClick={() => deleteTarget(eventList)}>
-                          Удалить
-                          <img src={deleteIcon} alt="delete" />
-                        </div>
-                      )}
-                    </>
-                  )}
+
                 </div>
               </>
             )}
@@ -557,32 +454,13 @@ export default function ProjectArchive() {
                         targetsList={targets}
                         selectedWorker={selectedWorker}
                         deadlineDate={deadlineDate}
-                        setTargetState={setTargetState}>
+                        setTargetState={setTargetState}
+                        isArchive={true}
+                      >
                       </Target>
                     </div>
                   ))}
-                  {edit && (
-                    <>
-                      {rulesList.map((item, index) => (
-                        <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'ПравилаNEW')}>
-                          <Target
-                            item={item}
-                            isNew={true}
-                            contentSender={setTargetContent}
-                            workersList={workers}
-                            setSelectedWorker={setSelectedWorker}
-                            setDeadlineDate={setDeadlineDate}
-                          ></Target>
-                        </div>
-                      ))}
-                      {rulesList.length > 0 && (
-                        <div className={classes.deleteContainer} onClick={() => deleteTarget(rulesList)}>
-                          Удалить
-                          <img src={deleteIcon} alt="delete" />
-                        </div>
-                      )}
-                    </>
-                  )}
+
                 </div>
               </>
             )}
@@ -605,32 +483,13 @@ export default function ProjectArchive() {
                         targetsList={targets}
                         selectedWorker={selectedWorker}
                         deadlineDate={deadlineDate}
-                        setTargetState={setTargetState}>
+                        setTargetState={setTargetState}
+                        isArchive={true}
+                      >
                       </Target>
                     </div>
                   ))}
-                  {edit && (
-                    <>
-                      {simpleList.map((item, index) => (
-                        <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'ОбычнаяNEW')}>
-                          <Target
-                            item={item}
-                            isNew={true}
-                            contentSender={setTargetContent}
-                            workersList={workers}
-                            setSelectedWorker={setSelectedWorker}
-                            setDeadlineDate={setDeadlineDate}
-                          ></Target>
-                        </div>
-                      ))}
-                      {simpleList.length > 0 && (
-                        <div className={classes.deleteContainer} onClick={() => deleteTarget(simpleList)}>
-                          Удалить
-                          <img src={deleteIcon} alt="delete" />
-                        </div>
-                      )}
-                    </>
-                  )}
+
                 </div>
               </>
             )}
@@ -642,8 +501,7 @@ export default function ProjectArchive() {
                 <div className={classes.targetsFlex}>
                   {statisticsArray.filter(item => item.targetState !== 'Отменена').filter(item => item.targetState !== 'Отменена').map((item, index) => (
                     <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Статистика')}>
-                      <Target
-                        id={item.id}
+                      <Target id={item.id}
                         item={item}
                         isNew={false}
                         edit={edit ? true : false}
@@ -655,39 +513,19 @@ export default function ProjectArchive() {
                         selectedWorker={selectedWorker}
                         deadlineDate={deadlineDate}
                         setTargetState={setTargetState}
+                        isArchive={true}
                       >
                       </Target>
                     </div>
                   ))}
-                  {edit && (
-                    <>
-                      {statisticsList.map((item, index) => (
-                        <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'СтатистикаNEW')}>
-                          <Target
-                            item={item}
-                            isNew={true}
-                            contentSender={setTargetContent}
-                            workersList={workers}
-                            setSelectedWorker={setSelectedWorker}
-                            setDeadlineDate={setDeadlineDate}
-                          ></Target>
-                        </div>
-                      ))}
-                      {statisticsList.length > 0 && (
-                        <div className={classes.deleteContainer} onClick={() => deleteTarget(statisticsList)}>
-                          Удалить
-                          <img src={deleteIcon} alt="delete" />
-                        </div>
-                      )}
-                    </>
-                  )}
+
                 </div>
               </>
             )}
           </div>
         </>
 
-        <>
+        {/* <>
           <footer className={classes.inputContainer}>
             <div className={classes.inputRow2}>
               <div></div>
@@ -703,7 +541,7 @@ export default function ProjectArchive() {
               </div>
             </div>
           </footer>
-        </>
+        </> */}
 
       </div>
 

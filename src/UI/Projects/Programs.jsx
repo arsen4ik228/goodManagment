@@ -8,7 +8,7 @@ import deleteIcon from '../Custom//icon/icon _ delete.svg'
 import Header from "../Custom/Header/Header"
 import HandlerMutation from "../Custom/HandlerMutation"
 import { formattedDate, transformArraiesForUpdate } from "../../BLL/constans"
-import editIcon from '../Custom/icon/icon _ save.svg'
+import editIcon from '../Custom/icon/icon _ edit.svg'
 import CustomSelectModalProgram from "./CustomSelectModalProgram/CustomSelectModalProgram"
 
 export default function Programs() {
@@ -295,6 +295,11 @@ export default function Programs() {
     }
   }, [targetState])
 
+  useEffect(() => {
+    if (isSuccessUpdateProjectMutation) {
+      setTimeout(window.location.reload(), 1000)
+    }
+  }, [isSuccessUpdateProjectMutation])
 
   const targetFormation = (index, type) => {
     setTargetIndex(index)
@@ -393,25 +398,25 @@ export default function Programs() {
     ]
 
     console.log(Data)
-      // await updateProject({
-      //   userId,
-      //   projectId: programId,
-      //   ...Data,
-      // })
-      //   .unwrap()
-      //   .then(() => {
-      //     reset();
-      //   })
-      //   .catch((error) => {
-      //     console.error("Ошибка:", JSON.stringify(error, null, 2));
-      //   });
+      await updateProject({
+        userId,
+        projectId: programId,
+        ...Data,
+      })
+        .unwrap()
+        .then(() => {
+          reset();
+        })
+        .catch((error) => {
+          console.error("Ошибка:", JSON.stringify(error, null, 2));
+        });
   }
   console.warn(projectsList)
   return (
     <>
       <div className={classes.wrapper}>
         <>
-          <Header create={false} title={'Создание новой программы'}></Header>
+          <Header create={false} title={'Редактирование программы'}></Header>
         </>
         <div className={classes.body}>
           <>
@@ -424,7 +429,7 @@ export default function Programs() {
               className={classes.bodyContainer}
             >
               <div className={classes.name}>Организация</div>
-              {edit ? (
+              {/* {edit ? (
                 <div className={classes.selectSection}>
                   <select name="selectOrg" disabled value={selectedOrg} onChange={(e) => setSelectedOrg(e.target.value)} >
                     {organizations.map((item, index) => (
@@ -434,11 +439,11 @@ export default function Programs() {
                     ))}
                   </select>
                 </div>
-              ) : (
+              ) : ( */}
                 <div className={classes.title}>
                   {currentProject?.organization?.organizationName}
                 </div>
-              )}
+              {/* )} */}
             </div>
             {/* {(edit || currentProject.programId) &&
               (
