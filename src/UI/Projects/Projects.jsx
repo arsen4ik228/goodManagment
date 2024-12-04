@@ -9,11 +9,13 @@ import Header from "../Custom/Header/Header"
 import HandlerMutation from "../Custom/HandlerMutation"
 import { formattedDate, resizeTextarea, transformArraiesForUpdate } from "../../BLL/constans"
 import editIcon from '../Custom/icon/icon _ edit.svg'
+import { current } from "@reduxjs/toolkit"
 
 export default function NewProject() {
   const { userId, projectId } = useParams();
   const [edit, setEdit] = useState(false)
   const [dummyKey, setDummyKey] = useState(0)
+  const [isRemoveProject, setIsRemoveProject] = useState(false)
 
   const [projectName, setProjectName] = useState('')
   const [selectedOrg, setSelectedOrg] = useState()
@@ -130,7 +132,7 @@ export default function NewProject() {
       setFilterStrategies(filter)
       setSelectedStrategy('')
     }
-  }, [strategies, selectedOrg])
+  }, [selectedOrg])
 
   useEffect(() => { // фильтр Программ по организации
     if (programs.length > 0) {
@@ -280,8 +282,21 @@ export default function NewProject() {
     // setTargetIndex(newIndex);
   }
 
+  const setProgaramForProject = (value) => {
+    setSelectedProgram(value)
+    const currentStrategy = programs?.find(program => program.id === value)
+    console.log(currentStrategy)
+    if (currentStrategy)
+      setSelectedStrategy(currentStrategy.strategy.id)
+  }
 
+  useEffect(() => {
+    if (isRemoveProject) {
+      saveProject()
+    }
+  }, [isRemoveProject])
 
+  console.log(selectedStrategy)
 
   const saveProject = async () => {
 
@@ -290,7 +305,7 @@ export default function NewProject() {
     const updatedEvent = transformArraiesForUpdate(eventArray)
     const updatedStatistics = transformArraiesForUpdate(statisticsArray)
     const updatedSimple = transformArraiesForUpdate(simpleArray)
-
+    console.log(productsArray, rulesArray)
 
     const Data = {}
 
@@ -304,7 +319,7 @@ export default function NewProject() {
       ]
     }
     else {
-      if((projectName !== currentProject.projectName) && projectName) {
+      if ((projectName !== currentProject.projectName) && projectName) {
         Data.projectName = projectName
       }
       if ((selectedOrg !== currentProject?.organization?.id) && selectedOrg) {
@@ -342,24 +357,24 @@ export default function NewProject() {
         ...updatedStatistics
       ]
     }
-
-
     console.log(Data)
-    await updateProject({
-      userId,
-      projectId,
-      _id: projectId,
-      ...Data,
-    })
-      .unwrap()
-      .then(() => {
-        reset();
-      })
-      .catch((error) => {
-        console.error("Ошибка:", JSON.stringify(error, null, 2));
-      });
+
+    // console.log(Data)
+    // await updateProject({
+    //   userId,
+    //   projectId,
+    //   _id: projectId,
+    //   ...Data,
+    // })
+    //   .unwrap()
+    //   .then(() => {
+    //     reset();
+    //   })
+    //   .catch((error) => {
+    //     console.error("Ошибка:", JSON.stringify(error, null, 2));
+    //   });
   }
-  console.log(currentProject)
+  // console.log(currentProject)
   return (
     <>
       <div className={classes.wrapper}>
@@ -387,7 +402,7 @@ export default function NewProject() {
               className={classes.bodyContainer}
             >
               <div className={classes.name}>Организация</div>
-              {edit ? (
+              {/* {edit ? (
                 <div className={classes.selectSection}>
                   <select name="selectOrg" value={selectedOrg} onChange={(e) => setSelectedOrg(e.target.value)} >
                     {organizations.map((item, index) => (
@@ -397,11 +412,11 @@ export default function NewProject() {
                     ))}
                   </select>
                 </div>
-              ) : (
+              ) : ( */}
                 <div className={classes.title}>
                   {currentProject?.organization?.organizationName}
                 </div>
-              )}
+              {/* )} */}
             </div>
             {(edit || currentProject.programId) &&
               (
@@ -411,7 +426,7 @@ export default function NewProject() {
                   <div className={classes.name}>Программа</div>
                   {edit ? (
                     <div className={classes.selectSection}>
-                      <select name="selectProgram" value={selectedProgram} onChange={(e) => setSelectedProgram(e.target.value)}>
+                      <select name="selectProgram" value={selectedProgram} onChange={(e) => setProgaramForProject(e.target.value)}>
                         <option value=''>-</option>
                         {filtredPrograms.map((item, index) => (
                           <option value={item.id}>{item.projectName}</option>
@@ -494,11 +509,13 @@ export default function NewProject() {
                           selectedWorker={selectedWorker}
                           deadlineDate={deadlineDate}
                           setTargetState={setTargetState}
+                          requestFunc={setIsRemoveProject}
                         >
                         </Target>
                       </div>
                     ))}
-                    {edit && (
+                    {edit && 
+                    (
                       <>
                         {productsList.map((item, index) => (
                           <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'ПродуктNEW')}>
@@ -529,7 +546,8 @@ export default function NewProject() {
                   <div className={classes.targetsFlex}>
                     {eventArray.filter(item => item.targetState !== 'Отменена').map((item, index) => (
                       <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Организационные мероприятия')}>
-                        <Target id={item.id}
+                        <Target 
+                          id={item.id}
                           item={item}
                           isNew={false}
                           edit={edit ? true : false}

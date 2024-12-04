@@ -14,10 +14,10 @@ const Chat = () => {
     const array = [
         {id: '1', icon: star, text: 'Цели', link: 'Goal'},
         {id: '2', icon: policy, text: 'Политика', link: 'Policy'},
-        {id: '3', icon: stats, text: 'Статистики', link: '',},
+        {id: '3', icon: stats, text: 'Статистики', link: 'Statistics',},
         {id: '4', icon: star, text: 'Краткосрочная цель', link: 'Objective',},
         {id: '5', icon: strategy, text: 'Стратегия', link: 'Strategy'},
-        {id: '6', icon: listView, text: 'Проекты', link: ''},
+        {id: '6', icon: listView, text: 'Проекты', link: 'Projects'},
         {id: '7', icon: post, text: 'Посты', link: 'Posts'},
 
     ]

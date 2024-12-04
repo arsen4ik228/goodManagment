@@ -3,7 +3,7 @@ import classes from './ConfirmRemoveModal.module.css'
 import { useNavigate } from 'react-router-dom'
 import close from "../SearchModal/icon/icon _ add.svg";
 
-export default function ConfirmRemoveModal({ setTargetState, setOpenModal, item }) {
+export default function ConfirmRemoveModal({ setTargetState, setOpenModal, item, requestFunc }) {
 
     const navigate = useNavigate()
     const [targetIsProduct, setTargetIsProduct] = useState(false)
@@ -15,10 +15,12 @@ export default function ConfirmRemoveModal({ setTargetState, setOpenModal, item 
     }, [item])
 
     const buttonClick = (flag) => {
-        setTargetState('Отменена')
-        setOpenModal(false)
-        //flag && navigate(-1)
-    }
+        setTargetState('Отменена');
+        setOpenModal(false);
+        flag && requestFunc(true)
+
+    };
+    
 
     return (
         <>

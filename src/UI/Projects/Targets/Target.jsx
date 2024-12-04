@@ -5,7 +5,7 @@ import ConfirmRemoveModal from "../../Custom/ConfirmRemoveModal/ConfirmRemoveMod
 import { formattedDate, resizeTextarea } from "../../../BLL/constans";
 import ConfirmCompleteModal from "../../Custom/ConfirmCompleteModal/ConfirmCompleteModal";
 
-function Target({ contentSender, workersList, setSelectedWorker, setDeadlineDate, isNew, edit, item, setTargetState }) {
+function Target({ contentSender, workersList, setSelectedWorker, setDeadlineDate, isNew, edit, item, setTargetState, requestFunc }) {
   const textareaHeight = 50;
   const [content, setContent] = useState('')
 
@@ -128,9 +128,9 @@ function Target({ contentSender, workersList, setSelectedWorker, setDeadlineDate
                   targetStatus === 'Отменена' ?
                     (
                       <div className={classes.deadline}>
-                      {/* <input type="date" value={deadline} disabled={!edit} onChange={(e) => setDeadlineDate(e.target.value)} /> */}
-                      <span> Отменена</span>
-                    </div>
+                        {/* <input type="date" value={deadline} disabled={!edit} onChange={(e) => setDeadlineDate(e.target.value)} /> */}
+                        <span> Отменена</span>
+                      </div>
                     ) : (
 
                       <div className={classes.deadline}>
@@ -143,18 +143,23 @@ function Target({ contentSender, workersList, setSelectedWorker, setDeadlineDate
         </div>
 
       </div>
-      {openConfirmRemoveModal && <ConfirmRemoveModal
-        setTargetState={setTargetState}
-        setOpenModal={setOpenConfirmRemoveModal}
-        item={item}
-      >
-      </ConfirmRemoveModal>}
-      {openConfirmCompleteModal && <ConfirmCompleteModal
-        setOpenModal={setOpenConfirmCompleteModal}
-        item={item}
-        setTargetState={setTargetState}
-      >
-      </ConfirmCompleteModal>}
+      {openConfirmRemoveModal &&
+        <ConfirmRemoveModal
+          setTargetState={setTargetState}
+          setOpenModal={setOpenConfirmRemoveModal}
+          item={item}
+          requestFunc={requestFunc}
+        >
+        </ConfirmRemoveModal>
+      }
+      {openConfirmCompleteModal &&
+        <ConfirmCompleteModal
+          setOpenModal={setOpenConfirmCompleteModal}
+          item={item}
+          setTargetState={setTargetState}
+        >
+        </ConfirmCompleteModal>
+      }
     </>
   );
 }

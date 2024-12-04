@@ -72,12 +72,14 @@ export default function NewStatistic() {
 
     // Для создания статистики через страницу пост
     useEffect(() => {
-        if (paramPostID) {
+        if (paramPostID && posts.length>0 && !postId) {
+            console.log(paramPostID)
             const obj = posts.find((item) => item.id === paramPostID);
+            console.log(obj)
             setOrganization(obj?.organization.id);
             setPostId(paramPostID);
         }
-    }, []);
+    }, [posts,paramPostID]);
     // Конец
 
     useEffect(() => {
@@ -170,7 +172,7 @@ export default function NewStatistic() {
         <div className={classes.wrapper}>
             <div className={classes.header}>
                 <Header create={false} title={'Cоздать Статистику'}></Header>
-                <div className={classes.saveIcon} onClick={() =>saveStatistics()}>
+                <div className={classes.saveIcon} onClick={() => saveStatistics()}>
                     <img src={saveIcon} alt="" />
                 </div>
             </div>
@@ -210,7 +212,12 @@ export default function NewStatistic() {
                             onChange={(e) => setName(e.target.value)}
                             placeholder="Название статистики"
                         />
-                        <img src={icon} alt="icon" onClick={() => setOpenMenu(!openMenu)} />
+                        <img
+                            src={icon}
+                            alt="icon"
+                            onClick={() => setOpenMenu(!openMenu)}
+                            style={{ transform: !openMenu ? 'rotate(180deg)' : 'none' }}
+                        />
                     </div>
                     {openMenu && (
                         <>
@@ -297,14 +304,6 @@ export default function NewStatistic() {
                                         </div>
                                     </div>
 
-                                    <div className={classes.rowTableDtos}>
-                                        <input
-                                            type="text"
-                                            value={'nhbjh'}
-                                            style={{ borderRight: '1px solid grey ' }}
-                                        />
-                                        <input type="text" value={'556000'} />
-                                    </div>
                                     {points
                                         .sort(
                                             (a, b) =>

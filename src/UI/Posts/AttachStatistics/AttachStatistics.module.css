@@ -4,7 +4,7 @@
     flex-direction: column;
     height: 100vh;
     font-family: "'Montserrat', sans-serif'";
-    overflow: hidden;
+    /* overflow: hidden; */
 }
 
 
@@ -12,24 +12,36 @@
     flex: 1 1 auto;
     /* max-height: calc(100vh - 173px); */
     margin-top: 60px;
-    overflow: hidden;
+    /* overflow: hidden; */
     /* border: 1px solid red; */
 }
 .bodyContainer{
     display: flex;
     /* width: 100vw; */
-    height: 100%; 
+    max-height: calc(100vh - 173px);
     padding: 10px 15px;
+        /* border: 1px solid red; */
 
 }
 
+.createNew{
+    display: flex;
+    justify-content: space-between;
+    width: 92%;
+    align-items: center;
+    box-shadow: 0 0 2px black;
+    border-radius: 15px;
+    padding: 5px 10px;
+    margin: 10px auto 0 auto;
+    font-size: 1.2rem;
+}
+
 .selectList{
-    overflow-x: auto;
-    overflow-y: hidden;
+    overflow-y: auto;
     font-size: 1.3em;
+    /* height: 100%; */
     /* padding-bottom: 10px; */
     width: 100%;
-
 
     li{
         /* border: #005475 1px solid; */

@@ -8,12 +8,14 @@ import { useGetStatisticsIdQuery, useGetStatisticsNewQuery, useGetStatisticsQuer
 import { useGetOrganizationsQuery, useUpdateOrganizationsMutation } from '../../BLL/organizationsApi'
 import saveIcon from '../Custom/icon/icon _ save.svg'
 import Graphic from '../Custom/Graph/Graphic'
+import HandlerMutation from '../Custom/HandlerMutation'
+import iconExit from '../Custom/icon/icon _ add2-b.svg'
 
 export default function Statistics() {
 
     const { userId, statisticId } = useParams()
 
-    const [openMenu, setOpenMenu] = useState(true)
+    const [openMenu, setOpenMenu] = useState(false)
 
     const [type, setType] = useState('null');
     const [name, setName] = useState('null');
@@ -206,7 +208,7 @@ export default function Statistics() {
     // }, [organizationId]);
 
     useEffect(() => {
-        if (organizations.length>0) {
+        if (organizations.length > 0) {
             const report = organizations.filter((item) => item?.id === organizationId);
             setReportDay(report[0]?.reportDay);
             setReportDayComes(report[0]?.reportDay);
@@ -1643,7 +1645,12 @@ export default function Statistics() {
                             onChange={(e) => setName(e.target.value)}
                             placeholder='Название статистики'
                         />
-                        <img src={icon} alt='icon' onClick={() => setOpenMenu(!openMenu)} />
+                        <img
+                            src={icon}
+                            alt='icon'
+                            onClick={() => setOpenMenu(!openMenu)}
+                            style={{ transform: !openMenu ? 'rotate(180deg)' : 'none' }}
+                        />
                     </div>
                     {openMenu && (
                         <>
@@ -1741,14 +1748,6 @@ export default function Statistics() {
                                         </div>
                                     </div>
 
-                                    <div className={classes.rowTableDtos}>
-                                        <input
-                                            type='text'
-                                            value={'nhbjh'}
-                                            style={{ borderRight: '1px solid grey ' }}
-                                        />
-                                        <input type='text' value={'556000'} />
-                                    </div>
                                     {/* {points
                                     .sort(
                                         (a, b) =>
@@ -1893,7 +1892,7 @@ export default function Statistics() {
                                                     <div
                                                         disabled={disabledPoints}
                                                         style={{ borderRight: '1px solid grey ' }}
-                                                        // className={`${classes.date} ${classes.textGrey}`}
+                                                    // className={`${classes.date} ${classes.textGrey}`}
                                                     >
                                                         {new Date(
                                                             item.valueDate
@@ -1931,6 +1930,113 @@ export default function Statistics() {
                     )}
                 </div>
             </div>
+            <HandlerMutation
+                Loading={isLoadingUpdateStatisticMutation}
+                Error={
+                    isErrorUpdateStatisticMutation && !manualErrorReset
+                } // Учитываем ручной сброс
+                Success={
+                    isSuccessUpdateStatisticMutation &&
+                    !manualSuccessReset
+                } // Учитываем ручной сброс
+                textSuccess={"Статистика обновлена"}
+                textError={
+                    Error?.data?.errors?.[0]?.errors?.[0]
+                        ? Error.data.errors[0].errors[0]
+                        : Error?.data?.message
+                }
+            ></HandlerMutation>
+            {openModal && (
+                <>
+                    <div className={classes.modal}>
+                        <table className={classes.modalTable}>
+                            <div className={classes.tableHeader}>
+                                {typeGraphic === "Ежемесячный" ||
+                                    typeGraphic === "Ежегодовой" ? (
+                                    <div className={classes.tableHeading}>
+                                        <span>Значение за месяц</span>
+                                    </div>
+                                ) : (
+                                    <div className=""></div>
+                                )}
+
+                                <div className={classes.iconSaveModal}>
+                                    <img
+                                        src={saveIcon}
+                                        alt="Blacksavetmp"
+                                        className={classes.image}
+                                        onClick={() => {
+                                            saveModalPoints(showPoints);
+                                        }}
+                                    />
+                                </div>
+                            </div>
+
+                            <img
+                                src={iconExit}
+                                alt="exit"
+                                onClick={exitModal}
+                                className={classes.exitImage}
+                            />
+
+                            <thead>
+                                <tr>
+                                    <th>Дата</th>
+                                    <th>Значение</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        {showPoints?.map((item) => (
+                                            <div
+                                                key={item.id}
+                                                className={classes.row}
+                                            >
+                                                <span
+                                                    className={`${classes.date} ${classes.textGrey}`}
+                                                >
+                                                    {new Date(
+                                                        item.valueDate
+                                                    ).toLocaleDateString("ru-RU", {
+                                                        day: "2-digit",
+                                                        month: "2-digit",
+                                                        year: "2-digit",
+                                                    })}
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </td>
+
+                                    <td>
+                                        {showPoints?.map((item, index) => (
+                                            <div
+                                                key={item.id}
+                                                className={classes.row}
+                                            >
+                                                <input
+                                                    type="text"
+                                                    inputMode="numeric"
+                                                    placeholder="—"
+                                                    value={item.value || ""}
+                                                    onChange={(e) => {
+                                                        const newValue =
+                                                            e.target.value.replace(
+                                                                /[^0-9]/g,
+                                                                ""
+                                                            );
+                                                        updateModalPoint(newValue, index);
+                                                    }}
+                                                />
+                                            </div>
+                                        ))}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </>
+            )}
         </div>
     )
 }

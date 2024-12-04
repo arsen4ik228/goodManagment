@@ -15,18 +15,13 @@ export const organizationsApi = createApi({
         organizations: response || [],
         transformOrganizations: response?.map(org => ({
           id: org.id,
-          organizationName: org.organizationName
+          organizationName: org.organizationName,
+          reportDay: org.reportDay || 0
         })) || [],
       }),
       
 
-      providesTags: (result) =>
-        result && Array.isArray(result)
-          ? [
-              ...result.map(({ id }) => ({ type: "Organizations", id })),
-              { type: "Organizations", id: "LIST" },
-            ]
-          : [{ type: "Organizations", id: "LIST" }],
+      providesTags: (result) => result ? [{type: "Organizations", id: "LIST" }] : []
     }),
 
     updateOrganizations: build.mutation({
@@ -35,7 +30,7 @@ export const organizationsApi = createApi({
         method: "PATCH",
         body,
       }),
-      invalidatesTags: (result, error) => result ? [{type: "Organization", id: "LIST" }] : []
+      invalidatesTags: (result, error) => result ? [{type: "Organizations", id: "LIST" }] : []
     }),
     
 

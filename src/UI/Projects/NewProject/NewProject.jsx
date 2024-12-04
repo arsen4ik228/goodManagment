@@ -26,7 +26,7 @@ export default function NewProject() {
   const [deadlineDate, setDeadlineDate] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
   const [openModalAlertOnlyOneProductTarget, setOpenModalAlertOnlyOneProductTarget] = useState(false)
-  console.log(deadlineDate)
+
   const [dummyKey, setDummyKey] = useState(0)
   const [rulesArray, setRulesArray] = useState([])
   const [productsArray, setProductsArray] = useState([])
@@ -242,6 +242,20 @@ export default function NewProject() {
     setModalOpen(true)
   }
 
+
+  useEffect(() => {
+    if (selectedProgram && programs) {
+      const currentStrategy = programs.find(program => program.id === selectedProgram);
+      if (currentStrategy) {
+        console.log(currentStrategy)
+        setSelectedStrategy(currentStrategy?.strategy?.id);
+      }
+    }
+  }, [selectedProgram]);
+
+  console.log(selectedStrategy, sortStrategy)
+
+
   const saveProject = async () => {
 
     const Data = {}
@@ -305,14 +319,14 @@ export default function NewProject() {
     })
       .unwrap()
       .then((result) => {
-        navigate( IsTypeProgram ? `/${userId}/Projects/program/${result?.id}` : `/${userId}/Projects/${result?.id}`)
-    })
+        navigate(IsTypeProgram ? `/${userId}/Projects/program/${result?.id}` : `/${userId}/Projects/${result?.id}`)
+      })
       .catch((error) => {
         console.error("Ошибка:", JSON.stringify(error, null, 2));
       });
 
   }
-  console.log(productsArray, eventArray, rulesArray, simpleArray, statisticsArray)
+  // console.log(productsArray, eventArray, rulesArray, simpleArray, statisticsArray)
   return (
     <>
       <div className={classes.wrapper}>
@@ -359,27 +373,31 @@ export default function NewProject() {
                 </select>
               </div>
             </div>
-            {!IsTypeProgram && (
-              <div
-                className={classes.bodyContainer}
-              >
-                <div className={classes.name}>Программа</div>
-                <div className={classes.selectSection}>
-                  <select name="selectProgram" disabled={!isToOrganization} onChange={(e) => setSelectedProgram(e.target.value)}>
-                    <option value="">-</option>
-                    {sortPrograms?.map((item, index) => (
-                      <option key={index} value={item.id} >Программма №{item.projectNumber}</option>
-                    ))}
-                  </select>
+            {!IsTypeProgram &&
+              (
+                <div
+                  className={classes.bodyContainer}
+                >
+                  <div className={classes.name}>Программа</div>
+                  <div className={classes.selectSection}>
+                    <select name="selectProgram" disabled={!isToOrganization} onChange={(e) => setSelectedProgram(e.target.value)}>
+                      <option value="">-</option>
+                      {sortPrograms?.map((item, index) => (
+                        <option key={index} value={item.id} >Программма №{item.projectNumber}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
             <div
               className={classes.bodyContainer}
             >
               <div className={classes.name}>Стратегия</div>
               <div className={classes.selectSection}>
-                <select name="selectProgram" disabled={!isToOrganization} onChange={(e) => setSelectedStrategy(e.target.value)}>
+                <select
+                  name="selectProgram"
+                  disabled={selectedProgram}
+                  onChange={(e) => setSelectedStrategy(e.target.value)}>
                   <option value="">-</option>
                   {sortStrategy?.map((item, index) => (
                     <option key={index} value={item.id}>Стратегия №{item.strategyNumber}</option>
@@ -587,7 +605,8 @@ export default function NewProject() {
         </>
       </div>
 
-      {modalOpen && <CustomSelectModal
+      {modalOpen && 
+      <CustomSelectModal
         setModalOpen={setModalOpen}
         projects={projectsForModal}
         workers={workers}

@@ -23,7 +23,7 @@ import { useSelector } from "react-redux";
 import ModalWindow from '../Custom/ConfirmStrategyToComplited/ModalWindow';
 import addIcon from '../Custom/icon/icon _ add _ blue.svg'
 import AlertDraftIsExists from '../Custom/AlertDraftIsExists/AlertDraftIsExists';
-import { isError } from 'react-query';
+import ModalChangeReportDay from './ModalChangeReportDay/ModalChangeReportday';
 
 const MainStatistics = () => {
 
@@ -31,7 +31,8 @@ const MainStatistics = () => {
     const navigate = useNavigate()
 
     const [selectedOrg, setSelectedOrg] = useState()
-    const [selectedStrategy, setSelectedStrategy] = useState('')
+    const [modalOpen, setModalOpen] = useState(false)
+    const [reportDay, setReportDay] = useState()
     const [filtredStatistics, setFiltredStatistics] = useState([])
 
     const {
@@ -39,7 +40,7 @@ const MainStatistics = () => {
         isLoadingGetStatistics,
         isFetchingGetStatistics,
         isErrorGetStatistics,
-    } = useGetStatisticsQuery({ userId, statisticData: false }, {
+    } = useGetStatisticsQuery({ userId, statisticData: true }, {
         selectFromResult: ({ data, isError, isFetching, isLoading }) => ({
             statistics: data || [],
             isLoadingGetStatistics: isLoading,
@@ -47,7 +48,7 @@ const MainStatistics = () => {
             isErrorGetStatistics: isError
         })
     })
-
+    console.log()
     const {
         organizations = [],
         isLoadindGetOrganizations,
@@ -62,12 +63,26 @@ const MainStatistics = () => {
         })
     })
 
+    const REPORT_DAY = {
+        0: 'Вс',
+        1: 'Пн',
+        2: 'Вт',
+        3: 'Ср',
+        4: 'Чт',
+        5: 'Пт',
+        6: 'Сб',
+    }
+
     useEffect(() => {
         const sortStatistics = () => {
-            if (selectedOrg) return
+            if (!selectedOrg && organizations.length>0) return
             setFiltredStatistics(statistics.filter(item => item?.organization.id === selectedOrg))
+            setReportDay(
+                organizations.find(item => item.id === selectedOrg).reportDay
+            )
         }
-    }, [selectedOrg])
+        sortStatistics()
+    }, [selectedOrg, organizations])
 
     return (
         <>
@@ -85,15 +100,23 @@ const MainStatistics = () => {
                                     {organizations?.map((item) => (
                                         <li key={item.id} onChange={(e) => setSelectedOrg(item.id)}>
                                             {(selectedOrg == item.id) ?
-                                                (<>
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={item?.id === selectedOrg}
-                                                        readOnly
+                                                (
+                                                    <>
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={item?.id === selectedOrg}
+                                                            readOnly
 
-                                                    />
-                                                    <div> {item.organizationName} </div>
-                                                </>) : (
+                                                        />
+                                                        <div> {item.organizationName} </div>
+                                                        {/* <div className={classes.addDraft}>
+                                                            <span>
+                                                                Создать
+                                                            </span>
+                                                            <img src={addIcon} />
+                                                        </div> */}
+                                                    </>
+                                                ) : (
                                                     <>
                                                         <input
                                                             type="checkbox"
@@ -110,8 +133,14 @@ const MainStatistics = () => {
                                 {selectedOrg && (
                                     <>
                                         <div className={classes.titleStrategy}>Статитстики:</div>
+                                        <div className={classes.addDraft} onClick={() => setModalOpen(true)}>
+                                            <span>
+                                                Отчётный день: {REPORT_DAY[reportDay]}
+                                            </span>
+                                            {/* <img src={addIcon} /> */}
+                                        </div>
                                         <ul className={classes.selectList}>
-                                            {statistics?.map((item, index) => (
+                                            {filtredStatistics?.map((item, index) => (
                                                 <li key={index}
                                                     // style={{ color: item?.state === 'Активный' ? '#005475' : 'none' }}
                                                     onClick={() => navigate(item.id)}
@@ -142,9 +171,14 @@ const MainStatistics = () => {
                 </div>
             </div>
 
-            {/* {modalOpen && (
-                <AlertDraftIsExists setModalOpen={setModalOpen}></AlertDraftIsExists>
-            )} */}
+            {modalOpen && (
+                <ModalChangeReportDay
+                    setModalOpen={setModalOpen}
+                    organizationId={selectedOrg}
+                    parenReportDay={reportDay}
+                >
+                </ModalChangeReportDay>
+            )}
 
         </>
     );

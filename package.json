@@ -5,6 +5,7 @@
   "dependencies": {
     "@draft-js-plugins/editor": "^4.1.4",
     "@draft-js-plugins/static-toolbar": "^4.1.4",
+    "@fingerprintjs/fingerprintjs": "^4.5.1",
     "@reduxjs/toolkit": "^2.2.7",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^13.0.0",
@@ -22,6 +23,7 @@
     "react-router-dom": "^6.26.2",
     "react-scripts": "5.0.1",
     "react-window-size": "^1.2.2",
+    "socket.io-client": "^4.8.1",
     "tinymce": "^7.3.0",
     "web-vitals": "^2.1.0"
   },

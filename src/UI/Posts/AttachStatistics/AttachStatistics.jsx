@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import classes from './AttachStatistics.module.css'
 import Header from '../../Custom/Header/Header'
+import addIcon from '../../Custom/icon/icon _ add _ blue.svg'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useGetStatisticsQuery} from '../../../BLL/statisticsApi'
-import { useGetPostIdQuery, useUpdateStatisticsToPostIdMutation} from '../../../BLL/postApi'
+import { useGetStatisticsQuery } from '../../../BLL/statisticsApi'
+import { useGetPostIdQuery, useUpdateStatisticsToPostIdMutation } from '../../../BLL/postApi'
 
 export default function AttachStatistics() {
 
@@ -85,6 +86,10 @@ export default function AttachStatistics() {
         }
     };
 
+    const createNewStatistic = () => {
+        navigate(`/${userId}/Statistics/new/${postId}`)
+    }
+
     console.log(selectedStatistics)
     return (
         <div className={classes.wrapper}>
@@ -100,6 +105,14 @@ export default function AttachStatistics() {
                     <div className={classes.element_srch}>
 
                         <input type="search" placeholder="Поиск" />
+                    </div>
+
+                    <div
+                        onClick={() => createNewStatistic()}
+                        className={classes.createNew}
+                    >
+                        <span>Создать новую</span>
+                        <img src={addIcon} alt="" />
                     </div>
 
                     <div className={classes.bodyContainer}>

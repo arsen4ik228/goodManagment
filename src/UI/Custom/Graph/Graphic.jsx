@@ -15,7 +15,7 @@ const Graphic = ({ data, name, setName, typeGraphic, type }) => {
       const windowHeight = window.innerHeight || document.documentElement.clientHeight;
       const windowWidth = window.innerWidth || document.documentElement.clientWidth;
 
-      const newHeight = windowHeight - 180;
+      const newHeight = windowHeight - 160;
       const newWidth = windowWidth + 40;
 
       console.log(newHeight)
@@ -45,44 +45,34 @@ const Graphic = ({ data, name, setName, typeGraphic, type }) => {
   // Обновляем ширину и высоту в зависимости от типа графика
   useEffect(() => {
     const updateDimensions = () => {
-      let newWidth, newHeight;
 
-      if (typeGraphic === "26" || !typeGraphic) {
-        if (window.innerWidth > 1400) {
-          newWidth = 900;
-          newHeight = 600;
-        } else if (window.innerWidth > 800) {
-          newWidth = 700;
-          newHeight = 400;
-        } 
-      } else {
-        if(typeGraphic === "52"){
-          if (window.innerWidth > 1400) {
-            newWidth = 1200;
-            newHeight = 600;
-          } else if (window.innerWidth > 800) {
-            newWidth = 880;
-            newHeight = 400;
-          } 
-        }else{
-          if (window.innerWidth > 600) {
-            newWidth = 500;
-            newHeight = 600;
-          } else if (window.innerWidth > 320) {
-            newWidth = 360;
-            // newHeight = 250;
-          } 
-        }        
+      if (typeGraphic !== "52" || !typeGraphic) {
+        const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+        const windowWidth = window.innerWidth || document.documentElement.clientWidth;
+
+        const newHeight = windowHeight - 160;
+        const newWidth = windowWidth + 40;
+
+        console.log(newHeight)
+        setWidth(newWidth)
+        setHeight(newHeight);
       }
-      // setWidth(newWidth);
-      // setHeight(newHeight);
+      else {
+        const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+        const windowWidth = window.innerWidth || document.documentElement.clientWidth;
+
+        const newHeight = windowWidth + 25;
+        const newWidth = windowHeight - 105;
+
+        // console.log(newHeight)
+        setWidth(newWidth)
+        setHeight(newHeight);
+      }
     };
 
-    // Устанавливаем начальные значения и добавляем слушатель события resize
     updateDimensions();
     window.addEventListener("resize", updateDimensions);
 
-    // Удаляем слушатель при размонтировании компонента
     return () => window.removeEventListener("resize", updateDimensions);
   }, [typeGraphic]);
 
@@ -191,15 +181,15 @@ const Graphic = ({ data, name, setName, typeGraphic, type }) => {
       .style("font-size", "12px");
 
     svg
-    .append("g")
-    .attr("transform", `translate(${margin.left},0)`)
-    .call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(".2s"))); // Format Y axis
+      .append("g")
+      .attr("transform", `translate(${margin.left},0)`)
+      .call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(".2s"))); // Format Y axis
 
     data.forEach((d, i) => {
       if (i > 0) {
         const prevValue = data[i - 1].value;
         // Reverse the line color logic based on the 'type' prop
-        const color = type === "Обратная" 
+        const color = type === "Обратная"
           ? (d.value < prevValue ? "blue" : "red") // Reverse logic for line color
           : (d.value < prevValue ? "red" : "blue"); // Normal logic for line color
 
@@ -217,7 +207,7 @@ const Graphic = ({ data, name, setName, typeGraphic, type }) => {
       if (index > 0) {
         const prevValue = data[index - 1].value;
         // Reverse the color logic for points as well
-        return type === "Обратная" 
+        return type === "Обратная"
           ? (value < prevValue ? "blue" : "red") // Reverse logic for points
           : (value < prevValue ? "red" : "blue"); // Normal logic for points
       } else {
@@ -225,105 +215,110 @@ const Graphic = ({ data, name, setName, typeGraphic, type }) => {
       }
     };
 
-    svg
-      .selectAll("circle")
-      .data(data)
-      .enter()
-      .append("circle")
-      .attr("cx", (d) =>
-        x(
-          d.valueDate === "" || d.valueDate === null
-            ? "дата"
-            : formatDate(parseDate(d.valueDate))
+  //  if (typeGraphic !== '52') {
+      svg
+        .selectAll("circle")
+        .data(data)
+        .enter()
+        .append("circle")
+        .attr("cx", (d) =>
+          x(
+            d.valueDate === "" || d.valueDate === null
+              ? "дата"
+              : formatDate(parseDate(d.valueDate))
+          )
         )
-      )
-      .attr("cy", (d) => y(d.value))
-      .attr("r", 5)
-      .attr("fill", (d, i) => getColor(d.value, i)) // Apply the reversed color logic here
-      .on("mouseover", (event, d) => {
-        d3.select(event.currentTarget).attr("r", 7).attr("fill", "orange");
-      
-        const tooltipX = x(
-          d.valueDate === "" || d.valueDate === null
-            ? "дата"
-            : formatDate(parseDate(d.valueDate))
-        );
-        const tooltipY = y(d.value) - 15;
-      
-        // Формируем текст для тултипа
-        const dateText = `Дата: ${d.valueDate === "" || d.valueDate === null ? "дата" : formatDate(parseDate(d.valueDate))}`;
-        const valueText = `Значение: ${d.value}`;
-        const textWidth = Math.max(dateText.length, valueText.length) * 6; // Оценочная ширина в пикселях
-      
-        // Ширина тултипа
-        const tooltipWidth = Math.max(120, textWidth + 20);
-        const tooltipHeight = 50;
-      
-        // Проверка на выход за границы
-        const isTopOutOfBound = tooltipY - tooltipHeight < margin.top;
-        const isRightOutOfBound = tooltipX + tooltipWidth / 2 > width - margin.right;
-        const isLeftOutOfBound = tooltipX - tooltipWidth / 2 < margin.left;
-      
-        let adjustedX = tooltipX;
-        if (isRightOutOfBound) adjustedX = width - margin.right - tooltipWidth / 2;
-        else if (isLeftOutOfBound) adjustedX = margin.left + tooltipWidth / 2;
-      
-        const adjustedY = isTopOutOfBound ? tooltipY + tooltipHeight : tooltipY;
-      
-        // Получаем цвет точки
-        const pointColor = getColor(d.value, data.indexOf(d));
-      
-        const tooltipGroup = svg
-          .append("g")
-          .attr("id", "tooltip")
-          .attr("transform", `translate(${adjustedX}, ${adjustedY})`);
-      
-        tooltipGroup
-          .append("rect")
-          .attr("x", -tooltipWidth / 2)
-          .attr("y", isTopOutOfBound ? 0 : -tooltipHeight)
-          .attr("width", tooltipWidth)
-          .attr("height", tooltipHeight)
-          .attr("fill", pointColor) // Используем цвет точки для фона тултипа
-          .attr("rx", 4)
-          .attr("ry", 4);
-      
-        tooltipGroup
-          .append("text")
-          .attr("text-anchor", "middle")
-          .attr("y", isTopOutOfBound ? 15 : -30)
-          .style("font-size", "11px")
-          .style("fill", "white")
-          .style("font-family", "Montserrat, sans-serif")
-          .text(dateText);
-      
-        tooltipGroup
-          .append("text")
-          .attr("text-anchor", "middle")
-          .attr("y", isTopOutOfBound ? 35 : -10)
-          .style("font-size", "11px")
-          .style("fill", "white")
-          .style("font-family", "Montserrat, sans-serif")
-          .text(valueText);
-      })      
-      .on("mouseout", (event) => {
-        const d = d3.select(event.currentTarget).datum();
-        const index = data.indexOf(d);
-        d3.select(event.currentTarget)
-          .attr("r", 5)
-          .attr("fill", getColor(d.value, index)); // Apply the reversed color logic here
-        svg.select("#tooltip").remove();
-      });
+        .attr("cy", (d) => y(d.value))
+        .attr("r", 5)
+        .attr("fill", (d, i) => getColor(d.value, i))
+        .on("mouseover", (event, d) => {
+          d3.select(event.currentTarget).attr("r", 7).attr("fill", "orange");
+
+          const tooltipX = x(
+            d.valueDate === "" || d.valueDate === null
+              ? "дата"
+              : formatDate(parseDate(d.valueDate))
+          );
+          const tooltipY = y(d.value) - 15;
+
+          // Формируем текст для тултипа
+          const dateText = `Дата: ${d.valueDate === "" || d.valueDate === null ? "дата" : formatDate(parseDate(d.valueDate))}`;
+          const valueText = `Значение: ${d.value}`;
+          const textWidth = Math.max(dateText.length, valueText.length) * 6; // Оценочная ширина в пикселях
+
+          // Ширина тултипа
+          const tooltipWidth = Math.max(120, textWidth + 20);
+          const tooltipHeight = 50;
+
+          // Проверка на выход за границы
+          const isTopOutOfBound = tooltipY - tooltipHeight < margin.top;
+          const isRightOutOfBound = tooltipX + tooltipWidth / 2 > width - margin.right;
+          const isLeftOutOfBound = tooltipX - tooltipWidth / 2 < margin.left;
+
+          let adjustedX = tooltipX;
+          if (isRightOutOfBound) adjustedX = width - margin.right - tooltipWidth / 2;
+          else if (isLeftOutOfBound) adjustedX = margin.left + tooltipWidth / 2;
+
+          const adjustedY = isTopOutOfBound ? tooltipY + tooltipHeight : tooltipY;
+
+          // Получаем цвет точки
+          const pointColor = getColor(d.value, data.indexOf(d));
+
+          const tooltipGroup = svg
+            .append("g")
+            .attr("id", "tooltip")
+            .attr("transform", `translate(${adjustedX}, ${adjustedY})`);
+
+          tooltipGroup
+            .append("rect")
+            .attr("x", -tooltipWidth / 2)
+            .attr("y", isTopOutOfBound ? 0 : -tooltipHeight)
+            .attr("width", tooltipWidth)
+            .attr("height", tooltipHeight)
+            .attr("fill", pointColor) // Используем цвет точки для фона тултипа
+            .attr("rx", 4)
+            .attr("ry", 4);
+
+          tooltipGroup
+            .append("text")
+            .attr("text-anchor", "middle")
+            .attr("y", isTopOutOfBound ? 15 : -30)
+            .style("font-size", "11px")
+            .style("fill", "white")
+            .style("font-family", "Montserrat, sans-serif")
+            .text(dateText);
+
+          tooltipGroup
+            .append("text")
+            .attr("text-anchor", "middle")
+            .attr("y", isTopOutOfBound ? 35 : -10)
+            .style("font-size", "11px")
+            .style("fill", "white")
+            .style("font-family", "Montserrat, sans-serif")
+            .text(valueText);
+        })
+        .on("mouseout", (event) => {
+          const d = d3.select(event.currentTarget).datum();
+          const index = data.indexOf(d);
+          d3.select(event.currentTarget)
+            .attr("r", 5)
+            .attr("fill", getColor(d.value, index)); // Apply the reversed color logic here
+          svg.select("#tooltip").remove();
+        });
+    //}
   }, [data, width, height, type]);
 
   return (
-    <div className={classes.block}>
-      <input
+    <div
+      className={classes.block}
+      style={{ transform: typeGraphic === '52' ? 'rotate(90deg)' : 'none' }}
+    >
+      {/* <input
         type="text"
         value={nameStatistics}
         onChange={(e) => setNameStatistics(e.target.value)}
         className={classes.row1}
-      />
+      /> */}
       <svg ref={svgRef} className={classes.row2}></svg>
     </div>
   );

@@ -146,8 +146,9 @@ h6 {
 .menu {
     background-color: white;
     /* padding: 10px; */
-    border: red 1px dotted;
+    /* border: red 1px dotted; */
     border-radius: 25px 25px 0 0;
+    box-shadow: 0 0 2px black;
     display: flex;
     flex: 1 1 auto;
     overflow: auto;

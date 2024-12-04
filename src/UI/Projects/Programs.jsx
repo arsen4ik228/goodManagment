@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import classes from "./Programs.module.css"
 import Target from "./Targets/Target"
 import { useGetProgramIdQuery, useGetProgramNewQuery, useUpdateProjectMutation } from "../../BLL/projectApi"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import CustomSelectModal from "./CustomSelectModal/CustomSelectModal"
 import deleteIcon from '../Custom//icon/icon _ delete.svg'
 import Header from "../Custom/Header/Header"
@@ -13,6 +13,7 @@ import CustomSelectModalProgram from "./CustomSelectModalProgram/CustomSelectMod
 
 export default function Programs() {
   const { userId, programId } = useParams();
+  const navigate = useNavigate()
   const [edit, setEdit] = useState(false)
   const [dummyKey, setDummyKey] = useState(0)
   const [sectionId, setSectionId] = useState(1)
@@ -204,21 +205,27 @@ export default function Programs() {
       targets.forEach((item) => {
         switch (item.type) {
           case 'Продукт':
-            setProductsArray([...productsArray, item])
+            setProductsArray([...productsArray, { ...item, holderUserIdchange: item.holderUserId }])
             break;
           case 'Правила':
-            setRulesArray([...rulesArray, item])
+            setRulesArray([...rulesArray, { ...item, holderUserIdchange: item.holderUserId }])
             break;
           case 'Организационные мероприятия':
-            setEventArray([...eventArray, item])
+            setEventArray([...eventArray, { ...item, holderUserIdchange: item.holderUserId }])
             break;
           case 'Обычная':
-            setSimpleArray([...simpleArray, item])
+            setSimpleArray([...simpleArray, { ...item, holderUserIdchange: item.holderUserId }])
             break;
           case 'Статистика':
-            setStatisticsArray([...statisticsArray, item])
+            setStatisticsArray([...statisticsArray, { ...item, holderUserIdchange: item.holderUserId }])
             break;
         }
+        // setEvent(
+        //   targets
+        //   .filter((item) => item.type === "Организационные мероприятия")
+        //   .map((item) => ({ ...item, holderUserIdchange: item.holderUserId }))
+        //   .sort((a, b) => a.orderNumber - b.orderNumber)
+        //   );
       })
     }
   }, [targets])
@@ -386,18 +393,18 @@ export default function Programs() {
     ]
 
     console.log(Data)
-      await updateProject({
-        userId,
-        projectId: programId,
-        ...Data,
-      })
-        .unwrap()
-        .then(() => {
-          reset();
-        })
-        .catch((error) => {
-          console.error("Ошибка:", JSON.stringify(error, null, 2));
-        });
+      // await updateProject({
+      //   userId,
+      //   projectId: programId,
+      //   ...Data,
+      // })
+      //   .unwrap()
+      //   .then(() => {
+      //     reset();
+      //   })
+      //   .catch((error) => {
+      //     console.error("Ошибка:", JSON.stringify(error, null, 2));
+      //   });
   }
   console.warn(projectsList)
   return (
@@ -415,12 +422,11 @@ export default function Programs() {
 
             <div
               className={classes.bodyContainer}
-              style={{ borderBottom: "1px solid grey" }}
             >
               <div className={classes.name}>Организация</div>
               {edit ? (
                 <div className={classes.selectSection}>
-                  <select name="selectOrg" value={selectedOrg} onChange={(e) => setSelectedOrg(e.target.value)} >
+                  <select name="selectOrg" disabled value={selectedOrg} onChange={(e) => setSelectedOrg(e.target.value)} >
                     {organizations.map((item, index) => (
                       <>
                         <option key={index} value={item.id}>{item.organizationName}</option>
@@ -461,7 +467,6 @@ export default function Programs() {
             {(edit || currentProject?.strategy?.id) && (
               <div
                 className={classes.bodyContainer}
-                style={{ borderBottom: "1px solid grey" }}
               >
                 <div className={classes.name}>Стратегия</div>
                 {edit ? (
@@ -644,7 +649,9 @@ export default function Programs() {
               <div className={classes.targetsFlex}>
                 {projectsList.map((item, index) => (
                   <>
-                    <div className={classes.cardContainer}>
+                    <div className={classes.cardContainer} 
+                    onClick={() => navigate(`/${userId}/Projects/${item.id}`)}
+                    >
                       <div className={classes.content}>
                         <div className={classes.titleProject}>{item?.nameProject}</div>
                         <div className={classes.contentProductTarget}>{item?.product}</div>
