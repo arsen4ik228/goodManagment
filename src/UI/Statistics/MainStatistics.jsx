@@ -89,7 +89,7 @@ const MainStatistics = () => {
         <>
             <div className={classes.wrapper}>
                 <>
-                    <Header create={false} title={'Статистики'}></Header>
+                    <Header create={true} title={'Статистики'}></Header>
                 </>
 
                 <div className={classes.body}>
@@ -99,8 +99,8 @@ const MainStatistics = () => {
                             <div className={classes.right}>
                                 <ul className={classes.selectList}>
                                     {organizations?.map((item) => (
-                                        <li key={item.id} onChange={(e) => setSelectedOrg(item.id)}>
-                                            {(selectedOrg == item.id) ?
+                                        <li key={item.id} onClick={(e) => setSelectedOrg(item.id)}>
+                                            {(selectedOrg === item.id) ?
                                                 (
                                                     <>
                                                         <input

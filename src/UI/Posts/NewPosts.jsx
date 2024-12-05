@@ -3,6 +3,7 @@ import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import backRow from './icon/icon _ back.svg'
 import menu from './icon/icon _ menu.svg'
 import classes from './NewPosts.module.css';
+import attachpolicy from './icon/icon _ attach policy.svg'
 import searchBlack from './icon/icon _ black_search.svg'
 import add from './icon/icon _ add2-b.svg'
 import sublist from '../Custom/icon/icon _ sublist.svg'
@@ -20,7 +21,6 @@ import Header from "../Custom/Header/Header";
 import blackStatistic from "../Custom/icon/blackStatistic.svg";
 import AttachPolicy from '../Custom/AttachPolicy/AttachPolicy.jsx';
 import AlertSavePost from '../Custom/AlertSavePost/AlertSavePost.jsx';
-import { current } from '@reduxjs/toolkit';
 
 
 const Posts = () => {
@@ -336,7 +336,7 @@ const Posts = () => {
                                             onClick={() => setModalPolicyOpen(true)}
 
                                         >
-                                            <img src={blackStatistic} alt="blackStatistic" />
+                                            <img src={attachpolicy} alt="blackStatistic" />
                                             <div>
                                                 {policy ? (
                                                     <span className={classes.nameButton}>
@@ -377,15 +377,10 @@ const Posts = () => {
 
                 <footer className={classes.inputContainer}>
                     <div className={classes.inputRow2}>
-                        <div></div>
                         <div>
                             <button onClick={() => savePosts()}> СОХРАНИТЬ</button>
                         </div>
-                        <div>
-                            {/* <img src={searchBlack} /> */}
-                            {/*<img src={policy} className={classes.image}/>*/}
-                            {/*<img src={stats}/>*/}
-                        </div>
+                      
                     </div>
                 </footer>
             </div>

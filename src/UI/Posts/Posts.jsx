@@ -8,6 +8,7 @@ import add from './icon/icon _ add2-b.svg'
 import sublist from '../Custom/icon/icon _ sublist.svg'
 import share from './icon/icon _ share.svg'
 import stats from './icon/_icon _ stats.svg'
+import attachpolicy from './icon/icon _ attach policy.svg'
 import {
     useGetPostIdQuery,
     useGetPostsQuery,
@@ -439,7 +440,7 @@ const Posts = () => {
                                                         className={classes.post}
                                                         onClick={() => setModalPolicyOpen(true)}
                                                     >
-                                                        <img src={share} alt="blackStatistic" />
+                                                        <img src={attachpolicy} alt="blackStatistic" />
                                                         <div>
                                                             {policy !== null ?
                                                                 (
@@ -457,7 +458,7 @@ const Posts = () => {
                                                         className={classes.post}
                                                         onClick={() => navigate('attachStatistics')}
                                                     >
-                                                        <img src={share} alt="blackStatistic" />
+                                                        <img src={stats} alt="blackStatistic" />
                                                         <div>
                                                             {statisticsIncludedPost?.length > 0 ?
                                                                 (
@@ -505,14 +506,8 @@ const Posts = () => {
 
                 <footer className={classes.inputContainer}>
                     <div className={classes.inputRow2}>
-                        <div></div>
                         <div>
                             <button onClick={() => saveUpdatePost()}> Сохранить</button>
-                        </div>
-                        <div>
-                            {/* <img src={searchBlack}/> */}
-                            {/*<img src={policy} className={classes.image}/>*/}
-                            {/*<img src={stats}/>*/}
                         </div>
                     </div>
                 </footer>

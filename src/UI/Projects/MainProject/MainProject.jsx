@@ -110,7 +110,7 @@ export default function MainProject() {
               <div className={classes.ElemTitle}> Проекты</div>
               <img
                 src={sublist}
-                alt="image"
+                alt="sublist"
                 style={{ transform: openProjects ? "none" : "rotate(90deg)" }}
               />
             </div>
@@ -147,7 +147,7 @@ export default function MainProject() {
               <div className={classes.ElemTitle}>Программы</div>
               <img
                 src={sublist}
-                alt="image"
+                alt="sublist"
                 style={{ transform: openPrograms ? "none" : "rotate(90deg)" }}
               />
             </div>

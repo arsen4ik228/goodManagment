@@ -45,8 +45,8 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 .close{
     position: absolute;
     float: right;
-    top: 38px;
-    right: 15px;
+    top: 33px;
+    right: 12px;
 }
 
 .element_srch{

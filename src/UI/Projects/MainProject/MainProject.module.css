@@ -98,6 +98,8 @@ h6 {
 .body {
     flex: 1 1 auto;
     margin-top: 50px;
+    overflow: auto;
+    padding-bottom: 10px;
 }
 
 .ColumnContainer {
