@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import style from "./AuthorizationPage.module.css"; // Ваши стили
 // import telegram from "../../../image/telegram.svg"; 
 import telegram from '../Custom/icon/telegram.svg'
+import logo from '../Custom/icon/logo.svg'
 import { io } from "socket.io-client";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { baseUrl } from "../../BLL/constans";
@@ -149,7 +150,7 @@ export default function AuthorizationPage() {
             <div className={style.Container}>
                 <div className={style.background}></div>
                 <div className={style.logoContainer}>
-                    {/* <img src={logo} alt="Логотип компании" /> */}
+                    <img src={logo} alt='logo' />
                 </div>
 
                 <div className={style.textContainer}>
