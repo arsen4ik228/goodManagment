@@ -57,11 +57,11 @@ const MainStrategy = () => {
             isFetchingGetPolicies: isFetching,
         }),
     });
-    console.log(activeDirectives,draftDirectives,archiveDirectives)
+
     const TYPE_DISPLAY = {
-        0: { type: 'Черновик', arrayDirectives: draftDirectives, arrayInstruction: draftInstructions },
+        0: { type: 'Отменён', arrayDirectives: archiveDirectives, arrayInstruction: archiveInstructions },
         1: { type: 'Активный', arrayDirectives: activeDirectives, arrayInstruction: activeInstructions },
-        2: { type: 'Отменён', arrayDirectives: archiveDirectives, arrayInstruction: archiveInstructions },
+        2: { type: 'Черновик', arrayDirectives: draftDirectives, arrayInstruction: draftInstructions },
     }
     const displayDirectives = TYPE_DISPLAY[typeDisplayDirectives]
     const displayInstruction = TYPE_DISPLAY[typeDisplayInstruction]
@@ -95,8 +95,6 @@ const MainStrategy = () => {
             error: ErrorPostPoliciesMutation,
         },
     ] = usePostPoliciesMutation();
-
-    console.log(selectedOrganization[0])
 
     const savePolicy = async () => {
         await postPolicy({

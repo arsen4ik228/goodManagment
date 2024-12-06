@@ -67,8 +67,9 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 
 .title{
     padding: 5px;
+    padding-top: 12px;
     color: #005475;
-    font-size: 1.4rem;
+    font-size: 1.6rem;
     /* border: 1px solid red; */
 
     >div{
