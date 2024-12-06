@@ -7,7 +7,7 @@ import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { baseUrl } from "../../BLL/constans";
 
 //5000
-const socket = io(`${baseUrl}auth`, {
+const socket = io(`https://24academy.ru/auth`, {
   cors: {
     credentials: true
   },transports : ['websocket']
@@ -15,9 +15,6 @@ const socket = io(`${baseUrl}auth`, {
 // Подключение к сокету
 
 export default function AuthorizationPage() {
-
-
-
 
   const [data, setData] = useState({
     accessToken: "",
@@ -31,67 +28,70 @@ export default function AuthorizationPage() {
   const [fingerprint, setFingerprint] = useState("");
   const userAgent = navigator.userAgent; // Получение User-Agent
 
+  const a ={_ip: '', _fingerprint: ''}
+
   useEffect(() => {
-    // Получение IP-адреса
-    fetch("https://api.ipify.org?format=json")
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("IP-адрес:", data.ip);
-        setIp(data.ip);
-      })
-      .catch((error) => {
-        console.error("Ошибка при получении IP-адреса:", error);
-      });
-
-    // Инициализация FingerprintJS
-    const fpPromise = FingerprintJS.load();
-    fpPromise
-      .then((fp) => fp.get())
-      .then((result) => {
-        const visitorId = result.visitorId;
-        console.log("Fingerprint ID:", visitorId);
-        setFingerprint(visitorId); // Сохраняем Fingerprint
-      })
-      .catch((error) => {
-        console.error("Ошибка при получении Fingerprint:", error);
-      });
-
-    // Запрос к серверу для получения токена
-    fetch(`${baseUrl}`, {
-      method: "GET",
-      headers: {
-        "User-Agent": userAgent, // Отправляем User-Agent в заголовке
-      },
-    })
-      .then((response) => response.json()) // Обрабатываем ответ как JSON
-      .then((data) => {
-        console.log("Ответ от /", data);
-        console.log("tokenForTG", data.tokenForTG);
-        setTokenForTG(data.tokenForTG);
-      })
-      .catch((error) => {
-        console.error("Ошибка при запросе /:", error);
-      });
-
-    // Подключение сокета и получение socketId
+    const fetchData = async () => {
+    try {
+    // Параллельное выполнение запросов для IP и Fingerprint
+    const [ipResponse, fp] = await Promise.all([
+    fetch("https://api.ipify.org?format=json").then((res) => res.json()),
+    FingerprintJS.load().then((fp) => fp.get()),
+    ]);
+    
+    // Обновляем объект `a` и состояние
+    a._ip = ipResponse.ip;
+    a._fingerprint = fp.visitorId;
+    
+    setIp(ipResponse.ip);
+    setFingerprint(fp.visitorId);
+    
+    console.log("IP-адрес:", a._ip);
+    console.log("Fingerprint ID:", a._fingerprint);
+    
+    // Запрос на сервер
+    const response = await fetch(
+    `${baseUrl}?fingerprint=${a._fingerprint}&ip=${a._ip}`,
+    {
+    method: "GET",
+    headers: {
+    "User-Agent": userAgent,
+    },
+    }
+    );
+    const serverData = await response.json();
+    
+    if (serverData.isLogged) {
+    window.location.href = `#/${serverData.userId}/start`;
+    }
+    console.log("Ответ от /:", serverData);
+    setTokenForTG(serverData.tokenForTG);
+    } catch (error) {
+    console.error("Ошибка:", error);
+    }
+    };
+    
+    fetchData();
+    
+    // Подключение к сокету
     console.log("Попытка подключения к сокету...");
     socket.on("connect", () => {
-      console.log("Сокет подключен, socket.id:", socket.id);
-      setSocketId(socket.id); // Сохраняем socket.id
+    console.log("Сокет подключен, socket.id:", socket.id);
+    setSocketId(socket.id);
     });
-
+    
     socket.on("disconnect", () => {
-      console.log("Сокет отключен.");
+    console.log("Сокет отключен.");
     });
-
+    
     // Очистка при размонтировании компонента
     return () => {
-      console.log("Отключаем сокет...");
-      socket.off("connect");
-      socket.off("disconnect");
-      socket.disconnect(); // Закрываем соединение при размонтировании компонента
+    console.log("Отключаем сокет...");
+    socket.off("connect");
+    socket.off("disconnect");
+    socket.disconnect();
     };
-  }, []); // Выполняется только один раз при монтировании компонента
+    }, []);
 
   // Эффект для отправки данных после того, как все зависимости будут установлены
   useEffect(() => {

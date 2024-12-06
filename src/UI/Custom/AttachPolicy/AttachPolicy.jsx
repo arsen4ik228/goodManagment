@@ -8,7 +8,7 @@ function AttachPolicy({ title, setModalOpen, firstArray, componentName, setIds, 
         if (id === itemId) setIds(null)
         else setIds(itemId)
     }
-
+    console.log(firstArray)
     return (
         <>
             <div className={classes.wrapper}>
@@ -23,16 +23,14 @@ function AttachPolicy({ title, setModalOpen, firstArray, componentName, setIds, 
                     </div>
                     <div className={classes.element_var}>
                         <div className={classes.heading}>{title}</div>
-                        <>
-                            {firstArray.map((item, index) => (
+                            {firstArray?.map((item, index) => (
                                 <div key={index} className={classes.item} onClick={() => selectItem(item.id)}>
                                     <span>
-                                        {item[`${componentName}`]}
+                                        {item[componentName]}
                                     </span>
                                     <input type="radio" checked={item.id === id} />
                                 </div>
                             ))}
-                        </>
                     </div>
 
                     <footer className={classes.footer}>

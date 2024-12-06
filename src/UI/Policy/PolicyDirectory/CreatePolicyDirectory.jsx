@@ -91,7 +91,9 @@ export default function CreatePolicyDirectory() {
                 <div className={classes.body}>
                     <>
                     <div className={classes.first}>
-                            <input type={'text'} value={directoryName} onChange={(e) => setDirectoryName(e.target.value)} />
+                            <input 
+                            placeholder=' Введите название'
+                            type={'text'} value={directoryName} onChange={(e) => setDirectoryName(e.target.value)} />
                         </div>
                         <div className={classes.element_srch}>
 

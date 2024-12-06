@@ -75,12 +75,13 @@ const MainStatistics = () => {
 
     useEffect(() => {
         const sortStatistics = () => {
-            if (!selectedOrg && organizations.length>0) return
-            setFiltredStatistics(statistics.filter(item => item?.organization.id === selectedOrg))
+            if (!selectedOrg || !organizations.length>0) return 
+            setFiltredStatistics(statistics?.filter(item => item?.organization.id === selectedOrg))
             setReportDay(
-                organizations.find(item => item.id === selectedOrg).reportDay
+                organizations?.find(item => item?.id === selectedOrg)?.reportDay
             )
         }
+
         sortStatistics()
     }, [selectedOrg, organizations])
 
@@ -88,7 +89,7 @@ const MainStatistics = () => {
         <>
             <div className={classes.wrapper}>
                 <>
-                    <Header create={false} title={'Стратегии'}></Header>
+                    <Header create={false} title={'Статистики'}></Header>
                 </>
 
                 <div className={classes.body}>

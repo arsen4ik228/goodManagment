@@ -1,7 +1,7 @@
 import './App.css';
 import React from 'react';
 import { Navigate, Route, Routes } from "react-router-dom";
-// import AuthorizationPage from './UI/Authorization/AuthorizationPage.jsx';
+import AuthorizationPage from './UI/Authorization/AuthorizationPage.jsx'
 import Main from './UI/Main/Main.jsx'
 import Chat from './UI/Chat/Chat.jsx'
 import MainPolicy from './UI/Policy/MainPolicy.jsx'
@@ -17,7 +17,6 @@ import MainStrategy from './UI/Strategy/MainStartegy.jsx';
 import Strategy from "./UI/Strategy/Strategy";
 import NewStrategy from "./UI/Strategy/NewStrategy";
 import Goal from "./UI/Goal/Goal";
-import CreateGoal from "./UI/Goal/CreateGoal";
 import Objective from "./UI/Objective/Objective.jsx"
 import NewObjective from "./UI/Objective/NewObjective";
 import Projects from './UI/Projects/Projects.jsx';
@@ -34,7 +33,7 @@ function App() {
     return (
         <>
             <Routes>
-                <Route path={'/'} element={<Navigate replace to="Main" />}></Route>
+                {/* <Route path={'/'} element={<Navigate replace to="Main" />}></Route> */}
                 {/* <Route path={'/'} element={<AuthorizationPage/>}></Route> */}
                 <Route path="/*"
                     element={
@@ -60,7 +59,6 @@ function App() {
                             <Route path=":userId/Strategy/:strategyId" element={<Strategy />} />
 
                             <Route path=":userId/Goal" element={<Goal />} />
-                            <Route path=":userId/Goal/new" element={<CreateGoal />} />
 
                             <Route path=":userId/Objective" element={<Objective />} />
                             <Route path=":userId/Objective/new" element={<NewObjective />} />

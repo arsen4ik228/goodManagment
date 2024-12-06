@@ -1,22 +1,96 @@
 /*Обнуление*/
-*{padding: 0;margin: 0;border: 0;}
-*,*:before,*:after{-moz-box-sizing: border-box;-webkit-box-sizing: border-box;box-sizing: border-box;}
-:focus,:active{outline: none;}
-a:focus,a:active{outline: none;}
-nav,footer,header,aside{display: block;}
-html,body{height:100%;width:100%;font-size:100%;line-height:1;font-size:16px;-ms-text-size-adjust:100%;-moz-text-size-adjust:100%;-webkit-text-size-adjust:100%;}
-input,button,textarea{font-family:inherit;}
-input::-ms-clear{display: none;}
-button{cursor: pointer;}
-button::-moz-focus-inner{padding:0;border:0;}
-a,a:visited{text-decoration: none;}
-a:hover{text-decoration: none;}
-ul li{list-style: none;}
-img{vertical-align: top;}
-h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
+* {
+    padding: 0;
+    margin: 0;
+    border: 0;
+}
+
+*,
+*:before,
+*:after {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+:focus,
+:active {
+    outline: none;
+}
+
+a:focus,
+a:active {
+    outline: none;
+}
+
+nav,
+footer,
+header,
+aside {
+    display: block;
+}
+
+html,
+body {
+    height: 100%;
+    width: 100%;
+    font-size: 100%;
+    line-height: 1;
+    font-size: 16px;
+    -ms-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+}
+
+input,
+button,
+textarea {
+    font-family: inherit;
+}
+
+input::-ms-clear {
+    display: none;
+}
+
+button {
+    cursor: pointer;
+}
+
+button::-moz-focus-inner {
+    padding: 0;
+    border: 0;
+}
+
+a,
+a:visited {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+ul li {
+    list-style: none;
+}
+
+img {
+    vertical-align: top;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-size: inherit;
+    font-weight: inherit;
+}
+
 /*--------------------*/
 
-.wrapper{
+.wrapper {
     display: flex;
     flex-direction: column;
     height: 100vh;
@@ -33,7 +107,7 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 
 }
 
-.headRow{
+.headRow {
     display: flex;
     align-items: flex-start;
     height: 50px;
@@ -44,36 +118,41 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
     /*    margin-right: 15px;*/
     /*}*/
 }
-.blueLine{
+
+.blueLine {
     display: block;
     height: 10px;
     width: 100%;
     background-color: #005475;
 }
-.whiteLine{
+
+.whiteLine {
     display: flex;
     flex-direction: row;
     flex: 1 1 auto;
     width: 100%;
     justify-content: space-between;
 }
-.headElem{
+
+.headElem {
     display: flex;
     flex: 0 1 auto;
     padding: 0 0 0 1px;
     align-items: center;
     justify-content: flex-start;
 }
-.menu{
+
+.menu {
     display: flex;
     padding: 0 10px 0 0;
     align-items: center;
 }
-.icon{
+
+.icon {
     margin: 0 15px;
 }
 
-.txt{
+.txt {
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -82,14 +161,14 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
     padding: 0 0 0 30px;
 }
 
-.headText{
+.headText {
     color: #005475;
     font-size: 20px;
     font-weight: 600;
 
 }
 
-.sectionName{
+.sectionName {
     color: #005475;
     font-size: 14px;
     font-weight: 600;
@@ -98,19 +177,27 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 
 
 
-.body{
-    flex: 1 1 auto;
-    max-height: calc(100vh - 173px);
+.body {
+    flex: 1 0 auto;
+    /* max-height: calc(100vh - 293px); */
     /* border: 1px solid red; */
+    /* display: flex; */
 }
 
-.bodyContainer{
-        display: flex;
-        width: 100vw;
-        height: 100%; 
+/* .editorContainer{
+    border: #005475 3px solid;
+    height: 350px;
+    flex: 1 0 auto;
+
+} */
+
+.bodyContainer {
+    display: flex;
+    width: 100vw;
+    height: 100%;
 }
 
-.left{
+.left {
     width: 45vw;
     font-size: 1.6em;
     justify-content: center;
@@ -121,24 +208,24 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
     height: 98%;
 }
 
-.selectList{
+.selectList {
     overflow-x: auto;
     overflow-y: hidden;
     font-size: 1.3em;
 
-    li{
+    li {
         display: flex;
         /* width: 60vw; */
         padding: 0.3rem 0.8rem;
         justify-content: flex-start;
 
-        div{
+        div {
             margin-left: 10px
         }
     }
 }
 
-.input1{
+.input1 {
     display: flex;
     width: 90%;
     height: 59%;
@@ -148,7 +235,7 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 
 
 
-.inputContainer{
+.inputContainer {
     position: fixed;
     bottom: 0;
     left: 0;
@@ -158,7 +245,7 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 }
 
 
-.inputRow1{
+.inputRow1 {
     display: flex;
     margin-top: 57px;
     justify-content: space-between;
@@ -167,13 +254,13 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
     padding: 0 1rem;
 
 
-    div{
+    div {
         display: flex;
         flex: 1 0 auto;
         align-items: center;
     }
 
-    input{
+    input {
         padding: 0 1em;
         height: 1.5rem;
         width: 12rem;
@@ -181,25 +268,27 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
         text-transform: uppercase;
         border-bottom: 1px solid #005475;
     }
+
     @media screen and (max-width: 375px) {
         input {
             width: 7rem;
         }
     }
+
     @media screen and (max-width: 440px) {
         input {
             width: 10rem;
         }
     }
 
-    img{
+    img {
         display: inline-block;
         border-bottom: #005475 1px solid;
         height: 1.5rem;
 
     }
 
-    select{
+    select {
         display: inline-block;
         font-family: "'Montserrat', sans-serif";
         font-size: 16px;
@@ -208,20 +297,21 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
     }
 }
 
-.first{
+.first {
     justify-content: space-between;
     padding: 1rem;
 }
 
-.second{
+.second {
     justify-content: center;
 }
 
-.inputColumn{
+.inputColumn {
     display: flex;
     /*border: black solid 1px;*/
 }
-.inputRow2{
+
+.inputRow2 {
     display: flex;
     padding: 1rem 2.5rem;
     /*border: #005475 1px solid;*/
@@ -231,15 +321,17 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
     @media screen and (max-width: 395px) {
         padding: 1.5rem 2rem;
     }
+
     @media screen and (max-width: 370px) {
         padding: 1.5rem 1.5rem;
     }
+
     @media screen and (max-width: 350px) {
         padding: 1.5rem 0.5rem;
     }
 
 
-    img{
+    img {
         display: inline-block;
         width: 30px;
         height: 30px;
@@ -248,7 +340,7 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 
     }
 
-    button{
+    button {
         height: 2rem;
         width: 11rem;
         background: #005475;
@@ -259,7 +351,7 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 
     }
 
-    div{
+    div {
         display: flex;
         flex: 1 1 auto;
         /*border: 1px solid #005475;*/
@@ -267,7 +359,7 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
     }
 }
 
-.image{
+.image {
     margin: 0 1rem;
 
 }

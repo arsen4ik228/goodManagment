@@ -9,7 +9,7 @@ import { useGetOrganizationsQuery, useUpdateOrganizationsMutation } from '../../
 import saveIcon from '../Custom/icon/icon _ save.svg'
 import Graphic from '../Custom/Graph/Graphic'
 import HandlerMutation from '../Custom/HandlerMutation'
-import iconExit from '../Custom/icon/icon _ add2-b.svg'
+import iconExit from '../Custom/SearchModal/icon/icon _ add.svg'
 
 export default function Statistics() {
 
@@ -114,7 +114,7 @@ export default function Statistics() {
             // skip: !statisticId,
         }
     );
-
+    console.log(currentStatistic, statisticDatas)
     const [
         updateStatistics,
         {
@@ -207,13 +207,13 @@ export default function Statistics() {
     //}
     // }, [organizationId]);
 
-    useEffect(() => {
-        if (organizations.length > 0) {
-            const report = organizations.filter((item) => item?.id === organizationId);
-            setReportDay(report[0]?.reportDay);
-            setReportDayComes(report[0]?.reportDay);
-        }
-    }, [isLoadingOrganizations, isFetchingOrganizations]);
+    // useEffect(() => {
+    //     if (organizations.length > 0) {
+    //         const report = organizations.filter((item) => item?.id === organizationId);
+    //         setReportDay(report[0]?.reportDay);
+    //         setReportDayComes(report[0]?.reportDay);
+    //     }
+    // }, [isLoadingOrganizations, isFetchingOrganizations]);
 
     // Все для начальной страницы
     useEffect(() => {
@@ -231,6 +231,8 @@ export default function Statistics() {
     }, [currentStatistic, isLoadingGetStatisticId, isFetchingGetStatisticId]);
 
     useEffect(() => {
+        console.warn(statisticDatas.length, reportDay)
+
         if (statisticDatas.length > 0 && reportDay) {
             setReceivedPoints([]);
             setCreatePoints([]);
@@ -239,10 +241,10 @@ export default function Statistics() {
             setShowPoints([]);
             setCount(0);
             setDay(reportDay);
-
+            console.warn('first')
             if (typeGraphic === 'Ежедневный' && day !== '') {
                 const dayNow = new Date();
-
+                console.warn('useEffect')
                 const currentWeekday = dayNow.getDay(); // Текущий день недели (0 - Воскресенье, 1 - Понедельник и т.д.)
 
                 // Определяем начальную дату - ближайший предыдущий день `day`
@@ -510,7 +512,7 @@ export default function Statistics() {
                 let currentSum = 0;
 
                 // Перемещаем currentDate на первый выбранный день недели
-                while (currentDate.getDay() !== selectedDayOfWeek - 1) {
+                while (currentDate.getDay() !== selectedDayOfWeek) {
                     currentDate.setDate(currentDate.getDate() + 1);
                 }
 
@@ -582,7 +584,7 @@ export default function Statistics() {
                 let currentSum = 0;
 
                 // Перемещаем currentDate на первый выбранный день недели
-                while (currentDate.getDay() !== selectedDayOfWeek - 1) {
+                while (currentDate.getDay() !== selectedDayOfWeek) {
                     currentDate.setDate(currentDate.getDate() + 1);
                 }
 
@@ -654,7 +656,7 @@ export default function Statistics() {
                 let currentSum = 0;
 
                 // Перемещаем currentDate на первый выбранный день недели
-                while (currentDate.getDay() !== selectedDayOfWeek - 1) {
+                while (currentDate.getDay() !== selectedDayOfWeek) {
                     currentDate.setDate(currentDate.getDate() + 1);
                 }
 
@@ -1261,7 +1263,7 @@ export default function Statistics() {
             let currentSum = 0;
 
             // Перемещаем currentDate на первый выбранный день недели
-            while (currentDate.getDay() !== selectedDayOfWeek - 1) {
+            while (currentDate.getDay() !== selectedDayOfWeek) {
                 currentDate.setDate(currentDate.getDate() + 1);
             }
 
@@ -1336,7 +1338,7 @@ export default function Statistics() {
             let currentSum = 0;
 
             // Перемещаем currentDate на первый выбранный день недели
-            while (currentDate.getDay() !== selectedDayOfWeek - 1) {
+            while (currentDate.getDay() !== selectedDayOfWeek) {
                 currentDate.setDate(currentDate.getDate() + 1);
             }
 
@@ -1411,7 +1413,7 @@ export default function Statistics() {
             let currentSum = 0;
 
             // Перемещаем currentDate на первый выбранный день недели
-            while (currentDate.getDay() !== selectedDayOfWeek - 1) {
+            while (currentDate.getDay() !== selectedDayOfWeek) {
                 currentDate.setDate(currentDate.getDate() + 1);
             }
 
@@ -1573,7 +1575,7 @@ export default function Statistics() {
                 console.error('Ошибка:', JSON.stringify(error, null, 2)); // выводим детализированную ошибку
             });
     };
-
+    console.log()
     return (
         <div className={classes.wrapper}>
             <div className={classes.header}>
@@ -1596,7 +1598,8 @@ export default function Statistics() {
                                 setName={setName}
                                 typeGraphic={typeGraphic}
                                 type={type}
-                            ></Graphic>
+                            >
+                            </Graphic>
                         </div>
                         <div className={classes.arrowSection}>
                             <img

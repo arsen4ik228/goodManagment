@@ -4,7 +4,7 @@ import close from "../SearchModal/icon/icon _ add.svg";
 
 export default function CustomSelect({organizations, requestFunc, isToOrganizations, setToOrganizations, setModalOpen, }) {
 
-    const [selectedItems, setSelectedItems] = useState([]);
+    const [selectedItems, setSelectedItems] = useState();
     const [extractedOrganizations, setExtractedOrganizations] = useState([]);
 
     console.log('custom:  ',isToOrganizations)
@@ -24,7 +24,7 @@ export default function CustomSelect({organizations, requestFunc, isToOrganizati
     // };
 
     const handleSelectItem = (id) => {
-        setToOrganizations([id]);
+        setToOrganizations(id);
         setSelectedItems(id);
     };
 
@@ -58,7 +58,7 @@ export default function CustomSelect({organizations, requestFunc, isToOrganizati
                                 <li key={item.id} onClick={() => handleSelectItem(item.id)}>
                                     <input
                                         type="checkbox"
-                                        checked={isToOrganizations.includes(item.id)}
+                                        checked={isToOrganizations?.includes(item.id)}
                                         readOnly
                                     />
                                     {item.organizationName}

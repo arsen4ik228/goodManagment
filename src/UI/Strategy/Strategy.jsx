@@ -173,7 +173,7 @@ const Strategy = () => {
         })
             .unwrap()
             .then(() => {
-                setTimeout(() => navigate(-1), 800);
+                // setTimeout(() => navigate(-1), 800);
             })            
             .catch((error) => {
                 console.error("Ошибка:", JSON.stringify(error, null, 2)); // выводим детализированную ошибку
@@ -234,7 +234,7 @@ const Strategy = () => {
                 .then(() => {
                     // saveUpdateStrategy();
                     setOpenModal(false)
-                    setTimeout(() => navigate(-1), 800);
+                    // setTimeout(() => navigate(-1), 800);
                 })  
                 .catch((error) => {
                     // При ошибке также сбрасываем флаги
@@ -278,15 +278,14 @@ const Strategy = () => {
 
                 <footer className={classes.inputContainer}>
                     <div className={classes.inputRow2}>
-                        <div></div>
                         <div>
-                            <button onClick={() => save()}> ОТРЕДАКТИРОВАТЬ</button>
+                            <button onClick={() => save()}> CОХРАНИТЬ</button>
                         </div>
-                        <div>
+                        {/* <div>
                             <img src={searchBlack} />
-                            {/* <img src={policy} className={classes.image}/> */}
+                            <img src={policy} className={classes.image}/>
                             <img src={stats}/>
-                        </div>
+                        </div> */}
                     </div>
                 </footer>
             </div>

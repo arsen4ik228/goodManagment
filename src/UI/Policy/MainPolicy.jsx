@@ -57,7 +57,7 @@ const MainStrategy = () => {
             isFetchingGetPolicies: isFetching,
         }),
     });
-
+    console.log(activeDirectives,draftDirectives,archiveDirectives)
     const TYPE_DISPLAY = {
         0: { type: 'Черновик', arrayDirectives: draftDirectives, arrayInstruction: draftInstructions },
         1: { type: 'Активный', arrayDirectives: activeDirectives, arrayInstruction: activeInstructions },
@@ -95,7 +95,9 @@ const MainStrategy = () => {
             error: ErrorPostPoliciesMutation,
         },
     ] = usePostPoliciesMutation();
+
     console.log(selectedOrganization[0])
+
     const savePolicy = async () => {
         await postPolicy({
             userId,
@@ -103,7 +105,7 @@ const MainStrategy = () => {
             state: "Черновик",
             type: 'Директива',
             content: ' ',
-            organizationId: selectedOrganization[0],
+            organizationId: selectedOrganization,
         })
             .unwrap()
             .then((result) => {
@@ -193,7 +195,7 @@ const MainStrategy = () => {
                                             {displayInstruction.arrayInstruction.map((item, index) => (
                                                 <li
                                                     key={index}
-                                                    style={{ color: item?.state === 'Активный' ? 'black' : 'grey' }}
+                                                    // style={{ color: item?.state === 'Активный' ? 'black' : 'grey' }}
                                                     onClick={() => navigate(item?.id)}
                                                 >
                                                     {item?.policyName}
@@ -246,7 +248,7 @@ const MainStrategy = () => {
                                             {displayDirectives.arrayDirectives?.map((item, index) => (
                                                 <li
                                                     key={index}
-                                                    style={{ color: item?.state === 'Активный' ? 'black' : 'grey' }}
+                                                    // style={{ color: item?.state === 'Активный' ? 'black' : 'grey' }}
                                                     onClick={() => navigate(item?.id)}
                                                 >
                                                     {item?.policyName}

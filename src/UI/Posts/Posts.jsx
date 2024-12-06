@@ -7,7 +7,6 @@ import searchBlack from './icon/icon _ black_search.svg'
 import add from './icon/icon _ add2-b.svg'
 import sublist from '../Custom/icon/icon _ sublist.svg'
 import share from './icon/icon _ share.svg'
-import policy from './icon/icon _ attach policy.svg'
 import stats from './icon/_icon _ stats.svg'
 import {
     useGetPostIdQuery,
@@ -78,7 +77,7 @@ const Posts = () => {
             }),
         }
     );
-    console.log(currentPost)
+    console.log(currentPost, workers, organizations, posts, parentPost, statisticsIncludedPost, policiesActive)
 
     useEffect(() => {
         if (currentPost && Object.keys(currentPost).length > 0) {
@@ -93,7 +92,7 @@ const Posts = () => {
 
     useEffect(() => {
         const foundPolicy = policiesActive?.find(item => item.id === policy);
-        if (foundPolicy) setCurrentPolicyName(foundPolicy)
+        if (foundPolicy) setCurrentPolicyName(foundPolicy.policyName)
         else setPolicy(null)
     }, [policy]);
 
@@ -460,14 +459,14 @@ const Posts = () => {
                                                     >
                                                         <img src={share} alt="blackStatistic" />
                                                         <div>
-                                                            {statisticsIncludedPost.length > 0 ?
+                                                            {statisticsIncludedPost?.length > 0 ?
                                                                 (
                                                                     <span className={classes.nameButton}>
                                                                         Статистика: {' '} {statisticsIncludedPost[0]?.name}
-                                                                        {statisticsIncludedPost.length > 1 ?
+                                                                        {statisticsIncludedPost?.length > 1 ?
                                                                             (
                                                                                 <span>
-                                                                                   {' '} и ещё ({statisticsIncludedPost.length-1})
+                                                                                   {' '} и ещё ({statisticsIncludedPost?.length-1})
                                                                                 </span>
                                                                             ) : (
                                                                                 <></>

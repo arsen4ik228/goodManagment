@@ -36,7 +36,7 @@ const Policy = () => {
     const [isModalOpen, setModalOpen] = useState(false);
     const [inputValue, setInputValue] = useState('');
     const [htmlContent, setHtmlContent] = useState();
-    const [policyToOrganizations, setPolicyToOrganizations] = useState([]);
+    const [policyToOrganizations, setPolicyToOrganizations] = useState();
     const [extractedOrganizations, setExtractedOrganizations] = useState([]);
     const [ModalOrgOpen, setModalOrgOpen] = useState(false);
     const [openAlertModal, setOpenAlertModal] = useState(false)
@@ -107,14 +107,16 @@ const Policy = () => {
             setEditorState(oldEditorState);
         }
     }, [currentPolicy.content]);
-    console.log(policyToOrganizations, currentPolicy.policyToOrganizations)
+
+    console.log(currentPolicy)
+
     const saveUpdatePolicy = async () => {
         const Data = {}
         if (inputValue !== currentPolicy.policyName) Data.policyName = inputValue
         if (policyState !== currentPolicy.state) Data.state = policyState
         if (valueType !== currentPolicy.type) Data.type = valueType
         if (htmlContent !== currentPolicy.content) Data.content = htmlContent
-        if (policyToOrganizations[0] !== currentPolicy.policyToOrganizations[0]?.organization?.id) Data.policyToOrganizations = policyToOrganizations
+        if (policyToOrganizations !== currentPolicy.organization?.id) Data.policyToOrganizations = policyToOrganizations
         console.log(Data)
         if (Object.keys(Data).length > 0) {
             await updatePolicy({
@@ -129,6 +131,7 @@ const Policy = () => {
                 });
         }
         else {
+            console.log('Проверка не прошла')
             setOpenAlertModal(true)
         }
     };
@@ -190,7 +193,7 @@ const Policy = () => {
                         <div className={classes.inputRow2}>
                             <div></div>
                             <div>
-                                <button onClick={() => openOrgModal()}> Отредактировать</button>
+                                <button onClick={() => openOrgModal()}> Сохранить</button>
                             </div>
                             <div>
                                 {/* <img src={searchBlack} onClick={() => navigate('CreateDirectory')} /> */}
@@ -205,7 +208,7 @@ const Policy = () => {
                 Loading={isLoadingUpdatePoliciesMutation}
                 Error={isErrorUpdatePoliciesMutation}
                 Success={isSuccessUpdatePoliciesMutation}
-                textSuccess={"Пост успешно создан."}
+                textSuccess={"Политика успешно сохранена."}
                 textError={ErrorUpdatePoliciesMutation?.data?.errors[0]?.errors}
             ></HandlerMutation>
             {openAlertModal && <AlertUpdateData setModalOpen={setOpenAlertModal}></AlertUpdateData>}
