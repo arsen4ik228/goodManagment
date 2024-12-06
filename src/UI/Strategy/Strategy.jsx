@@ -10,13 +10,11 @@ import stats from '../Custom/icon/_icon _ stats.svg'
 import { useGetStrategyQuery, useGetStrategyIdQuery, useUpdateStrategyMutation, useGetStrategyNewQuery } from "../../BLL/strategyApi";
 import { useNavigate, useParams } from "react-router-dom";
 import search from "../Custom/icon/icon _ search.svg";
-import SearchModal from "../Custom/SearchModal/SearchModal";
 import MyEditor from "../Custom/Editor/MyEditor";
 import { EditorState, convertFromHTML, ContentState } from "draft-js";
 import draftToHtml from "draftjs-to-html"; // Импортируем конвертер
 import { convertToRaw } from "draft-js";
 import Header from "../Custom/Header/Header";
-import CustomSelect from "../Custom/CustomSelect/CustomSelect";
 import HandlerMutation from "../Custom/HandlerMutation";
 import { useSelector } from "react-redux";
 import ModalWindow from '../Custom/ConfirmStrategyToComplited/ModalWindow';
@@ -31,7 +29,6 @@ const Strategy = () => {
     const [inputValue, setInputValue] = useState('');
     const [valueDate, setValueDate] = useState('');
     const [isModalSearchOpen, setModalSearchOpen] = useState(false);
-    const [isModalOrgOpen, setModalOrgOpen] = useState(false);
     const [selectedId, setSelectedId] = useState('');
     const [editorState, setEditorState] = useState(EditorState.createEmpty());
     const [htmlContent, setHtmlContent] = useState();
@@ -80,7 +77,7 @@ const Strategy = () => {
           skip: !selectedOrg,
         }
       );
-      console.warn(allStrategies)
+
       const {
         currentStrategy = [],
         // organizations = [],
@@ -160,7 +157,8 @@ const Strategy = () => {
       console.log(activeStrategDB)
 
       const saveUpdateStrategy = async () => {
-        console.log(strategyId, currentStrategy.state, currentStrategy.strategyToOrganizations)
+        console.log(strategyId, currentStrategy.state)
+        if (currentStrategy.state)
         await updateStrategy({
             // userId,
             strategyId: strategyId,
@@ -168,8 +166,6 @@ const Strategy = () => {
             _id: strategyId,
             state: currentStrategy.state !== isState ? isState : undefined,
             content: htmlContent,
-            // strategyToOrganizations: strategyToOrganizations,
-
         })
             .unwrap()
             .then(() => {
@@ -253,11 +249,14 @@ const Strategy = () => {
         <>
             <div className={classes.wrapper}>
                 <>
-                    <Header create={true} title={'Стратегии'}></Header>
+                    <Header create={false} title={'Редактировать стратегию'}></Header>
                 </>
 
                 <div className={classes.inputRow1}>
                     <div className={classes.first}>
+                        <span>
+                            Cтратегия №{currentStrategy.strategyNumber}
+                        </span>
                         <select name={'mySelect'} disabled={currentStrategy.state === 'Завершено'} value={isState} onChange={(e) => setIsState(e.target.value)}>
                             {currentStrategy.state == 'Черновик' && (<option value={'Черновик'}>Черновик</option>)}
                             <option value={'Активный'}>Активный</option>
@@ -281,11 +280,6 @@ const Strategy = () => {
                         <div>
                             <button onClick={() => save()}> CОХРАНИТЬ</button>
                         </div>
-                        {/* <div>
-                            <img src={searchBlack} />
-                            <img src={policy} className={classes.image}/>
-                            <img src={stats}/>
-                        </div> */}
                     </div>
                 </footer>
             </div>
@@ -293,7 +287,7 @@ const Strategy = () => {
             {openModal && (
                 <ModalWindow
                     text={
-                        "У Вас уже есть Активная стратегия, при нажатии на Да, Она будет завершена."
+                        "У Вас уже есть Активная стратегия, при нажатии кнопки Да, Она будет завершена."
                     }
                     close={setOpenModal}
                     btnYes={btnYes}
@@ -309,10 +303,6 @@ const Strategy = () => {
                 // textError={ErrorStrategyMutation?.data?.errors[0]?.errors}
             ></HandlerMutation>
 
-            
-            {isModalOrgOpen && <CustomSelect setModalOpen={setModalOrgOpen} requestFunc={saveUpdateStrategy}
-                organizations={organizations} isToOrganizations={strategyToOrganizations}
-                setToOrganizations={setStrategyToOrganizations}></CustomSelect>}
         </>
     );
 };

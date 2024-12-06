@@ -249,10 +249,9 @@ h6 {
     display: flex;
     margin-top: 57px;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     height: 50px;
-    padding: 0 1rem;
-
+    padding: 0 15px;
 
     div {
         display: flex;
@@ -291,15 +290,19 @@ h6 {
     select {
         display: inline-block;
         font-family: "'Montserrat', sans-serif";
-        font-size: 16px;
+        font-size: 1.2rem;
         height: 1.5rem;
         border-bottom: #005475 1px solid;
+    }
+
+    span{
+        font-size: 1.5rem;
     }
 }
 
 .first {
     justify-content: space-between;
-    padding: 1rem;
+    padding: 15px 0;
 }
 
 .second {
@@ -313,7 +316,7 @@ h6 {
 
 .inputRow2 {
     display: flex;
-    padding: 1rem 2.5rem;
+    padding: 15px;
     /*border: #005475 1px solid;*/
     width: 100%;
     align-items: center;
