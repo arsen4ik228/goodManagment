@@ -136,11 +136,6 @@ const Policy = () => {
         }
     };
 
-
-    const openModal = () => {
-        setModalOpen(true);
-        console.log(isModalOpen)
-    }
     const openOrgModal = () => {
         setModalOrgOpen(true)
     }
@@ -159,7 +154,7 @@ const Policy = () => {
                     </div>
                     {disabled && (
                         <div className={classes.organizationInfo}>
-                            {/* <div>Организация:</div> */}
+                            <span>Организация:</span>
                             <span>Soplya firma</span>
                         </div>
                     )}
