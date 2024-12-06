@@ -46,7 +46,6 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
     display: flex;
     flex-direction: column;
     margin-top: 57px;
-    /* height: 50px; */
     padding: 0 1rem;
 
     div{
@@ -65,18 +64,8 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
         color: #005475;
         text-transform: uppercase;
         border-bottom: #005475 2px solid;
-       
     }
-    /* @media screen and (max-width: 375px) {
-        input {
-            width: 7rem;
-        }
-    }
-    @media screen and (max-width: 440px) {
-        input {
-            width: 10rem;
-        }
-    } */
+  
 
     img{
         display: inline-block;
@@ -99,8 +88,7 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 .organizationInfo{
     justify-content: space-between;
     font-size: 1.4rem;
-    padding: 10px 0.2em;
-    
+    padding-bottom: 10px;    
     >span{
         color: grey;
     }
@@ -123,20 +111,10 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 }
 .inputRow2{
     display: flex;
-    padding: 1rem 2.5rem;
+    padding: 15px;
     /*border: #005475 1px solid;*/
     width: 100%;
     align-items: center;
-
-    @media screen and (max-width: 395px) {
-        padding: 1.5rem 2rem;
-    }
-    @media screen and (max-width: 370px) {
-        padding: 1.5rem 1.5rem;
-    }
-    @media screen and (max-width: 350px) {
-        padding: 1.5rem 0.5rem;
-    }
 
 
     img{
