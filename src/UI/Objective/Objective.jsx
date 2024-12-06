@@ -18,7 +18,7 @@ function Objective(props) {
     const { userId } = useParams();
     const [testParam, setTestParam] = useState("");
     const [activeIndex, setActiveIndex] = useState('0');
-    const [selectedStrategId, setSelectedStrategId] = useState('');
+    const [selectedStrategyId, setselectedStrategyId] = useState('');
     const [manualSuccessReset, setManualSuccessReset] = useState(false);
     const [manualErrorReset, setManualErrorReset] = useState(false);
 
@@ -52,7 +52,7 @@ function Objective(props) {
         isErrorGetSpeedGoalId,
         isFetchingGetSpeedGoalId,
     } = useGetSpeedGoalIdQuery(
-        { userId, strategId: selectedStrategId },
+        { userId, strategId: selectedStrategyId },
         {
             selectFromResult: ({ data, isLoading, isError, isFetching }) => ({
                 currentSpeedGoal: data?.currentSpeedGoal || {},
@@ -60,10 +60,12 @@ function Objective(props) {
                 isErrorGetSpeedGoalId: isError,
                 isFetchingGetSpeedGoalId: isFetching,
             }),
-            skip: !selectedStrategId,
+            skip: !selectedStrategyId,
         }
     );
+
     console.log(currentSpeedGoal)
+
     const [
         updateSpeedGoal,
         {
@@ -98,6 +100,11 @@ function Objective(props) {
             )
         );
     }, [rootCauseEditors]);
+
+    useEffect(() => {
+        if (activeAndDraftStrategies.length > 0)
+            setselectedStrategyId(activeAndDraftStrategies[0]?.id)
+    }, [activeAndDraftStrategies])
 
     useEffect(() => {
         // Initialize editors for 'content' if it's an array
@@ -154,7 +161,7 @@ function Objective(props) {
     }, [currentSpeedGoal]);
 
     const saveUpdateSpeedGoal = async () => {
-        if (selectedStrategId.length > 0) {
+        if (selectedStrategyId.length > 0) {
             await updateSpeedGoal({
                 userId,
                 objectiveId: currentSpeedGoal.id,
@@ -162,7 +169,7 @@ function Objective(props) {
                 situation: htmlSituation.length > 0 ? htmlSituation : undefined,
                 content: htmlContent.length > 0 ? htmlContent : undefined,
                 rootCause: htmlRootCause.length > 0 ? htmlRootCause : undefined,
-                strategyId: selectedStrategId,
+                strategyId: selectedStrategyId,
             })
                 .unwrap()
                 .then(() => {
@@ -261,7 +268,6 @@ function Objective(props) {
         }
     };
 
-
     const onDragEnd = (result, type) => {
         const { source, destination } = result;
 
@@ -298,6 +304,7 @@ function Objective(props) {
                 break;
         }
     };
+
     console.log(contentEditors)
 
     return (
@@ -309,7 +316,7 @@ function Objective(props) {
 
                 <div className={classes.inputRow1}>
                     <div className={classes.first}>
-                        <select name={'strategy'} onChange={(e) => setSelectedStrategId(e.target.value)}>
+                        <select name={'strategy'} onChange={(e) => setselectedStrategyId(e.target.value)}>
                             {/* <option value={''}>-</option> */}
                             {activeAndDraftStrategies?.map((item, index) => (
                                 <>
@@ -357,7 +364,7 @@ function Objective(props) {
                         />
                     ) : (
                         <>
-                            {selectedStrategId.length > 0 && (
+                            {selectedStrategyId.length > 0 && (
                                 <>
                                     {activeIndex == 0 && (
                                         <DragDropContext
@@ -562,7 +569,6 @@ function Objective(props) {
                 </div>
             </div>
 
-            {selectedStrategId.length > 0 && (
                 <footer className={classes.inputContainer}>
                     <div className={classes.inputColumn}>
                         <div className={classes.inputRow2}>
@@ -574,7 +580,6 @@ function Objective(props) {
                         </div>
                     </div>
                 </footer>
-            )}
 
         </>
     );
