@@ -13,14 +13,13 @@ import { useNavigate, useParams } from "react-router-dom";
 const Chat = () => {
 
     const array = [
-        { id: '1', icon: star, text: 'Цели', link: 'Goal' },
-        { id: '2', icon: policy, text: 'Политика', link: 'Policy' },
-        { id: '3', icon: stats, text: 'Статистики', link: 'Statistics', },
+        { id: '1', icon: post, text: 'Посты', link: 'Posts' },
+        { id: '2', icon: listView, text: 'Проекты', link: 'Projects' },
+        { id: '3', icon: strategy, text: 'Стратегия', link: 'Strategy' },
         { id: '4', icon: star, text: 'Краткосрочная цель', link: 'Objective', },
-        { id: '5', icon: strategy, text: 'Стратегия', link: 'Strategy' },
-        { id: '6', icon: listView, text: 'Проекты', link: 'Projects' },
-        { id: '7', icon: post, text: 'Посты', link: 'Posts' },
-
+        { id: '5', icon: stats, text: 'Статистики', link: 'Statistics', },
+        { id: '6', icon: policy, text: 'Политика', link: 'Policy' },
+        { id: '7', icon: star, text: 'Цели', link: 'Goal' },
     ]
 
     const navigate = useNavigate()
@@ -69,7 +68,7 @@ const Chat = () => {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> 
 
                 </div>
                 <footer className={classes.inputContainer}>
