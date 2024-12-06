@@ -150,8 +150,8 @@ function Objective(props) {
         else if (currentSpeedGoal.rootCause === null) {
             setRootCauseEditors([]);
         }
-        
-    }, [currentSpeedGoal.id]);
+
+    }, [currentSpeedGoal]);
 
     const saveUpdateSpeedGoal = async () => {
         if (selectedStrategId.length > 0) {
@@ -159,9 +159,9 @@ function Objective(props) {
                 userId,
                 objectiveId: currentSpeedGoal.id,
                 _id: userId,
-                situation: htmlSituation.length>0 ? htmlSituation : undefined,
-                content: htmlContent.length>0 ? htmlContent : undefined,
-                rootCause: htmlRootCause.length>0 ? htmlRootCause : undefined,
+                situation: htmlSituation.length > 0 ? htmlSituation : undefined,
+                content: htmlContent.length > 0 ? htmlContent : undefined,
+                rootCause: htmlRootCause.length > 0 ? htmlRootCause : undefined,
                 strategyId: selectedStrategId,
             })
                 .unwrap()
@@ -299,6 +299,7 @@ function Objective(props) {
         }
     };
     console.log(contentEditors)
+
     return (
         <>
             <div className={classes.wrapper}>
@@ -309,7 +310,7 @@ function Objective(props) {
                 <div className={classes.inputRow1}>
                     <div className={classes.first}>
                         <select name={'strategy'} onChange={(e) => setSelectedStrategId(e.target.value)}>
-                            <option value={''}>-</option>
+                            {/* <option value={''}>-</option> */}
                             {activeAndDraftStrategies?.map((item, index) => (
                                 <>
                                     <option key={index} value={item?.id} style={{ color: item?.state === 'Активный' ? '#005475' : 'none' }}>Стратегия №{item?.strategyNumber}</option>
@@ -561,13 +562,19 @@ function Objective(props) {
                 </div>
             </div>
 
-            <footer className={classes.inputContainer}>
-                <div className={classes.inputColumn}>
-                    <div className={classes.inputRow2}>
-                        <button style={{ backgroundColor: !selectedStrategId.length > 0 ? 'grey' : '' }} onClick={() => saveUpdateSpeedGoal()}> отредактировать</button>
+            {selectedStrategId.length > 0 && (
+                <footer className={classes.inputContainer}>
+                    <div className={classes.inputColumn}>
+                        <div className={classes.inputRow2}>
+                            <button
+                                onClick={() => saveUpdateSpeedGoal()}
+                            >
+                                Сохранить
+                            </button>
+                        </div>
                     </div>
-                </div>
-            </footer>
+                </footer>
+            )}
 
         </>
     );
