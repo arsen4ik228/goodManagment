@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Header from '../../Custom/Header/Header'
 import classes from "./CreatePolicyDirectory.module.css"
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useGetPolicyDirectoriesQuery, usePostPolicyDirectoriesMutation } from '../../../BLL/policyDirectoriesApi'
 import { useGetPoliciesQuery } from '../../../BLL/policyApi'
 import HandlerMutation from '../../Custom/HandlerMutation'
@@ -10,6 +10,7 @@ import SetPolicyDirectoryName from '../../Custom/SetPolicyDirectoyName/SetPolicy
 export default function CreatePolicyDirectory() {
 
     const { userId } = useParams()
+    const navigate = useNavigate()
     const [selectedId, setSelectedId] = useState([])
     const [directoryName, setDirectoryName] = useState('')
     const [openModal, setOpenModal] =useState(false)
@@ -73,8 +74,9 @@ export default function CreatePolicyDirectory() {
             policyToPolicyDirectories: selectedId,
         })
             .unwrap()
-            .then(() => {
-                reset();
+            .then((result) => {
+                // reset();
+                navigate(`/${userId}/Policy/EditDirectory/${result?.id}`)
             })
             .catch((error) => {
                 console.error("Ошибка:", JSON.stringify(error, null, 2)); // выводим детализированную ошибку
