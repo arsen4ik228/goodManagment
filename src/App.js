@@ -34,7 +34,7 @@ function App() {
         <>
             <Routes>
                 {/* <Route path={'/'} element={<Navigate replace to="Main" />}></Route> */}
-                <Route path={'/'} element={<AuthorizationPage/>}></Route>
+                {/* <Route path={'/'} element={<AuthorizationPage/>}></Route> */}
                 <Route path="/*"
                     element={
                         <Routes>

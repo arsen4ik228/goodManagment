@@ -9,6 +9,7 @@ import { useGetOrganizationsQuery } from '../../BLL/organizationsApi'
 import { useDispatch } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import Graphic from '../Custom/Graph/Graphic'
+import HandlerMutation from '../Custom/HandlerMutation'
 
 export default function NewStatistic() {
 
@@ -160,8 +161,8 @@ export default function NewStatistic() {
             .then((result) => {
                 reset();
                 //   createStatisticNavigate(result.id);
-                console.log("result.id");
-                console.log(result.id);
+                navigate(`/${userId}/Statistics/${result?.id}`)
+
             })
             .catch((error) => {
                 console.error("Ошибка:", JSON.stringify(error, null, 2)); // выводим детализированную ошибку
@@ -353,6 +354,14 @@ export default function NewStatistic() {
                     )}
                 </div>
             </div>
+            <HandlerMutation
+                Loading={isLoadingPostStatisticMutation}
+                Error={isErrorPostStatisticMutation}
+                Success={isSuccessPostStatisticMutation}
+                textSuccess={"Подборка политик успешко создана"}
+                textError={Error?.data?.errors[0]?.errors}
+            >
+            </HandlerMutation>
         </div>
     )
 }

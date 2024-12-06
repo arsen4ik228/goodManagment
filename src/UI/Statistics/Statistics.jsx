@@ -231,6 +231,11 @@ export default function Statistics() {
     }, [currentStatistic, isLoadingGetStatisticId, isFetchingGetStatisticId]);
 
     useEffect(() => {
+        if (currentStatistic.type && currentStatistic.type !== type)
+            setType(currentStatistic.type)
+    }, [currentStatistic])
+
+    useEffect(() => {
         console.warn(statisticDatas.length, reportDay)
 
         if (statisticDatas.length > 0 && reportDay) {
