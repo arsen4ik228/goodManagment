@@ -742,7 +742,7 @@ export default function NewProject() {
                 <button
                   onClick={() => saveProject()}
                 >
-                  {edit ? 'РЕДАКТИРОВАТЬ' : 'СОХРАНИТЬ'}
+                  СОХРАНИТЬ
                 </button>
               </div>
               <div>
