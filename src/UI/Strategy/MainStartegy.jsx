@@ -135,7 +135,7 @@ const MainStrategy = () => {
                             <div className={classes.right}>
                                 <ul className={classes.selectList}>
                                     {organizations?.map((item) => (
-                                        <li key={item.id} onChange={(e) => setSelectedOrg(item.id)}>
+                                        <li key={item.id} onClick={(e) => setSelectedOrg(item.id)}>
                                             {(selectedOrg == item.id) ?
                                                 (<>
                                                     <input

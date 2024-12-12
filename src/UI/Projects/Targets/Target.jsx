@@ -35,7 +35,7 @@ function Target({ contentSender, workersList, setSelectedWorker, setDeadlineDate
   }, [content])
 
   const completeTarget = () => {
-    if (targetStatus === 'Завершена') return
+    if (item?.targetState === 'Завершена') return
     setOpenConfirmCompleteModal(true)
   }
   const removeTarget = () => {
@@ -49,12 +49,12 @@ function Target({ contentSender, workersList, setSelectedWorker, setDeadlineDate
       <div className={classes.cardContainer}>
         {!isArchive && (
           <div className={classes.header}>
-          {(!isNew && !edit && !item?.isExpired) &&
+          {(!isNew && !edit) &&
             (
               <div className={classes.confirm} onClick={() => completeTarget()}>
-                {targetStatus === 'Завершена' ? 'Задача завершена' : "Завершить задачу"}
+                {item?.targetState === 'Завершена' ? 'Задача завершена' : "Завершить задачу"}
                 <input type="checkbox"
-                  checked={targetStatus === 'Завершена'}
+                  checked={item?.targetState === 'Завершена'}
                 />
               </div>
             )}
@@ -127,7 +127,7 @@ function Target({ contentSender, workersList, setSelectedWorker, setDeadlineDate
                     <span> Просрочено {formattedDate(deadline)} </span>
                   </div>
                 ) : (
-                  targetStatus === 'Отменена' ?
+                  item?.targetState === 'Отменена' ?
                     (
                       <div className={classes.deadline}>
                         {/* <input type="date" value={deadline} disabled={!edit} onChange={(e) => setDeadlineDate(e.target.value)} /> */}

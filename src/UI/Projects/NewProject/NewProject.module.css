@@ -24,6 +24,25 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
     overflow: hidden;
 }
 
+.header {
+    /* margin-bottom: 57px; */
+}
+
+.saveIcon {
+    position: relative;
+    z-index: 1000;
+    width: 100%;
+
+    >img {
+        z-index: 1000;
+        position: absolute;
+        float: left;
+        top: 17px;
+        right: 10px;
+        cursor: pointer;
+    }
+}
+
 .body{
     /* flex: 1 1 auto; */
     margin-top: 57px;

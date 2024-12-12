@@ -66,19 +66,19 @@ const Strategy = () => {
         allStrategies = [],
         isLoadingStrateg,
         isErrorStrateg,
-      } = useGetStrategyQuery(
+    } = useGetStrategyQuery(
         { userId, organizationId: selectedOrg },
         {
-          selectFromResult: ({ data, isLoading, isError }) => ({
-            allStrategies: data?.activeAndDraftStrategies || [],
-            isLoadingStrateg: isLoading,
-            isErrorStrateg: isError,
-          }),
-          skip: !selectedOrg,
+            selectFromResult: ({ data, isLoading, isError }) => ({
+                allStrategies: data?.activeAndDraftStrategies || [],
+                isLoadingStrateg: isLoading,
+                isErrorStrateg: isError,
+            }),
+            skip: !selectedOrg,
         }
-      );
+    );
 
-      const {
+    const {
         currentStrategy = [],
         // organizations = [],
     } = useGetStrategyIdQuery(
@@ -102,7 +102,7 @@ const Strategy = () => {
         },
     ] = useUpdateStrategyMutation();
 
-  
+
 
     useEffect(() => {
         setSelectedId(selectedStrategy)
@@ -110,7 +110,7 @@ const Strategy = () => {
 
 
     useEffect(() => {
-        const rawContent = draftToHtml(
+            const rawContent = draftToHtml(
             convertToRaw(editorState.getCurrentContent())
         );
         setHtmlContent(rawContent);
@@ -146,34 +146,34 @@ const Strategy = () => {
     }, [currentStrategy.state, currentStrategy.dataActive, extractedOrganizations]);
 
     useEffect(() => {
-        if (selectedOrg !== "" ) {
-          const activeStrateg = allStrategies?.find(
-            (item) => item.state === "Активный"
-          );
-          setActiveStrategDB(activeStrateg?.id);
+        if (selectedOrg !== "") {
+            const activeStrateg = allStrategies?.find(
+                (item) => item.state === "Активный"
+            );
+            setActiveStrategDB(activeStrateg?.id);
         }
-      }, [selectedOrg]);
+    }, [selectedOrg]);
 
-      console.log(activeStrategDB)
+    console.log(activeStrategDB)
 
-      const saveUpdateStrategy = async () => {
+    const saveUpdateStrategy = async () => {
         console.log(strategyId, currentStrategy.state)
         if (currentStrategy.state)
-        await updateStrategy({
-            // userId,
-            strategyId: strategyId,
-            userId: userId,
-            _id: strategyId,
-            state: currentStrategy.state !== isState ? isState : undefined,
-            content: htmlContent,
-        })
-            .unwrap()
-            .then(() => {
-                // setTimeout(() => navigate(-1), 800);
-            })            
-            .catch((error) => {
-                console.error("Ошибка:", JSON.stringify(error, null, 2)); // выводим детализированную ошибку
-            });
+            await updateStrategy({
+                // userId,
+                strategyId: strategyId,
+                userId: userId,
+                _id: strategyId,
+                state: currentStrategy.state !== isState ? isState : undefined,
+                content: htmlContent,
+            })
+                .unwrap()
+                .then(() => {
+                    // setTimeout(() => navigate(-1), 800);
+                })
+                .catch((error) => {
+                    console.error("Ошибка:", JSON.stringify(error, null, 2)); // выводим детализированную ошибку
+                });
     };
 
 
@@ -184,15 +184,15 @@ const Strategy = () => {
         console.log(activeStrategDB);
         console.log(isState)
         if (
-          isState === "Активный" &&
-          currentStrategy.state === "Черновик" &&
-          activeStrategDB
+            isState === "Активный" &&
+            currentStrategy.state === "Черновик" &&
+            activeStrategDB
         ) {
-          setOpenModal(true);
+            setOpenModal(true);
         } else {
-          saveUpdateStrategy();
+            saveUpdateStrategy();
         }
-      };
+    };
 
     const btnYes = async () => {
         await updateStrategy({
@@ -231,7 +231,7 @@ const Strategy = () => {
                     // saveUpdateStrategy();
                     setOpenModal(false)
                     // setTimeout(() => navigate(-1), 800);
-                })  
+                })
                 .catch((error) => {
                     // При ошибке также сбрасываем флаги
                     //   setManualErrorReset(false);
@@ -257,31 +257,46 @@ const Strategy = () => {
                         <span>
                             Cтратегия №{currentStrategy.strategyNumber}
                         </span>
-                        <select name={'mySelect'} disabled={currentStrategy.state === 'Завершено'} value={isState} onChange={(e) => setIsState(e.target.value)}>
-                            {currentStrategy.state == 'Черновик' && (<option value={'Черновик'}>Черновик</option>)}
-                            <option value={'Активный'}>Активный</option>
-                            {currentStrategy.state == 'Активный' && (<option value={'Завершено'}>Завершено</option>)}
+                        <select
+                            name={'mySelect'}
+                            disabled={currentStrategy.state === 'Завершено'}
+                            value={isState} onChange={(e) => setIsState(e.target.value)}
+                        >
+                            {currentStrategy.state == 'Черновик' && (
+                                <option value={'Черновик'}>Черновик</option>
+                            )}
+                            {currentStrategy.state !== 'Завершено' && (
+                                <option value={'Активный'}>Активный</option>
+                            )}
+                            {currentStrategy.state !== 'Черновик' && (
+                                <option value={'Завершено'}>Завершено</option>
+                            )}
                         </select>
-                        {valueDate && (<input type="date" name="calendar"  value={valueDate}
+                        {valueDate && (<input type="date" name="calendar" value={valueDate}
                             onChange={(e) => setValueDate(e.target.value)} />)}
 
                     </div>
                 </div>
 
                 <div className={classes.body}>
-                        <div className={classes.editorContainer}>
-                            <MyEditor editorState={editorState} setEditorState={setEditorState} />
-                        </div>
+                    <div className={classes.editorContainer}>
+                        <MyEditor
+                            editorState={editorState}
+                            setEditorState={currentStrategy.state == 'Завершено' ? '' : setEditorState}
+                        />
+                    </div>
                 </div>
 
 
-                <footer className={classes.inputContainer}>
+                {currentStrategy.state !== 'Завершено' && (
+                    <footer className={classes.inputContainer}>
                     <div className={classes.inputRow2}>
                         <div>
                             <button onClick={() => save()}> CОХРАНИТЬ</button>
                         </div>
                     </div>
                 </footer>
+            )}
             </div>
 
             {openModal && (
@@ -300,7 +315,7 @@ const Strategy = () => {
                 Error={isErrorUpdateStrategyMutation}
                 Success={isSuccessUpdateStrategyMutation}
                 textSuccess={"Cтратегия успешно обновлена."}
-                // textError={ErrorStrategyMutation?.data?.errors[0]?.errors}
+            // textError={ErrorStrategyMutation?.data?.errors[0]?.errors}
             ></HandlerMutation>
 
         </>

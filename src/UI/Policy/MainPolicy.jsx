@@ -99,9 +99,7 @@ const MainStrategy = () => {
     const savePolicy = async () => {
         await postPolicy({
             userId,
-            policyName: 'Директива',
-            state: "Черновик",
-            type: 'Директива',
+            policyName: 'Политика',
             content: ' ',
             organizationId: selectedOrganization,
         })

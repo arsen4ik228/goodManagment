@@ -26,7 +26,7 @@ export default function NewStatistic() {
     const [postId, setPostId] = useState("");
     const [description, setDescription] = useState("");
     const [points, setPoints] = useState([
-        { valueDate: "", value: 0, id: new Date() },
+        { valueDate: new Date().toISOString().split('T')[0], value: 0, id: new Date() },
     ]);
 
     const [organization, setOrganization] = useState("");

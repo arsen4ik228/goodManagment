@@ -48,6 +48,7 @@ function Objective(props) {
 
     const {
         currentSpeedGoal = {},
+        isArchive,
         isLoadingGetSpeedGoalId,
         isErrorGetSpeedGoalId,
         isFetchingGetSpeedGoalId,
@@ -56,6 +57,7 @@ function Objective(props) {
         {
             selectFromResult: ({ data, isLoading, isError, isFetching }) => ({
                 currentSpeedGoal: data?.currentSpeedGoal || {},
+                isArchive: data?.isArchive,
                 isLoadingGetSpeedGoalId: isLoading,
                 isErrorGetSpeedGoalId: isError,
                 isFetchingGetSpeedGoalId: isFetching,
@@ -64,7 +66,7 @@ function Objective(props) {
         }
     );
 
-    console.log(currentSpeedGoal)
+    console.log(isArchive)
 
     const [
         updateSpeedGoal,
@@ -212,6 +214,7 @@ function Objective(props) {
     };
 
     const handleEditorChange = (index, newState, type) => {
+        if (isArchive) return
         switch (type) {
             case "content":
                 setContentEditors((prevEditors) => {
@@ -304,8 +307,6 @@ function Objective(props) {
                 break;
         }
     };
-
-    console.log(contentEditors)
 
     return (
         <>
@@ -401,14 +402,16 @@ function Objective(props) {
                                                                                 )
                                                                             }
                                                                         />
-                                                                        <img
-                                                                            src={deleteImage}
-                                                                            alt="deleteImage"
-                                                                            className={classes.deleteIcon}
-                                                                            onClick={() =>
-                                                                                deleteEditor(index, "content")
-                                                                            } // Передаём тип content
-                                                                        />
+                                                                        {/* {!isArchive && (
+                                                                            <img
+                                                                                src={deleteImage}
+                                                                                alt="deleteImage"
+                                                                                className={classes.deleteIcon}
+                                                                                onClick={() =>
+                                                                                    deleteEditor(index, "content")
+                                                                                }
+                                                                            />
+                                                                        )} */}
                                                                     </div>
                                                                 )}
                                                             </Draggable>
@@ -454,14 +457,17 @@ function Objective(props) {
                                                                                 )
                                                                             }
                                                                         />
-                                                                        <img
-                                                                            src={deleteImage}
-                                                                            alt="deleteImage"
-                                                                            className={classes.deleteIcon}
-                                                                            onClick={() =>
-                                                                                deleteEditor(index, "situation")
-                                                                            } // Передаём тип content
-                                                                        />
+                                                                        {/* {!isArchive && (
+
+                                                                            <img
+                                                                                src={deleteImage}
+                                                                                alt="deleteImage"
+                                                                                className={classes.deleteIcon}
+                                                                                onClick={() =>
+                                                                                    deleteEditor(index, "situation")
+                                                                                } // Передаём тип content
+                                                                            />
+                                                                        )} */}
                                                                     </div>
                                                                 )}
                                                             </Draggable>
@@ -507,14 +513,17 @@ function Objective(props) {
                                                                                 )
                                                                             }
                                                                         />
-                                                                        <img
-                                                                            src={deleteImage}
-                                                                            alt="deleteImage"
-                                                                            className={classes.deleteIcon}
-                                                                            onClick={() =>
-                                                                                deleteEditor(index, "rootCause")
-                                                                            } // Передаём тип content
-                                                                        />
+                                                                        {/* {!isArchive && (
+
+                                                                            <img
+                                                                                src={deleteImage}
+                                                                                alt="deleteImage"
+                                                                                className={classes.deleteIcon}
+                                                                                onClick={() =>
+                                                                                    deleteEditor(index, "rootCause")
+                                                                                } // Передаём тип content
+                                                                            />
+                                                                        )} */}
                                                                     </div>
                                                                 )}
                                                             </Draggable>
@@ -532,7 +541,7 @@ function Objective(props) {
                                         Success={isSuccessUpdateSpeedGoalMutation && !manualSuccessReset}
                                         textSuccess={"Краткосрочная цель обновлена"}
                                     />
-                                    {Object.keys(currentSpeedGoal).length > 0 && (
+                                    {/* {Object.keys(currentSpeedGoal).length > 0 && (
                                         <button
                                             className={classes.add}
                                             onClick={() => addEditor(activeIndex)}
@@ -561,7 +570,7 @@ function Objective(props) {
                                                 </span>
                                             </div>
                                         </button>
-                                    )}
+                                    )} */}
                                 </>
                             )}
                         </>
@@ -569,6 +578,7 @@ function Objective(props) {
                 </div>
             </div>
 
+            {!isArchive && (
                 <footer className={classes.inputContainer}>
                     <div className={classes.inputColumn}>
                         <div className={classes.inputRow2}>
@@ -580,6 +590,7 @@ function Objective(props) {
                         </div>
                     </div>
                 </footer>
+            )}
 
         </>
     );

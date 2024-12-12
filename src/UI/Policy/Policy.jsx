@@ -73,7 +73,7 @@ const Policy = () => {
     ] = useUpdatePoliciesMutation();
 
     useEffect(() => {
-        setInputValue(currentPolicy.policyName);
+        setInputValue(currentPolicy.policyName === 'Политика' ? `Политика №${currentPolicy.policyNumber}` : currentPolicy.policyName);
         currentPolicy.type === 'Инструкция' ? setValueType('Инструкция') : setValueType('Директива');
         setPolicyState(currentPolicy.state)
         if (currentPolicy.state === 'Отменён') setDisabled(true)

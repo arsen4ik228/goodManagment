@@ -9,64 +9,14 @@ import Header from "../../Custom/Header/Header";
 import HandlerMutation from "../../Custom/HandlerMutation";
 import { formattedDate } from "../../../BLL/constans"
 import { resizeTextarea } from "../../../BLL/constans";
+import listSetting from '../../Custom/icon/icon _ list setting.svg'
 import AlertOnlyOneProductTarget from "../../Custom/AlertOnlyOneProductTarget/AlertOnlyOneProductTarget";
+import CustomSelectSettingModal from "../CustomSelectSettingModal/CustomSelectSettingModal";
 
 export default function NewProject() {
   const { userId } = useParams();
   const navigate = useNavigate()
   const [IsTypeProgram, setIsTypeProgram] = useState(false);
-  const [openDescription, setOpenDescription] = useState(false)
-  const [projectDescription, setProjectDescription] = useState('')
-  const [projectName, setProjectName] = useState('')
-  const [isToOrganization, setIsToOrganization] = useState('')
-  const [selectedStrategy, setSelectedStrategy] = useState('')
-  const [selectedProgram, setSelectedProgram] = useState('')
-  const [sortPrograms, setSortPrograms] = useState([])
-  const [selectedWorker, setSelectedWorker] = useState('')
-  const [deadlineDate, setDeadlineDate] = useState('')
-  const [modalOpen, setModalOpen] = useState(false)
-  const [openModalAlertOnlyOneProductTarget, setOpenModalAlertOnlyOneProductTarget] = useState(false)
-
-  const [dummyKey, setDummyKey] = useState(0)
-  const [rulesArray, setRulesArray] = useState([])
-  const [productsArray, setProductsArray] = useState([])
-  const [statisticsArray, setStatisticsArray] = useState([])
-  const [simpleArray, setSimpleArray] = useState([])
-  const [eventArray, setEventArray] = useState([])
-
-  const [sortStrategy, setSortStrategy] = useState([])
-
-  const [targetIndex, setTargetIndex] = useState()
-  const [targetContent, setTargetContent] = useState('')
-  const [targetType, setTargetType] = useState('')
-
-  const [projectsForModal, setProjectsForModal] = useState([])
-  const [selectedProject, setSelectedProject] = useState([])
-  const [filtredProjects, setFiltredProjects] = useState([])
-  const [currentProjects, setCurrentProjects] = useState([])
-
-  const [workers, setWorkers] = useState([])
-  const [programs, setPrograms] = useState([])
-  const [organizations, setOrganizations] = useState([])
-  const [projects, setProjects] = useState([])
-  const [strategies, setStrategies] = useState([])
-
-  const TARGET_TYPES = {
-    'Правила': 'rules',
-    'Продукт': 'products',
-    'Статистика': 'statistics',
-    'Обычная': 'simple',
-    'Организационные мероприятия': 'event',
-  };
-
-  const ADD_TARGET = {
-    rules: { array: rulesArray, setFunction: setRulesArray },
-    products: { array: productsArray, setFunction: setProductsArray },
-    statistics: { array: statisticsArray, setFunction: setStatisticsArray },
-    simple: { array: simpleArray, setFunction: setSimpleArray },
-    event: { array: eventArray, setFunction: setEventArray },
-  };
-
 
   const {
     projectData = [],
@@ -85,6 +35,99 @@ export default function NewProject() {
     }),
     skip: !IsTypeProgram
   });
+
+  const [openDescription, setOpenDescription] = useState(true)
+  const [projectDescription, setProjectDescription] = useState('')
+  const [projectName, setProjectName] = useState('')
+  const [isToOrganization, setIsToOrganization] = useState('')
+  const [selectedStrategy, setSelectedStrategy] = useState('')
+  const [selectedProgram, setSelectedProgram] = useState('')
+  const [sortPrograms, setSortPrograms] = useState([])
+  const [selectedWorker, setSelectedWorker] = useState('')
+  const [deadlineDate, setDeadlineDate] = useState('')
+  const [modalOpen, setModalOpen] = useState(false)
+  const [openModalAlertOnlyOneProductTarget, setOpenModalAlertOnlyOneProductTarget] = useState(false)
+  const [openSelectSettingModal, setOpenSelectSettingModal] = useState(true)
+
+  const [sortStrategy, setSortStrategy] = useState([])
+
+  const [targetIndex, setTargetIndex] = useState()
+  const [targetContent, setTargetContent] = useState('')
+  const [targetType, setTargetType] = useState('')
+
+  const [projectsForModal, setProjectsForModal] = useState([])
+  const [selectedProject, setSelectedProject] = useState([])
+  const [filtredProjects, setFiltredProjects] = useState([])
+  const [currentProjects, setCurrentProjects] = useState([])
+
+  const [workers, setWorkers] = useState([])
+  const [programs, setPrograms] = useState([])
+  const [organizations, setOrganizations] = useState([])
+  const [projects, setProjects] = useState([])
+  const [strategies, setStrategies] = useState([])
+
+  const [dummyKey, setDummyKey] = useState(0)
+  const [rulesArray, setRulesArray] = useState([
+    {
+      type: 'Продукт',
+      orderNumber: 1,
+      content: "",
+      holderUserId: workers?.[0]?.id,
+      deadline: ""
+    }
+  ])
+  const [productsArray, setProductsArray] = useState([
+    {
+      type: 'Продукт',
+      orderNumber: 1,
+      content: "",
+      holderUserId: workers?.[0]?.id,
+      deadline: ""
+    }
+  ])
+  const [statisticsArray, setStatisticsArray] = useState([
+    {
+      type: 'Продукт',
+      orderNumber: 1,
+      content: "",
+      holderUserId: workers?.[0]?.id,
+      deadline: ""
+    }
+  ])
+  const [simpleArray, setSimpleArray] = useState([
+    {
+      type: 'Обычная',
+      orderNumber: 1,
+      content: "",
+      holderUserId: workers?.[0]?.id,
+      deadline: ""
+    }
+  ])
+  const [eventArray, setEventArray] = useState([
+    {
+      type: 'Продукт',
+      orderNumber: 1,
+      content: "",
+      holderUserId: workers?.[0]?.id,
+      deadline: ""
+    }
+  ])
+
+  const TARGET_TYPES = {
+    'Правила': 'rules',
+    'Продукт': 'products',
+    'Статистика': 'statistics',
+    'Обычная': 'simple',
+    'Организационные мероприятия': 'event',
+  };
+
+  const ADD_TARGET = {
+    rules: { array: rulesArray, setFunction: setRulesArray },
+    products: { array: productsArray, setFunction: setProductsArray },
+    statistics: { array: statisticsArray, setFunction: setStatisticsArray },
+    simple: { array: simpleArray, setFunction: setSimpleArray },
+    event: { array: eventArray, setFunction: setEventArray },
+  };
 
   const [
     postProject,
@@ -331,8 +374,14 @@ export default function NewProject() {
     <>
       <div className={classes.wrapper}>
         <>
-          <Header create={false} title={IsTypeProgram ? 'Создание новой программы' : 'Создание нового проекта'}></Header>
+          <div className={classes.header}>
+            <Header create={false} title={IsTypeProgram ? 'Создание новой программы' : 'Создание нового проекта'}></Header>
+            <div className={classes.saveIcon}>
+              <img src={listSetting} />
+            </div>
+          </div>
         </>
+
         <div className={classes.body}>
           <>
             <div className={classes.Type}>
@@ -434,7 +483,12 @@ export default function NewProject() {
                       )}
                     </div>
 
-                    <div className={classes.sectionName} onClick={() => addTarget('Продукт')}>Продукт</div>
+                    <div
+                      className={classes.sectionName}
+                      style={{ backgroundImage: 'none' }}
+                    >
+                      Продукт
+                    </div>
                     <div className={classes.targetsFlex}>
                       {productsArray.map((item, index) => (
                         <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Продукт')}>
@@ -448,12 +502,12 @@ export default function NewProject() {
                           </Target>
                         </div>
                       ))}
-                      {productsArray.length > 0 && (
+                      {/* {productsArray.length > 0 && (
                         <div className={classes.deleteContainer} onClick={() => deleteTarget(productsArray)}>
                           Удалить
                           <img src={deleteIcon} alt="delete" />
                         </div>
-                      )}
+                      )} */}
                     </div>
 
                     <div className={classes.sectionName} onClick={() => addTarget('Организационные мероприятия')}>Организационные мероприятия</div>
@@ -605,21 +659,28 @@ export default function NewProject() {
         </>
       </div>
 
-      {modalOpen && 
-      <CustomSelectModal
-        setModalOpen={setModalOpen}
-        projects={projectsForModal}
-        workers={workers}
-        selectedProject={selectedProject}
-        setSelectedProject={setSelectedProject}
-        setParentFilteredProjects={setFiltredProjects}
-      >
-      </CustomSelectModal>}
+      {modalOpen &&
+        <CustomSelectModal
+          setModalOpen={setModalOpen}
+          projects={projectsForModal}
+          workers={workers}
+          selectedProject={selectedProject}
+          setSelectedProject={setSelectedProject}
+          setParentFilteredProjects={setFiltredProjects}
+        >
+        </CustomSelectModal>}
 
-      {openModalAlertOnlyOneProductTarget && <AlertOnlyOneProductTarget
-        setModalOpen={setOpenModalAlertOnlyOneProductTarget}
-      >
-      </AlertOnlyOneProductTarget>}
+      {openModalAlertOnlyOneProductTarget &&
+        <AlertOnlyOneProductTarget
+          setModalOpen={setOpenModalAlertOnlyOneProductTarget}
+        >
+        </AlertOnlyOneProductTarget>}
+        
+      {openSelectSettingModal && (
+        <CustomSelectSettingModal
+          setModalOpen={setOpenSelectSettingModal}
+        ></CustomSelectSettingModal>
+      )}
 
       <HandlerMutation
         Loading={isLoadingProjectMutation}

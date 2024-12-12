@@ -1,12 +1,12 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import {baseUrl} from "./constans";
+import { baseUrl } from "./constans";
 
 export const speedGoalApi = createApi({
   reducerPath: "speedSpeedGoalApi",
   tagTypes: ["SpeedGoal"],
   baseQuery: fetchBaseQuery({ baseUrl }),
   endpoints: (build) => ({
-    
+
     getSpeedGoals: build.query({
       query: (userId = "") => ({
         url: `${userId}/objectives`,
@@ -17,33 +17,33 @@ export const speedGoalApi = createApi({
           .sort((a, b) => {
             const stateA = a.state || '';
             const stateB = b.state || '';
-            
+
             if (stateA === 'Активный' && stateB !== 'Активный') return -1;
             if (stateB === 'Активный' && stateA !== 'Активный') return 1;
-            
+
             if (stateA === 'Черновик' && stateB !== 'Черновик') return -1;
             if (stateB === 'Черновик' && stateA !== 'Черновик') return 1;
-            
+
             return 0;
           });
-      
-        const activeAndDraftStrategies = sortedStrategies.filter(strategy => 
+
+        const activeAndDraftStrategies = sortedStrategies.filter(strategy =>
           strategy.state === 'Активный' || strategy.state === 'Черновик'
         );
-      
-        const otherStrategies = sortedStrategies.filter(strategy => 
+
+        const otherStrategies = sortedStrategies.filter(strategy =>
           strategy.state !== 'Активный' && strategy.state !== 'Черновик'
         );
-      
+
         return {
           activeAndDraftStrategies: activeAndDraftStrategies,
-          archiveStrategies: otherStrategies,  
+          archiveStrategies: otherStrategies,
         };
       },
-        
-      
+
+
       providesTags: (result, error, userId) =>
-        result ? [{ type: "SpeedGoal", id: userId }] : [], 
+        result ? [{ type: "SpeedGoal", id: userId }] : [],
     }),
 
 
@@ -52,7 +52,7 @@ export const speedGoalApi = createApi({
         url: `${userId}/objectives/new`,
       }),
       providesTags: (result, error, userId) =>
-        result ? [{ type: "SpeedGoal", id: userId }] : [], 
+        result ? [{ type: "SpeedGoal", id: userId }] : [],
     }),
 
 
@@ -62,8 +62,8 @@ export const speedGoalApi = createApi({
         method: "POST",
         body,
       }),
-      invalidatesTags: (result, error, { userId }) => 
-        [{ type: "SpeedGoal", id: userId }], 
+      invalidatesTags: (result, error, { userId }) =>
+        [{ type: "SpeedGoal", id: userId }],
     }),
 
 
@@ -72,7 +72,7 @@ export const speedGoalApi = createApi({
         url: `${userId}/objectives/update`,
       }),
       providesTags: (result, error, userId) =>
-        result ? [{ type: "SpeedGoal", id: userId }] : [], 
+        result ? [{ type: "SpeedGoal", id: userId }] : [],
     }),
 
     getSpeedGoalId: build.query({
@@ -80,8 +80,11 @@ export const speedGoalApi = createApi({
         url: `${userId}/objectives/${strategId}`,
       }),
       transformResponse: (response) => {
+        console.log('response   ', response)
+        const isArchive = response?.strategy.state === 'Завершено' ? true : false
         return {
           currentSpeedGoal: response || {},
+          isArchive
         };
       },
       providesTags: (result, error, { strategId }) =>
