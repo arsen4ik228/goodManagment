@@ -41,9 +41,9 @@ export default function NewProject() {
   const [simpleList, setSimpleList] = useState([])
   const [statisticsList, setStatisticsList] = useState([])
 
-  const [selectedWorker, setSelectedWorker] = useState('')
+  const [selectedWorker, setSelectedWorker] = useState(null)
   const [targetState, setTargetState] = useState('')
-  const [deadlineDate, setDeadlineDate] = useState('')
+  const [deadlineDate, setDeadlineDate] = useState(null)
   const [targetIndex, setTargetIndex] = useState()
   const [targetContent, setTargetContent] = useState('')
   const [targetType, setTargetType] = useState('')
@@ -125,11 +125,11 @@ export default function NewProject() {
 
   }
 
-  // useEffect(() => {
-  //   if (isSuccessUpdateProjectMutation) {
-  //     setTimeout(window.location.reload(), 1000)
-  //   }
-  // }, [isSuccessUpdateProjectMutation])
+  useEffect(() => {
+    if (isSuccessUpdateProjectMutation) {
+      setTimeout(window.location.reload(), 1000)
+    }
+  }, [isSuccessUpdateProjectMutation])
 
   useEffect(() => { // фильтр Стратегий по организации
     if (strategies.length > 0) {
@@ -161,21 +161,21 @@ export default function NewProject() {
         // newElement?._id = item.id
         switch (item.type) {
           case 'Продукт':
-            setProductsArray((prevState) => ([...prevState, item]))
+            setProductsArray((prevState) => ([...prevState, {...item, holderUserIdchange: item.holderUserId}]))
             break;
           case 'Правила':
-            setRulesArray((prevState) => ([...prevState, item]))
+            setRulesArray((prevState) => ([...prevState, {...item, holderUserIdchange: item.holderUserId}]))
             setSelectedSections((prevState) => ([...prevState, 'Правила']))
             break;
           case 'Организационные мероприятия':
-            setEventArray((prevState) => ([...prevState, item]))
+            setEventArray((prevState) => ([...prevState, {...item, holderUserIdchange: item.holderUserId}]))
             setSelectedSections((prevState) => ([...prevState, 'Организационные мероприятия']))
             break;
           case 'Обычная':
-            setSimpleArray((prevState) => ([...prevState, item]))
+            setSimpleArray((prevState) => ([...prevState, {...item, holderUserIdchange: item.holderUserId}]))
             break;
           case 'Статистика':
-            setStatisticsArray((prevState) => ([...prevState, item]))
+            setStatisticsArray((prevState) => ([...prevState, {...item, holderUserIdchange: item.holderUserId}]))
             setSelectedSections((prevState) => ([...prevState, 'Метрика']))
             break;
           default:
@@ -230,12 +230,13 @@ export default function NewProject() {
   }, [deadlineDate])
 
   useEffect(() => {
-    if (targetType) {
+    if (targetType && selectedWorker !== null) {
       const { array, setFunction } = ADD_TARGET[targetType];
       const updatedArray = [...array]
       const updatedItem = { ...updatedArray[targetIndex], holderUserId: selectedWorker }
       updatedArray[targetIndex] = updatedItem
       setFunction(updatedArray)
+      setSelectedWorker(null)
     }
   }, [selectedWorker])
 

@@ -24,13 +24,14 @@ import CustomSelect from "../Custom/CustomSelect/CustomSelect";
 import HandlerMutation from "../Custom/HandlerMutation";
 import PolicySearchModal from "./PolicySearchModal/PolicySearchModule"
 import AlertUpdateData from '../Custom/AlertUpdateData/AlertUpdateData';
+import Mdxeditor from '../Custom/MDXEditor/Mdxeditor';
 
 
 const Policy = () => {
 
     const { userId, policyId } = useParams()
     const navigate = useNavigate()
-    const [editorState, setEditorState] = useState(EditorState.createEmpty());
+    const [editorState, setEditorState] = useState('');
     const [valueType, setValueType] = useState('')
     const [policyState, setPolicyState] = useState('')
     const [isModalOpen, setModalOpen] = useState(false);
@@ -59,7 +60,6 @@ const Policy = () => {
                 isErrorGetPoliciesId: isError,
                 isFetchingGetPoliciesId: isFetching,
             }),
-            skip: !policyId,
         }
     );
     const [
@@ -87,26 +87,26 @@ const Policy = () => {
         setPolicyToOrganizations(extractedOrganizations?.map(item => item.id))
     }, [extractedOrganizations])
 
-    useEffect(() => {//Editor
-        const rawContent = draftToHtml(
-            convertToRaw(editorState.getCurrentContent())
-        );
-        setHtmlContent(rawContent);
-    }, [editorState]);
+    // useEffect(() => {//Editor
+    //     const rawContent = draftToHtml(
+    //         convertToRaw(editorState.getCurrentContent())
+    //     );
+    //     setHtmlContent(rawContent);
+    // }, [editorState]);
 
-    useEffect(() => {//Editor content
-        if (currentPolicy.content) {
-            const { contentBlocks, entityMap } = convertFromHTML(
-                currentPolicy.content
-            );
-            const contentState = ContentState.createFromBlockArray(
-                contentBlocks,
-                entityMap
-            );
-            const oldEditorState = EditorState.createWithContent(contentState);
-            setEditorState(oldEditorState);
-        }
-    }, [currentPolicy.content]);
+    // useEffect(() => {//Editor content
+    //     if (currentPolicy.content) {
+    //         const { contentBlocks, entityMap } = convertFromHTML(
+    //             currentPolicy.content
+    //         );
+    //         const contentState = ContentState.createFromBlockArray(
+    //             contentBlocks,
+    //             entityMap
+    //         );
+    //         const oldEditorState = EditorState.createWithContent(contentState);
+    //         setEditorState(oldEditorState);
+    //     }
+    // }, [currentPolicy.content]);
 
     console.log(currentPolicy)
 
@@ -115,7 +115,7 @@ const Policy = () => {
         if (inputValue !== currentPolicy.policyName) Data.policyName = inputValue
         if (policyState !== currentPolicy.state) Data.state = policyState
         if (valueType !== currentPolicy.type) Data.type = valueType
-        if (htmlContent !== currentPolicy.content) Data.content = htmlContent
+         Data.content = editorState
         if (policyToOrganizations !== currentPolicy.organization?.id) Data.policyToOrganizations = policyToOrganizations
         console.log(Data)
         if (Object.keys(Data).length > 0) {
@@ -174,13 +174,23 @@ const Policy = () => {
                 </div>
 
                 <div className={classes.body}>
-                    <>
-                        <MyEditor
+                    {Object.keys(currentPolicy).length>0 && (
+                        <>
+                        {/* <MyEditor
                             editorState={editorState}
                             setEditorState={disabled ? '' : setEditorState}
                             policyContent={true}
-                        />
+                        /> */}
+                        <Mdxeditor
+                            key={currentPolicy?.id}
+                            editorState={currentPolicy?.content}
+                            setEditorState={setEditorState}
+                            userId={userId}
+                            policyId={policyId}
+                        >
+                        </Mdxeditor>
                     </>
+                )}
                 </div>
 
                 {!disabled && (

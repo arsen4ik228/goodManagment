@@ -28,8 +28,10 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 .body{
 
     flex: 1 1 auto;
-    max-height: calc(100vh - 173px);
+    max-height: calc(100vh - 200px);
     overflow: auto;
+    background-color: #F0F0F0;
+    padding: 5px;
 }
 
 .inputContainer{

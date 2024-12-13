@@ -166,7 +166,7 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 
 .targetsContainer{
     flex: 1;
-    background-color: #f0f8ff;
+    background-color: #F0F0F0;
     padding-bottom: 15px;
 }
 

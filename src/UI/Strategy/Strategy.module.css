@@ -179,6 +179,8 @@ h6 {
 
 .body {
     flex: 1 0 auto;
+    background-color: #F0F0F0;
+
     /* max-height: calc(100vh - 293px); */
     /* border: 1px solid red; */
     /* display: flex; */

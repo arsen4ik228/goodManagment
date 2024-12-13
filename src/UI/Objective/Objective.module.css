@@ -69,8 +69,8 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 }
 
 .first{
-    justify-content: space-between;
-    padding: 0 1em;
+    justify-content: center;
+    /* padding: 0 1em; */
 
     select{
       text-transform: uppercase;
@@ -105,6 +105,7 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
     max-height: calc(100vh - 173px);
     overflow: auto;
     padding: 10px 0;
+    background-color: #F0F0F0;
 }
 .editorContainer {
     /* margin-top: 10px; */
