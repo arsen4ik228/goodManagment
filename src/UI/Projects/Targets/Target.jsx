@@ -102,6 +102,7 @@ function Target({ contentSender, workersList, setSelectedWorker, setDeadlineDate
             <>
               <div className={classes.worker}>
                 <select name="selectWorker" id="1" onChange={(e) => setSelectedWorker(e.target.value)}>
+                <option>Выберите ответственного</option>
                   {workersList?.map((item, index) => (
                     <option key={index} value={item.id}> {item.firstName + ' ' + item.lastName}</option>
                   ))}
@@ -115,6 +116,7 @@ function Target({ contentSender, workersList, setSelectedWorker, setDeadlineDate
             <>
               <div className={classes.worker}>
                 <select name="selectWorker" id="1" value={worker} disabled={!edit} onChange={(e) => setSelectedWorker(e.target.value)}>
+                <option>Выберите ответственного</option>
                   {workersList?.map((item, index) => (
                     <option key={index} value={item.id}> {item.firstName + ' ' + item.lastName}</option>
                   ))}

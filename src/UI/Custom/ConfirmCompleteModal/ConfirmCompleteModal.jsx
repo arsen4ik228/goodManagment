@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import classes from './ConfirmCompleteModal.module.css'
-import { useNavigate } from 'react-router-dom'
 import close from "../SearchModal/icon/icon _ add.svg";
 
 export default function ConfirmCompleteModal({ setTargetState, setOpenModal, item }) {
 
-    const navigate = useNavigate()
     const [targetIsProduct, setTargetIsProduct] = useState(false)
 
     useEffect(() => {
@@ -15,9 +13,9 @@ export default function ConfirmCompleteModal({ setTargetState, setOpenModal, ite
     }, [item])
 
     const buttonClick = (flag) => {
+        console.log('clich change state')
         setTargetState('Завершена')
         setOpenModal(false)
-        // flag && navigate(-1)
     }
 
     return (
@@ -25,7 +23,7 @@ export default function ConfirmCompleteModal({ setTargetState, setOpenModal, ite
             <div className={classes.wrapper}>
                 <div className={classes.column}>
                     <div className={classes.close} onClick={() => setOpenModal(false)}>
-                        <img src={close} />
+                        <img src={close} alt='close'/>
                     </div>
                     {targetIsProduct ? (
                         <div className={classes.title}>Данное действие <span>нельзя отменить</span>, завершить проект?</div>

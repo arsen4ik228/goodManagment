@@ -340,7 +340,7 @@ function NewGoal(props) {
 
                                                         <div>
                                                             <span className={classes.nameButton}>
-                                                                Добавить еще одну часть цель
+                                                                Добавить еще одну часть цели
                                                             </span>
                                                         </div>
                                                     </button>

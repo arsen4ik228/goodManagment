@@ -24,6 +24,21 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
     overflow: hidden;
 }
 
+.saveIcon {
+    position: relative;
+    z-index: 1000;
+    width: 100%;
+
+    >img {
+        z-index: 1000;
+        position: absolute;
+        float: left;
+        top: 17px;
+        right: 10px;
+        cursor: pointer;
+    }
+}
+
 .body{
     /* flex: 1 1 auto; */
     margin-top: 57px;
@@ -64,47 +79,47 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
     /* border: #005475 1px solid; */
 }
 
-.bodyContainer{
+.bodyContainer {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    padding: 10px 25px;
+    padding: 10px 20px;
     /* height: 20px; */
-    /*border-bottom: #005475 solid 1px;*/
+    /* border: #005475 solid 1px; */
 }
 
-.name{
+.name {
     font-size: 1.25rem;
     width: 50%;
     /* border: black solid 1px; */
 }
 
-.selectSection{
+.selectSection {
     display: flex;
     font-size: 1.2rem;
     width: 50%;
-    /*border: black solid 1px;*/
+    /* border: black solid 1px; */
 
-    >select{
+    >select {
         font-size: 1.2rem;
-        font-family:"'Montserrat', sans-serif'";
+        font-family: "'Montserrat', sans-serif'";
         border-bottom: #005475 1px solid;
         height: 30px;
         width: 100%;
         text-align: center;
     }
 
-    >input{
+    >input {
         font-size: 1.2rem;
         /* height: 30px; */
+        height: 30px;
         font-family: "'Montserrat', sans-serif";
         border-bottom: #005475 1px solid;
         padding-left: 10px;
         width: 100%;
     }
 
-  
 }
 
 .OrgSection{
@@ -229,20 +244,10 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 
 .inputRow2{
     display: flex;
-    padding: 0.8rem;
+    padding: 15px;
     /*border: #005475 1px solid;*/
     width: 100%;
     align-items: center;
-
-    @media screen and (max-width: 395px) {
-        padding: 1.5rem 2rem;
-    }
-    @media screen and (max-width: 370px) {
-        padding: 1.5rem 1.5rem;
-    }
-    @media screen and (max-width: 350px) {
-        padding: 1.5rem 0.5rem;
-    }
 
 
     img{

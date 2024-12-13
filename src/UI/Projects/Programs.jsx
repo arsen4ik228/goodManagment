@@ -3,6 +3,7 @@ import classes from "./Programs.module.css"
 import Target from "./Targets/Target"
 import { useGetProgramIdQuery, useGetProgramNewQuery, useUpdateProjectMutation } from "../../BLL/projectApi"
 import { useNavigate, useParams } from "react-router-dom"
+import listSetting from '../Custom/icon/icon _ list setting.svg'
 import CustomSelectModal from "./CustomSelectModal/CustomSelectModal"
 import deleteIcon from '../Custom//icon/icon _ delete.svg'
 import Header from "../Custom/Header/Header"
@@ -10,6 +11,7 @@ import HandlerMutation from "../Custom/HandlerMutation"
 import { formattedDate, transformArraiesForUpdate } from "../../BLL/constans"
 import editIcon from '../Custom/icon/icon _ edit.svg'
 import CustomSelectModalProgram from "./CustomSelectModalProgram/CustomSelectModalProgram"
+import CustomSelectSettingModal from "./CustomSelectSettingModal/CustomSelectSettingModal"
 
 export default function Programs() {
   const { userId, programId } = useParams();
@@ -21,6 +23,8 @@ export default function Programs() {
   const [selectedProject, setSelectedProject] = useState([])
   const [filtredProjects, setFiltredProjects] = useState([])
   const [selectedProjectsForRequest, setSelectedProjectsForRequest] = useState([])
+  const [selectedSections, setSelectedSections] = useState([])
+  const [openSelectSettingModal, setOpenSelectSettingModal] = useState(false)
 
   const [projectsList, setProjectsList] = useState([])
   const [allProjects, setAllProjects] = useState([])
@@ -163,17 +167,17 @@ export default function Programs() {
 
 
   useEffect(() => {
-    if(projects && !filtredProjects.length>0) {
+    if (projects && !filtredProjects.length > 0) {
       const filtredProjects = projects.filter(project => project?.organization?.id === selectedOrg)
       setFiltredProjects(filtredProjects)
     }
   }, [projects, selectedOrg])
 
   useEffect(() => {
-      const newIds = projectsList?.map(item => item?.id);
-      setSelectedProjectsForRequest(newIds);
+    const newIds = projectsList?.map(item => item?.id);
+    setSelectedProjectsForRequest(newIds);
   }, [projectsList])
-  
+
   console.error(selectedProjectsForRequest)
   // useEffect(() => {
   //   if (currentProjects && Array.isArray(currentProjects)) {
@@ -201,7 +205,7 @@ export default function Programs() {
   }, [strategies, selectedOrg])
 
   useEffect(() => { // формирование массивов на основе targets
-    if (targets.length > 0 && productsArray.length < 1 && rulesArray.length < 1 && eventArray.length < 1 && simpleArray.length < 1 && statisticsArray.length < 1) {
+    if (targets.length > 0) {
       targets.forEach((item) => {
         switch (item.type) {
           case 'Продукт':
@@ -209,15 +213,20 @@ export default function Programs() {
             break;
           case 'Правила':
             setRulesArray([...rulesArray, { ...item, holderUserIdchange: item.holderUserId }])
+            setSelectedSections((prevState) => ([...prevState, 'Правила']))
             break;
           case 'Организационные мероприятия':
             setEventArray([...eventArray, { ...item, holderUserIdchange: item.holderUserId }])
+            setSelectedSections((prevState) => ([...prevState, 'Организационные мероприятия']))
             break;
           case 'Обычная':
             setSimpleArray([...simpleArray, { ...item, holderUserIdchange: item.holderUserId }])
             break;
           case 'Статистика':
             setStatisticsArray([...statisticsArray, { ...item, holderUserIdchange: item.holderUserId }])
+            setSelectedSections((prevState) => ([...prevState, 'Метрика']))
+            break;
+          default:
             break;
         }
         // setEvent(
@@ -233,17 +242,18 @@ export default function Programs() {
   console.log('массивчики   ', productsArray, rulesArray, eventArray, simpleArray, statisticsArray)
 
   useEffect(() => { // предустановка значений при загрузке страницы
-    if (currentProject?.organization?.id) {
+    if (currentProject?.organization?.id)
       setSelectedOrg(currentProject?.organization.id)
-    }
-    if (currentProject?.programId) {
+
+    if (currentProject?.programId)
       setSelectedProgram(currentProject.programId)
-    }
-    if (currentProject?.strategy?.id) {
+
+    if (currentProject?.strategy?.id)
       setSelectedStrategy(currentProject.strategy.id)
-    }
+
     if (currentProject?.content) {
       setDescriptionProject(currentProject?.content)
+      setSelectedSections((prevState) => ([...prevState, 'Описание']))
     }
   }, [currentProject])
 
@@ -398,25 +408,34 @@ export default function Programs() {
     ]
 
     console.log(Data)
-      await updateProject({
-        userId,
-        projectId: programId,
-        ...Data,
+    await updateProject({
+      userId,
+      projectId: programId,
+      ...Data,
+    })
+      .unwrap()
+      .then(() => {
+        reset();
       })
-        .unwrap()
-        .then(() => {
-          reset();
-        })
-        .catch((error) => {
-          console.error("Ошибка:", JSON.stringify(error, null, 2));
-        });
+      .catch((error) => {
+        console.error("Ошибка:", JSON.stringify(error, null, 2));
+      });
   }
   console.warn(projectsList)
   return (
     <>
       <div className={classes.wrapper}>
         <>
-          <Header create={false} title={'Редактирование программы'}></Header>
+          <div className={classes.header}>
+            <Header create={false} title={'Редактирование программы'}></Header>
+            <div className={classes.saveIcon}>
+              <img
+                src={listSetting}
+                alt="listSetting"
+                onClick={() => setOpenSelectSettingModal(true)}
+              />
+            </div>
+          </div>
         </>
         <div className={classes.body}>
           <>
@@ -440,9 +459,9 @@ export default function Programs() {
                   </select>
                 </div>
               ) : ( */}
-                <div className={classes.title}>
-                  {currentProject?.organization?.organizationName}
-                </div>
+              <div className={classes.title}>
+                {currentProject?.organization?.organizationName}
+              </div>
               {/* )} */}
             </div>
             {/* {(edit || currentProject.programId) &&
@@ -474,19 +493,13 @@ export default function Programs() {
                 className={classes.bodyContainer}
               >
                 <div className={classes.name}>Стратегия</div>
-                {edit ? (
-                  <div className={classes.selectSection}>
-                    <select name="selectProgram" value={selectedStrategy} onChange={(e) => setSelectedStrategy(e.target.value)}>
-                      {filtredStrategies.map((item, index) => (
-                        <option value={item.id}> Стратегия №{item.strategyNumber}</option>
-                      ))}
-                    </select>
-                  </div>
-                ) : (
-                  <div className={classes.title}>
-                    Стратегия №{currentProject?.strategy?.strategyNumber}
-                  </div>
-                )}
+                <div className={classes.selectSection}>
+                  <select name="selectProgram" value={selectedStrategy} disabled={!edit} onChange={(e) => setSelectedStrategy(e.target.value)}>
+                    {filtredStrategies.map((item, index) => (
+                      <option value={item.id}> Стратегия №{item.strategyNumber}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
             )}
           </>
@@ -494,7 +507,7 @@ export default function Programs() {
         <>
           <div className={classes.targetsContainer}>
 
-            {(currentProject?.content || edit) && (
+            {(selectedSections.includes('Описание')) && (
               <>
                 <div className={classes.sectionName}>Описание</div>
                 <div className={classes.targetsFlex}>
@@ -555,7 +568,7 @@ export default function Programs() {
                 </div>
               </>
             )}
-             {(eventArray.length > 0 || edit) && (
+            {selectedSections.includes('Организационные мероприятия') && (
               <>
                 <div className={classes.sectionName} data-section-id={edit ? "1" : "none"} onClick={() => addTarget('Организационные мероприятияNEW')}>Организационные мероприятия</div>
                 <div className={classes.targetsFlex}>
@@ -602,7 +615,7 @@ export default function Programs() {
               </>
             )}
 
-            {(rulesArray.length > 0 || edit) && (
+            {selectedSections.includes('Правила') && (
               <>
                 <div className={classes.sectionName} data-section-id={edit ? "1" : "none"} onClick={() => addTarget('ПравилаNEW')}>Правила</div>
                 <div className={classes.targetsFlex}>
@@ -654,8 +667,8 @@ export default function Programs() {
               <div className={classes.targetsFlex}>
                 {projectsList.map((item, index) => (
                   <>
-                    <div className={classes.cardContainer} 
-                    onClick={() => navigate(`/${userId}/Projects/${item.id}`)}
+                    <div className={classes.cardContainer}
+                      onClick={() => navigate(`/${userId}/Projects/${item.id}`)}
                     >
                       <div className={classes.content}>
                         <div className={classes.titleProject}>{item?.nameProject}</div>
@@ -679,7 +692,7 @@ export default function Programs() {
                 ))}
               </div>
             </>
-            {(statisticsArray.length > 0 || edit) && (
+            {selectedSections.includes('Метрика') && (
               <>
                 <div className={classes.sectionName} data-section-id={edit ? "1" : "none"} onClick={() => addTarget('СтатистикаNEW')}> Метрика</div>
                 <div className={classes.targetsFlex}>
@@ -736,7 +749,7 @@ export default function Programs() {
             <div className={classes.inputRow2}>
               <div></div>
               <div>
-                <button onClick={() => saveProject()}>{edit ? 'РЕДАКТИРОВАТЬ' : 'СОХРАНИТЬ'}</button>
+                <button onClick={() => saveProject()}>СОХРАНИТЬ</button>
               </div>
               <div>
 
@@ -748,8 +761,15 @@ export default function Programs() {
       </div>
       {modalOpen && <CustomSelectModalProgram setModalOpen={setModalOpen} workers={workers} projectsList={projectsList} setParentFiltredProjects={setFiltredProjects} setProjectsList={setProjectsList} parentFilteredProjects={filtredProjects}></CustomSelectModalProgram>}
 
-      {/* {modalOpen && <CustomSelectModal setModalOpen={setModalOpen} projects={projects} workers={workers} selectedProject={selectedProject} setSelectedProject={setSelectedProject} setParentFilteredProjects={setFiltredProjects}></CustomSelectModal>}
-    */}  <HandlerMutation
+      {openSelectSettingModal && (
+        <CustomSelectSettingModal
+          setModalOpen={setOpenSelectSettingModal}
+          listSelectedSections={selectedSections}
+          setListSelectedSections={setSelectedSections}
+        ></CustomSelectSettingModal>
+      )}
+
+      <HandlerMutation
         Loading={isLoadingUpdateProjectMutation}
         Error={isErrorUpdateProjectMutation}
         Success={isSuccessUpdateProjectMutation}
@@ -759,7 +779,7 @@ export default function Programs() {
             ? Error.data.errors[0].errors[0]
             : Error?.data?.message
         }
-      ></HandlerMutation> 
+      ></HandlerMutation>
     </>
   );
 }

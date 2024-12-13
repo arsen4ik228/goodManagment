@@ -17,6 +17,7 @@ export default function NewProject() {
   const { userId } = useParams();
   const navigate = useNavigate()
   const [IsTypeProgram, setIsTypeProgram] = useState(false);
+  const [selectedSections, setSelectedSections] = useState([])
 
   const {
     projectData = [],
@@ -47,7 +48,7 @@ export default function NewProject() {
   const [deadlineDate, setDeadlineDate] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
   const [openModalAlertOnlyOneProductTarget, setOpenModalAlertOnlyOneProductTarget] = useState(false)
-  const [openSelectSettingModal, setOpenSelectSettingModal] = useState(true)
+  const [openSelectSettingModal, setOpenSelectSettingModal] = useState(false)
 
   const [sortStrategy, setSortStrategy] = useState([])
 
@@ -68,49 +69,49 @@ export default function NewProject() {
 
   const [dummyKey, setDummyKey] = useState(0)
   const [rulesArray, setRulesArray] = useState([
-    {
-      type: 'Продукт',
-      orderNumber: 1,
-      content: "",
-      holderUserId: workers?.[0]?.id,
-      deadline: ""
-    }
+    // {
+    //   type: 'Правила',
+    //   orderNumber: 1,
+    //   content: "",
+    //   holderUserId: '',
+    //   deadline: ""
+    // }
   ])
   const [productsArray, setProductsArray] = useState([
     {
       type: 'Продукт',
       orderNumber: 1,
       content: "",
-      holderUserId: workers?.[0]?.id,
+      holderUserId: '',
       deadline: ""
     }
   ])
   const [statisticsArray, setStatisticsArray] = useState([
-    {
-      type: 'Продукт',
-      orderNumber: 1,
-      content: "",
-      holderUserId: workers?.[0]?.id,
-      deadline: ""
-    }
+    // {
+    //   type: 'Статистика',
+    //   orderNumber: 1,
+    //   content: "",
+    //   holderUserId: '',
+    //   deadline: ""
+    // }
   ])
   const [simpleArray, setSimpleArray] = useState([
     {
       type: 'Обычная',
       orderNumber: 1,
       content: "",
-      holderUserId: workers?.[0]?.id,
+      holderUserId: '',
       deadline: ""
     }
   ])
   const [eventArray, setEventArray] = useState([
-    {
-      type: 'Продукт',
-      orderNumber: 1,
-      content: "",
-      holderUserId: workers?.[0]?.id,
-      deadline: ""
-    }
+    // {
+    //   type: 'Организационные мероприятия',
+    //   orderNumber: 1,
+    //   content: "",
+    //   holderUserId: '',
+    //   deadline: ""
+    // }
   ])
 
   const TARGET_TYPES = {
@@ -247,7 +248,7 @@ export default function NewProject() {
       type: type,
       orderNumber: newIndex,
       content: "",
-      holderUserId: workers[0].id,
+      holderUserId: '',
       deadline: ""
     };
     setTargetIndex(newIndex);
@@ -295,8 +296,6 @@ export default function NewProject() {
       }
     }
   }, [selectedProgram]);
-
-  console.log(selectedStrategy, sortStrategy)
 
 
   const saveProject = async () => {
@@ -377,7 +376,11 @@ export default function NewProject() {
           <div className={classes.header}>
             <Header create={false} title={IsTypeProgram ? 'Создание новой программы' : 'Создание нового проекта'}></Header>
             <div className={classes.saveIcon}>
-              <img src={listSetting} />
+              <img
+                src={listSetting}
+                alt="listSetting"
+                onClick={() => setOpenSelectSettingModal(true)}
+              />
             </div>
           </div>
         </>
@@ -459,179 +462,194 @@ export default function NewProject() {
 
           <>
             <div className={classes.targetsContainer}>
-              {!projectsForModal?.length > 0 && IsTypeProgram ?
-                (
-                  <div className={classes.alertInfo}>нет проектов для создания программы</div>
-                ) : (
-                  <>
+              {!projectsForModal?.length > 0 && IsTypeProgram ? (
+                <div className={classes.alertInfo}>нет проектов для создания программы</div>
+              ) : (
+                <>
 
 
-                    <div className={classes.sectionName} data-section-id={openDescription ? "1" : "2"} onClick={() => setOpenDescription(!openDescription)}>Описание</div>
-                    <div className={classes.targetsFlex}>
-                      {openDescription && (
-                        <div className={classes.descriptionFlex}>
-                          <div className={classes.descriptionContainer}>
-                            <textarea name="description" placeholder="Введите описание проекта..." id="1"
-                              onChange={(e) => {
-                                setProjectDescription(e.target.value)
-                                setTimeout(resizeTextarea('1'), 0)
-                              }}
-                            >
-                            </textarea>
+                  {selectedSections.includes('Описание') && (
+                    <>
+                      <div className={classes.sectionName} data-section-id={openDescription ? "1" : "2"} onClick={() => setOpenDescription(!openDescription)}>Описание</div>
+                      <div className={classes.targetsFlex}>
+                        {openDescription && (
+                          <div className={classes.descriptionFlex}>
+                            <div className={classes.descriptionContainer}>
+                              <textarea name="description" placeholder="Введите описание проекта..." id="1"
+                                onChange={(e) => {
+                                  setProjectDescription(e.target.value)
+                                  setTimeout(resizeTextarea('1'), 0)
+                                }}
+                              >
+                              </textarea>
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </div>
+                        )}
+                      </div>
+                    </>
+                  )}
 
-                    <div
-                      className={classes.sectionName}
-                      style={{ backgroundImage: 'none' }}
-                    >
-                      Продукт
-                    </div>
-                    <div className={classes.targetsFlex}>
-                      {productsArray.map((item, index) => (
-                        <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Продукт')}>
-                          <Target
-                            item={item}
-                            isNew={true}
-                            contentSender={setTargetContent}
-                            workersList={workers}
-                            setSelectedWorker={setSelectedWorker}
-                            setDeadlineDate={setDeadlineDate}>
-                          </Target>
-                        </div>
-                      ))}
-                      {/* {productsArray.length > 0 && (
+                  <div
+                    className={classes.sectionName}
+                    style={{ backgroundImage: 'none' }}
+                  >
+                    Продукт
+                  </div>
+                  <div className={classes.targetsFlex}>
+                    {productsArray.map((item, index) => (
+                      <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Продукт')}>
+                        <Target
+                          item={item}
+                          isNew={true}
+                          contentSender={setTargetContent}
+                          workersList={workers}
+                          setSelectedWorker={setSelectedWorker}
+                          setDeadlineDate={setDeadlineDate}>
+                        </Target>
+                      </div>
+                    ))}
+                    {/* {productsArray.length > 0 && (
                         <div className={classes.deleteContainer} onClick={() => deleteTarget(productsArray)}>
                           Удалить
                           <img src={deleteIcon} alt="delete" />
                         </div>
                       )} */}
-                    </div>
+                  </div>
 
-                    <div className={classes.sectionName} onClick={() => addTarget('Организационные мероприятия')}>Организационные мероприятия</div>
-                    <div className={classes.targetsFlex}>
-                      {eventArray.map((item, index) => (
-                        <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Организационные мероприятия')}>
-                          <Target
-                            item={item}
-                            isNew={true}
-                            contentSender={setTargetContent}
-                            workersList={workers}
-                            setSelectedWorker={setSelectedWorker}
-                            setDeadlineDate={setDeadlineDate}>
-                          </Target>
-                        </div>
-                      ))}
-                      {eventArray.length > 0 && (
-                        <div className={classes.deleteContainer} onClick={() => deleteTarget(eventArray)}>
-                          Удалить
-                          <img src={deleteIcon} alt="delete" />
-                        </div>
-                      )}
-                    </div>
+                  {selectedSections.includes('Организационные мероприятия') && (
+                    <>
+                      <div className={classes.sectionName} onClick={() => addTarget('Организационные мероприятия')}>Организационные мероприятия</div>
+                      <div className={classes.targetsFlex}>
+                        {eventArray.map((item, index) => (
+                          <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Организационные мероприятия')}>
+                            <Target
+                              item={item}
+                              isNew={true}
+                              contentSender={setTargetContent}
+                              workersList={workers}
+                              setSelectedWorker={setSelectedWorker}
+                              setDeadlineDate={setDeadlineDate}>
+                            </Target>
+                          </div>
+                        ))}
+                        {eventArray.length > 0 && (
+                          <div className={classes.deleteContainer} onClick={() => deleteTarget(eventArray)}>
+                            Удалить
+                            <img src={deleteIcon} alt="delete" />
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  )}
 
-                    <div className={classes.sectionName} onClick={() => addTarget('Правила')}>Правила</div>
-                    <div className={classes.targetsFlex}>
-                      {rulesArray.map((item, index) => (
-                        <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Правила')}>
-                          <Target
-                            item={item}
-                            isNew={true}
-                            contentSender={setTargetContent}
-                            workersList={workers}
-                            setSelectedWorker={setSelectedWorker}
-                            setDeadlineDate={setDeadlineDate}>
-                          </Target>
-                        </div>
-                      ))}
-                      {rulesArray.length > 0 && (
-                        <div className={classes.deleteContainer} onClick={() => deleteTarget(rulesArray)}>
-                          Удалить
-                          <img src={deleteIcon} alt="delete" />
-                        </div>
-                      )}
-                    </div>
+                  {selectedSections.includes('Правила') && (
+                    <>
+                      <div className={classes.sectionName} onClick={() => addTarget('Правила')}>Правила</div>
+                      <div className={classes.targetsFlex}>
+                        {rulesArray.map((item, index) => (
+                          <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Правила')}>
+                            <Target
+                              item={item}
+                              isNew={true}
+                              contentSender={setTargetContent}
+                              workersList={workers}
+                              setSelectedWorker={setSelectedWorker}
+                              setDeadlineDate={setDeadlineDate}>
+                            </Target>
+                          </div>
+                        ))}
+                        {rulesArray.length > 0 && (
+                          <div className={classes.deleteContainer} onClick={() => deleteTarget(rulesArray)}>
+                            Удалить
+                            <img src={deleteIcon} alt="delete" />
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  )}
 
-                    {!IsTypeProgram ? (
-                      <>
-                        <div className={classes.sectionName} onClick={() => addTarget('Обычная')}>Задачи</div>
-                        <div className={classes.targetsFlex}>
-                          {simpleArray.map((item, index) => (
-                            <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Обычная')}>
-                              <Target
-                                item={item}
-                                isNew={true}
-                                contentSender={setTargetContent}
-                                workersList={workers}
-                                setSelectedWorker={setSelectedWorker}
-                                setDeadlineDate={setDeadlineDate}>
-                              </Target>
-                            </div>
-                          ))}
-                          {simpleArray.length > 0 && (
-                            <div className={classes.deleteContainer} onClick={() => deleteTarget(simpleArray)}>
-                              Удалить
-                              <img src={deleteIcon} alt="delete" />
-                            </div>
-                          )}
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div className={classes.sectionName} onClick={() => addProjects()}>Проекты</div>
-                        <div className={classes.targetsFlex}>
-                          {currentProjects.map((item, index) => (
-                            <>
-                              <div className={classes.cardContainer}>
-                                <div className={classes.content}>
-                                  <div className={classes.titleProject}>{item.nameProject}</div>
-                                  <div className={classes.contentProductTarget}>{item.product}</div>
+                  {!IsTypeProgram ? (
+                    <>
+                      <div className={classes.sectionName} onClick={() => addTarget('Обычная')}>Задачи</div>
+                      <div className={classes.targetsFlex}>
+                        {simpleArray.map((item, index) => (
+                          <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Обычная')}>
+                            <Target
+                              item={item}
+                              isNew={true}
+                              contentSender={setTargetContent}
+                              workersList={workers}
+                              setSelectedWorker={setSelectedWorker}
+                              setDeadlineDate={setDeadlineDate}>
+                            </Target>
+                          </div>
+                        ))}
+                        {simpleArray.length > 0 && (
+                          <div className={classes.deleteContainer} onClick={() => deleteTarget(simpleArray)}>
+                            Удалить
+                            <img src={deleteIcon} alt="delete" />
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className={classes.sectionName} onClick={() => addProjects()}>Проекты</div>
+                      <div className={classes.targetsFlex}>
+                        {currentProjects.map((item, index) => (
+                          <>
+                            <div className={classes.cardContainer}>
+                              <div className={classes.content}>
+                                <div className={classes.titleProject}>{item.nameProject}</div>
+                                <div className={classes.contentProductTarget}>{item.product}</div>
+                              </div>
+                              <div className={classes.bottom}>
+                                <div className={classes.worker}>
+                                  {item.worker}
                                 </div>
-                                <div className={classes.bottom}>
-                                  <div className={classes.worker}>
-                                    {item.worker}
-                                  </div>
-                                  <div className={classes.deleteContainer} onClick={() => deleteProject(item.id)}>
-                                    Удалить
-                                    <img src={deleteIcon} alt="delete" />
-                                  </div>
-                                  <div className={classes.deadline}>
-                                    {formattedDate(item.deadline)}
-                                    {/* {item.deadline?.slice(0, 10)} */}
-                                  </div>
+                                <div className={classes.deleteContainer} onClick={() => deleteProject(item.id)}>
+                                  Удалить
+                                  <img src={deleteIcon} alt="delete" />
+                                </div>
+                                <div className={classes.deadline}>
+                                  {formattedDate(item.deadline)}
+                                  {/* {item.deadline?.slice(0, 10)} */}
                                 </div>
                               </div>
-                            </>
-                          ))}
-                        </div>
-                      </>
-                    )}
+                            </div>
+                          </>
+                        ))}
+                      </div>
+                    </>
+                  )}
 
-                    <div className={classes.sectionName} onClick={() => addTarget('Статистика')}> Метрика</div>
-                    <div className={classes.targetsFlex}>
-                      {statisticsArray.map((item, index) => (
-                        <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Статистика')}>
-                          <Target
-                            item={item}
-                            isNew={true}
-                            contentSender={setTargetContent}
-                            workersList={workers}
-                            setSelectedWorker={setSelectedWorker}
-                            setDeadlineDate={setDeadlineDate}>
-                          </Target>
-                        </div>
-                      ))}
-                      {statisticsArray.length > 0 && (
-                        <div className={classes.deleteContainer} onClick={() => deleteTarget(statisticsArray)}>
-                          Удалить
-                          <img src={deleteIcon} alt="delete" />
-                        </div>
-                      )}
-                    </div>
-                  </>
-                )}
+                  {selectedSections.includes('Метрика') && (
+                    <>
+                      <div className={classes.sectionName} onClick={() => addTarget('Статистика')}>Метрика</div>
+                      <div className={classes.targetsFlex}>
+                        {statisticsArray.map((item, index) => (
+                          <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Статистика')}>
+                            <Target
+                              item={item}
+                              isNew={true}
+                              contentSender={setTargetContent}
+                              workersList={workers}
+                              setSelectedWorker={setSelectedWorker}
+                              setDeadlineDate={setDeadlineDate}>
+                            </Target>
+                          </div>
+                        ))}
+                        {statisticsArray.length > 0 && (
+                          <div className={classes.deleteContainer} onClick={() => deleteTarget(statisticsArray)}>
+                            Удалить
+                            <img src={deleteIcon} alt="delete" />
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </>
+              )}
             </div>
           </>
         </div>
@@ -675,10 +693,12 @@ export default function NewProject() {
           setModalOpen={setOpenModalAlertOnlyOneProductTarget}
         >
         </AlertOnlyOneProductTarget>}
-        
+
       {openSelectSettingModal && (
         <CustomSelectSettingModal
           setModalOpen={setOpenSelectSettingModal}
+          listSelectedSections={selectedSections}
+          setListSelectedSections={setSelectedSections}
         ></CustomSelectSettingModal>
       )}
 

@@ -24,9 +24,6 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
     overflow: hidden;
 }
 
-.header {
-    /* margin-bottom: 57px; */
-}
 
 .saveIcon {
     position: relative;
@@ -148,7 +145,8 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 
 .targetsContainer{
     flex: 1;
-    background-color: #f0f8ff;
+    /* background-color: #f0f8ff; */
+        background-color: #f0f80f;
     padding-bottom: 15px;
     /* height: 100px; */
     /* height: 100%; */
@@ -249,20 +247,10 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 
 .inputRow2{
     display: flex;
-    padding: 0.8rem;
+    padding: 15px;
     /*border: #005475 1px solid;*/
     width: 100%;
     align-items: center;
-
-    @media screen and (max-width: 395px) {
-        padding: 1.5rem 2rem;
-    }
-    @media screen and (max-width: 370px) {
-        padding: 1.5rem 1.5rem;
-    }
-    @media screen and (max-width: 350px) {
-        padding: 1.5rem 0.5rem;
-    }
 
 
     img{

@@ -3,24 +3,28 @@ import classes from "./Projects.module.css"
 import Target from "./Targets/Target"
 import { useGetProjectIdQuery, useGetProjectNewQuery, useUpdateProjectMutation } from "../../BLL/projectApi"
 import { useParams } from "react-router-dom"
-import CustomSelectModal from "./CustomSelectModal/CustomSelectModal"
 import deleteIcon from '../Custom//icon/icon _ delete.svg'
 import Header from "../Custom/Header/Header"
 import HandlerMutation from "../Custom/HandlerMutation"
-import { formattedDate, resizeTextarea, transformArraiesForUpdate } from "../../BLL/constans"
+import { resizeTextarea, transformArraiesForUpdate } from "../../BLL/constans"
 import editIcon from '../Custom/icon/icon _ edit.svg'
-import { current } from "@reduxjs/toolkit"
+import listSetting from '../Custom/icon/icon _ list setting.svg'
+import CustomSelectSettingModal from "./CustomSelectSettingModal/CustomSelectSettingModal"
+
 
 export default function NewProject() {
   const { userId, projectId } = useParams();
   const [edit, setEdit] = useState(false)
   const [dummyKey, setDummyKey] = useState(0)
   const [isRemoveProject, setIsRemoveProject] = useState(false)
+  const [selectedSections, setSelectedSections] = useState([])
+  const [openSelectSettingModal, setOpenSelectSettingModal] = useState(false)
+
 
   const [projectName, setProjectName] = useState('')
   const [selectedOrg, setSelectedOrg] = useState()
-  const [selectedStrategy, setSelectedStrategy] = useState('')
-  const [selectedProgram, setSelectedProgram] = useState('')
+  const [selectedStrategy, setSelectedStrategy] = useState(null)
+  const [selectedProgram, setSelectedProgram] = useState(null)
   const [filtredPrograms, setFilterPrograms] = useState([])
   const [filtredStrategies, setFilterStrategies] = useState([])
 
@@ -92,7 +96,7 @@ export default function NewProject() {
       targets: data?.targets,
     })
   })
-
+  console.log(currentProject)
   const {
     organizations = [],
     programs = [],
@@ -121,11 +125,11 @@ export default function NewProject() {
 
   }
 
-  useEffect(() => {
-    if (isSuccessUpdateProjectMutation) {
-      setTimeout(window.location.reload(), 1000)
-    }
-  }, [isSuccessUpdateProjectMutation])
+  // useEffect(() => {
+  //   if (isSuccessUpdateProjectMutation) {
+  //     setTimeout(window.location.reload(), 1000)
+  //   }
+  // }, [isSuccessUpdateProjectMutation])
 
   useEffect(() => { // фильтр Стратегий по организации
     if (strategies.length > 0) {
@@ -144,7 +148,7 @@ export default function NewProject() {
   }, [programs, selectedOrg])
 
   useEffect(() => { // формирование массивов на основе targets
-    if (targets.length > 0 && productsArray.length < 1 && rulesArray.length < 1 && eventArray.length < 1 && simpleArray.length < 1 && statisticsArray.length < 1) {
+    if (targets.length > 0) {
       targets.forEach((item) => {
         // const newElement = {
         //   _id : item?.id,
@@ -161,15 +165,18 @@ export default function NewProject() {
             break;
           case 'Правила':
             setRulesArray((prevState) => ([...prevState, item]))
+            setSelectedSections((prevState) => ([...prevState, 'Правила']))
             break;
           case 'Организационные мероприятия':
             setEventArray((prevState) => ([...prevState, item]))
+            setSelectedSections((prevState) => ([...prevState, 'Организационные мероприятия']))
             break;
           case 'Обычная':
             setSimpleArray((prevState) => ([...prevState, item]))
             break;
           case 'Статистика':
             setStatisticsArray((prevState) => ([...prevState, item]))
+            setSelectedSections((prevState) => ([...prevState, 'Метрика']))
             break;
           default:
             break
@@ -178,22 +185,23 @@ export default function NewProject() {
     }
   }, [targets])
 
-  console.log('массивчики   ', productsArray, rulesArray, eventArray, simpleArray, statisticsArray)
+  console.log('массивчики   ', productsArray, eventArray, rulesArray, simpleArray, statisticsArray)
   useEffect(() => { // предустановка значений при загрузке страницы
-    if (currentProject.projectName) {
+    if (currentProject.projectName)
       setProjectName(currentProject.projectName)
-    }
-    if (currentProject?.organization?.id) {
+
+    if (currentProject?.organization?.id)
       setSelectedOrg(currentProject?.organization.id)
-    }
-    if (currentProject?.programId) {
+
+    if (currentProject?.programId)
       setSelectedProgram(currentProject.programId)
-    }
-    if (currentProject?.strategy?.id) {
+
+    if (currentProject?.strategy?.id)
       setSelectedStrategy(currentProject.strategy.id)
-    }
+
     if (currentProject?.content) {
       setDescriptionProject(currentProject?.content)
+      setSelectedSections((prevState) => ([...prevState, 'Описание']))
     }
   }, [currentProject])
 
@@ -234,14 +242,17 @@ export default function NewProject() {
   useEffect(() => {
     resizeTextarea('1')
   }, [descriptionProject])
-
+  console.log(targetState)
   useEffect(() => {
-    if (targetType) {
+    console.log(targetType)
+    if (targetType && targetState !== null) {
+      console.warn('targetState useEffect')
       const { array, setFunction } = ADD_TARGET[targetType];
       const updatedArray = [...array]
       const updatedItem = { ...updatedArray[targetIndex], targetState: targetState }
       updatedArray[targetIndex] = updatedItem
       setFunction(updatedArray)
+      setTargetState(null)
     }
   }, [targetState])
 
@@ -302,7 +313,6 @@ export default function NewProject() {
     const updatedEvent = transformArraiesForUpdate(eventArray)
     const updatedStatistics = transformArraiesForUpdate(statisticsArray)
     const updatedSimple = transformArraiesForUpdate(simpleArray)
-    console.log(productsArray, rulesArray)
 
     const Data = {}
 
@@ -354,7 +364,6 @@ export default function NewProject() {
         ...updatedStatistics
       ]
     }
-    console.log(Data)
 
     console.log(Data)
     await updateProject({
@@ -376,7 +385,16 @@ export default function NewProject() {
     <>
       <div className={classes.wrapper}>
         <>
-          <Header create={false} title={'Редактировать проект'}></Header>
+          <div className={classes.header}>
+            <Header create={false} title={'Редактировать проект'}></Header>
+            <div className={classes.saveIcon}>
+              <img
+                src={listSetting}
+                alt="listSetting"
+                onClick={() => setOpenSelectSettingModal(true)}
+              />
+            </div>
+          </div>
         </>
         <div className={classes.body}>
           <>
@@ -463,7 +481,7 @@ export default function NewProject() {
           <>
             <div className={classes.targetsContainer}>
 
-              {(currentProject?.content || edit) && (
+              {(selectedSections.includes('Описание')) && (
                 <>
                   <div className={classes.sectionName}>Описание</div>
                   <div className={classes.targetsFlex}>
@@ -523,7 +541,8 @@ export default function NewProject() {
                                 workersList={workers}
                                 setSelectedWorker={setSelectedWorker}
                                 setDeadlineDate={setDeadlineDate}
-                              ></Target>
+                              >
+                              </Target>
                             </div>
                           ))}
                           {productsList.length > 0 && (
@@ -537,7 +556,7 @@ export default function NewProject() {
                   </div>
                 </>
               )}
-              {(eventArray.length > 0 || edit) && (
+              {selectedSections.includes('Организационные мероприятия') && (
                 <>
                   <div className={classes.sectionName} data-section-id={edit ? "1" : "none"} onClick={() => addTarget('Организационные мероприятияNEW')}>Организационные мероприятия</div>
                   <div className={classes.targetsFlex}>
@@ -585,7 +604,7 @@ export default function NewProject() {
                 </>
               )}
 
-              {(rulesArray.length > 0 || edit) && (
+              {selectedSections.includes('Правила') && (
                 <>
                   <div className={classes.sectionName} data-section-id={edit ? "1" : "none"} onClick={() => addTarget('ПравилаNEW')}>Правила</div>
                   <div className={classes.targetsFlex}>
@@ -680,7 +699,7 @@ export default function NewProject() {
               )}
 
 
-              {(statisticsArray.length > 0 || edit) && (
+              {selectedSections.includes('Метрика') && (
                 <>
                   <div className={classes.sectionName} data-section-id={edit ? "1" : "none"} onClick={() => addTarget('СтатистикаNEW')}> Метрика</div>
                   <div className={classes.targetsFlex}>
@@ -754,8 +773,15 @@ export default function NewProject() {
 
       </div>
 
-      {/* {modalOpen && <CustomSelectModal setModalOpen={setModalOpen} projects={projects} workers={workers} selectedProject={selectedProject} setSelectedProject={setSelectedProject} setParentFilteredProjects={setFiltredProjects}></CustomSelectModal>}
- */}     <HandlerMutation
+      {openSelectSettingModal && (
+        <CustomSelectSettingModal
+          setModalOpen={setOpenSelectSettingModal}
+          listSelectedSections={selectedSections}
+          setListSelectedSections={setSelectedSections}
+        ></CustomSelectSettingModal>
+      )}
+
+      <HandlerMutation
         Loading={isLoadingUpdateProjectMutation}
         Error={isErrorUpdateProjectMutation}
         Success={isSuccessUpdateProjectMutation}
