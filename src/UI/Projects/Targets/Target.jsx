@@ -5,7 +5,7 @@ import ConfirmRemoveModal from "../../Custom/ConfirmRemoveModal/ConfirmRemoveMod
 import { formattedDate, resizeTextarea } from "../../../BLL/constans";
 import ConfirmCompleteModal from "../../Custom/ConfirmCompleteModal/ConfirmCompleteModal";
 
-function Target({ contentSender, workersList, setSelectedWorker, setDeadlineDate, isNew, edit, item, setTargetState, requestFunc, isArchive }) {
+function Target({ item, isNew, edit, contentSender, workersList, setSelectedWorker, setDeadlineDate, setTargetState, isArchive, requestFunc }) {
   const textareaHeight = 50;
   const [content, setContent] = useState('')
 
@@ -13,14 +13,12 @@ function Target({ contentSender, workersList, setSelectedWorker, setDeadlineDate
   const [openConfirmCompleteModal, setOpenConfirmCompleteModal] = useState(false)
   const [worker, SetWorker] = useState()
   const [deadline, setDeadline] = useState()
-  const [targetStatus, setTargetStatus] = useState()
 
   useEffect(() => {
     if (!isNew) {
       setContent(item?.content)
       SetWorker(item?.holderUserId)
       setDeadline(item.deadline.slice(0, 10))
-      setTargetStatus(item.targetState)
       // resizeTextarea(item?.type + item?.orderNumber)
     }
   }, [item, isNew])
@@ -35,9 +33,10 @@ function Target({ contentSender, workersList, setSelectedWorker, setDeadlineDate
   }, [content])
 
   const completeTarget = () => {
-    if (item?.targetState === 'Завершена') return
+    if (item?.targetState === 'Завершена' || isArchive) return
     setOpenConfirmCompleteModal(true)
   }
+
   const removeTarget = () => {
     console.log('item:  ', item)
 
@@ -47,10 +46,9 @@ function Target({ contentSender, workersList, setSelectedWorker, setDeadlineDate
   return (
     <>
       <div className={classes.cardContainer}>
-        {!isArchive && (
+
           <div className={classes.header}>
-          {(!isNew && !edit) &&
-            (
+            {(!isNew && !edit) && (
               <div className={classes.confirm} onClick={() => completeTarget()}>
                 {item?.targetState === 'Завершена' ? 'Задача завершена' : "Завершить задачу"}
                 <input type="checkbox"
@@ -58,13 +56,12 @@ function Target({ contentSender, workersList, setSelectedWorker, setDeadlineDate
                 />
               </div>
             )}
-          {(edit && !isNew) && (
-            <div className={classes.remove}>
-              <img src={remove} alt="" onClick={removeTarget} />
-            </div>
-          )}
-        </div>
-      )}
+            {(edit && !isNew && item?.targetState !== 'Отменена') && (
+              <div className={classes.remove}>
+                <img src={remove} alt="" onClick={removeTarget} />
+              </div>
+            )}
+          </div>
         {isNew ?
           (
             <div className={classes.content}>
@@ -102,7 +99,7 @@ function Target({ contentSender, workersList, setSelectedWorker, setDeadlineDate
             <>
               <div className={classes.worker}>
                 <select name="selectWorker" id="1" onChange={(e) => setSelectedWorker(e.target.value)}>
-                <option>Выберите ответственного</option>
+                  <option>Выберите ответственного</option>
                   {workersList?.map((item, index) => (
                     <option key={index} value={item.id}> {item.firstName + ' ' + item.lastName}</option>
                   ))}
@@ -116,7 +113,7 @@ function Target({ contentSender, workersList, setSelectedWorker, setDeadlineDate
             <>
               <div className={classes.worker}>
                 <select name="selectWorker" id="1" value={worker} disabled={!edit} onChange={(e) => setSelectedWorker(e.target.value)}>
-                <option>Выберите ответственного</option>
+                  <option>Выберите ответственного</option>
                   {workersList?.map((item, index) => (
                     <option key={index} value={item.id}> {item.firstName + ' ' + item.lastName}</option>
                   ))}

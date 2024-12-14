@@ -193,7 +193,7 @@ export default function MainProject() {
               <div className={classes.ElemTitle}>Архив</div>
               <img
                 src={sublist}
-                alt="image"
+                alt="sublist"
                 style={{ transform: openArchive ? "none" : "rotate(90deg)" }}
               />
             </div>
@@ -237,7 +237,7 @@ export default function MainProject() {
                         key={index}
                         style={{ color: 'grey' }}
                         className={classes.ProjectListItem}
-                        onClick={() => navigate(`archive/${item.id}`)}
+                        onClick={() => navigate(item.id)}
                       >
                         {item.projectName}
                       </li>

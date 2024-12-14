@@ -19,6 +19,7 @@ export default function NewProject() {
   const [isRemoveProject, setIsRemoveProject] = useState(false)
   const [selectedSections, setSelectedSections] = useState([])
   const [openSelectSettingModal, setOpenSelectSettingModal] = useState(false)
+  const [isArchive, setIsArchive] = useState(false)
 
 
   const [projectName, setProjectName] = useState('')
@@ -161,21 +162,23 @@ export default function NewProject() {
         // newElement?._id = item.id
         switch (item.type) {
           case 'Продукт':
-            setProductsArray((prevState) => ([...prevState, {...item, holderUserIdchange: item.holderUserId}]))
+            setProductsArray((prevState) => ([...prevState, { ...item, holderUserIdchange: item.holderUserId }]))
+            if (item.targetState === 'Завершена')
+              setIsArchive(true)
             break;
           case 'Правила':
-            setRulesArray((prevState) => ([...prevState, {...item, holderUserIdchange: item.holderUserId}]))
+            setRulesArray((prevState) => ([...prevState, { ...item, holderUserIdchange: item.holderUserId }]))
             setSelectedSections((prevState) => ([...prevState, 'Правила']))
             break;
           case 'Организационные мероприятия':
-            setEventArray((prevState) => ([...prevState, {...item, holderUserIdchange: item.holderUserId}]))
+            setEventArray((prevState) => ([...prevState, { ...item, holderUserIdchange: item.holderUserId }]))
             setSelectedSections((prevState) => ([...prevState, 'Организационные мероприятия']))
             break;
           case 'Обычная':
-            setSimpleArray((prevState) => ([...prevState, {...item, holderUserIdchange: item.holderUserId}]))
+            setSimpleArray((prevState) => ([...prevState, { ...item, holderUserIdchange: item.holderUserId }]))
             break;
           case 'Статистика':
-            setStatisticsArray((prevState) => ([...prevState, {...item, holderUserIdchange: item.holderUserId}]))
+            setStatisticsArray((prevState) => ([...prevState, { ...item, holderUserIdchange: item.holderUserId }]))
             setSelectedSections((prevState) => ([...prevState, 'Метрика']))
             break;
           default:
@@ -243,7 +246,7 @@ export default function NewProject() {
   useEffect(() => {
     resizeTextarea('1')
   }, [descriptionProject])
-  console.log(targetState)
+
   useEffect(() => {
     console.log(targetType)
     if (targetType && targetState !== null) {
@@ -389,11 +392,13 @@ export default function NewProject() {
           <div className={classes.header}>
             <Header create={false} title={'Редактировать проект'}></Header>
             <div className={classes.saveIcon}>
-              <img
+              {!isArchive && (
+                <img
                 src={listSetting}
                 alt="listSetting"
                 onClick={() => setOpenSelectSettingModal(true)}
               />
+              )}
             </div>
           </div>
         </>
@@ -411,7 +416,13 @@ export default function NewProject() {
                   {currentProject.projectName}
                 </>
               )}
-              <img src={editIcon} alt="" onClick={() => setEdit(!edit)} />
+              {!isArchive && (
+                <img
+                  src={editIcon}
+                  alt="edit"
+                  onClick={() => setEdit(!edit)}
+                />
+              )}
             </div>
 
             <div
@@ -510,7 +521,8 @@ export default function NewProject() {
                 <>
                   <div className={classes.sectionName}  >Продукт</div>
                   <div className={classes.targetsFlex}>
-                    {productsArray.filter(item => item.targetState !== 'Отменена').map((item, index) => (
+                    {/* {productsArray.filter(item => item.targetState !== 'Отменена').map((item, index) => ( */}
+                    {productsArray.map((item, index) => (
                       <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Продукт')}>
                         <Target
                           id={item.id}
@@ -530,7 +542,7 @@ export default function NewProject() {
                         </Target>
                       </div>
                     ))}
-                    {edit &&
+                    {/* {edit &&
                       (
                         <>
                           {productsList.map((item, index) => (
@@ -553,7 +565,7 @@ export default function NewProject() {
                             </div>
                           )}
                         </>
-                      )}
+                      )} */}
                   </div>
                 </>
               )}
@@ -561,10 +573,10 @@ export default function NewProject() {
                 <>
                   <div className={classes.sectionName} data-section-id={edit ? "1" : "none"} onClick={() => addTarget('Организационные мероприятияNEW')}>Организационные мероприятия</div>
                   <div className={classes.targetsFlex}>
-                    {eventArray.filter(item => item.targetState !== 'Отменена').map((item, index) => (
+                    {/* {eventArray.filter(item => item.targetState !== 'Отменена').map((item, index) => ( */}
+                    {eventArray.map((item, index) => (
                       <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Организационные мероприятия')}>
                         <Target
-                          id={item.id}
                           item={item}
                           isNew={false}
                           edit={edit ? true : false}
@@ -572,10 +584,10 @@ export default function NewProject() {
                           workersList={workers}
                           setSelectedWorker={setSelectedWorker}
                           setDeadlineDate={setDeadlineDate}
+                          setTargetState={setTargetState}
                           targetsList={targets}
-                          selectedWorker={selectedWorker}
-                          deadlineDate={deadlineDate}
-                          setTargetState={setTargetState}>
+                          isArchive={isArchive}
+                        >
                         </Target>
                       </div>
                     ))}
@@ -611,7 +623,7 @@ export default function NewProject() {
                   <div className={classes.targetsFlex}>
                     {rulesArray.filter(item => item.targetState !== 'Отменена').map((item, index) => (
                       <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Правила')}>
-                        <Target id={item.id}
+                        <Target
                           item={item}
                           isNew={false}
                           edit={edit ? true : false}
@@ -619,10 +631,10 @@ export default function NewProject() {
                           workersList={workers}
                           setSelectedWorker={setSelectedWorker}
                           setDeadlineDate={setDeadlineDate}
+                          setTargetState={setTargetState}
                           targetsList={targets}
-                          selectedWorker={selectedWorker}
-                          deadlineDate={deadlineDate}
-                          setTargetState={setTargetState}>
+                          isArchive={isArchive}
+                        >
                         </Target>
                       </div>
                     ))}
@@ -659,7 +671,7 @@ export default function NewProject() {
                   <div className={classes.targetsFlex}>
                     {simpleArray.map((item, index) => (
                       <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Обычная')}>
-                        <Target id={item.id}
+                        <Target
                           item={item}
                           isNew={false}
                           edit={edit ? true : false}
@@ -667,9 +679,10 @@ export default function NewProject() {
                           workersList={workers}
                           setSelectedWorker={setSelectedWorker}
                           setDeadlineDate={setDeadlineDate}
-                          selectedWorker={selectedWorker}
-                          deadlineDate={deadlineDate}
-                          setTargetState={setTargetState}>
+                          setTargetState={setTargetState}
+                          targetsList={targets}
+                          isArchive={isArchive}
+                        >
                         </Target>
                       </div>
                     ))}
@@ -707,7 +720,6 @@ export default function NewProject() {
                     {statisticsArray.filter(item => item.targetState !== 'Отменена').filter(item => item.targetState !== 'Отменена').map((item, index) => (
                       <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Статистика')}>
                         <Target
-                          id={item.id}
                           item={item}
                           isNew={false}
                           edit={edit ? true : false}
@@ -715,10 +727,9 @@ export default function NewProject() {
                           workersList={workers}
                           setSelectedWorker={setSelectedWorker}
                           setDeadlineDate={setDeadlineDate}
-                          targetsList={targets}
-                          selectedWorker={selectedWorker}
-                          deadlineDate={deadlineDate}
                           setTargetState={setTargetState}
+                          targetsList={targets}
+                          isArchive={isArchive}
                         >
                         </Target>
                       </div>
@@ -754,6 +765,7 @@ export default function NewProject() {
         </div>
 
 
+       {!isArchive && ( 
         <>
           <footer className={classes.inputContainer}>
             <div className={classes.inputRow2}>
@@ -771,6 +783,7 @@ export default function NewProject() {
             </div>
           </footer>
         </>
+        )}
 
       </div>
 
