@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react'
 import classes from './Statistics.module.css'
 import Header from '../Custom/Header/Header'
 import icon from '../Custom/icon/icon _ downarrow _ 005475.svg'
-import { resizeTextarea } from '../../BLL/constans'
+import { getDateFormatSatatistic, } from '../../BLL/constans'
 import { useParams } from 'react-router-dom'
-import { useGetStatisticsIdQuery, useGetStatisticsNewQuery, useGetStatisticsQuery, useUpdateStatisticsMutation } from '../../BLL/statisticsApi'
+import { useGetStatisticsIdQuery, useGetStatisticsNewQuery, useUpdateStatisticsMutation } from '../../BLL/statisticsApi'
 import { useGetOrganizationsQuery, useUpdateOrganizationsMutation } from '../../BLL/organizationsApi'
 import saveIcon from '../Custom/icon/icon _ save.svg'
 import Graphic from '../Custom/Graph/Graphic'
@@ -1504,6 +1504,8 @@ export default function Statistics() {
                 case 6:
                     setShowReportDay('Суббота');
                     break;
+                default:
+                    break
             }
         } else {
             switch (day) {
@@ -1528,6 +1530,8 @@ export default function Statistics() {
                 case 6:
                     setShowReportDayComes('Суббота');
                     break;
+                default:
+                    break
             }
         }
     };
@@ -1609,6 +1613,7 @@ export default function Statistics() {
                         <div className={classes.arrowSection}>
                             <img
                                 src={icon}
+                                alt='icon'
                                 style={{ transform: 'rotate(90deg)' }}
                                 onClick={handleArrowLeftClick}
                             />
@@ -1902,13 +1907,7 @@ export default function Statistics() {
                                                         style={{ borderRight: '1px solid grey ' }}
                                                     // className={`${classes.date} ${classes.textGrey}`}
                                                     >
-                                                        {new Date(
-                                                            item.valueDate
-                                                        ).toLocaleDateString('ru-RU', {
-                                                            day: '2-digit',
-                                                            month: '2-digit',
-                                                            year: '2-digit',
-                                                        })}
+                                                        {getDateFormatSatatistic(item.valueDate, typeGraphic)}
                                                     </div>
 
                                                     <div
@@ -2004,13 +2003,7 @@ export default function Statistics() {
                                                 <span
                                                     className={`${classes.date} ${classes.textGrey}`}
                                                 >
-                                                    {new Date(
-                                                        item.valueDate
-                                                    ).toLocaleDateString("ru-RU", {
-                                                        day: "2-digit",
-                                                        month: "2-digit",
-                                                        year: "2-digit",
-                                                    })}
+                                                    {getDateFormatSatatistic(item.valueDate, typeGraphic)}
                                                 </span>
                                             </div>
                                         ))}

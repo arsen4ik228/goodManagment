@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import classes from "./Graphic.module.css";
 import { useWindowSize } from 'react-window-size';
+import { getDateFormatSatatistic } from "../../../BLL/constans";
 
 const Graphic = ({ data, name, setName, typeGraphic, type }) => {
   const svgRef = useRef();
@@ -80,8 +81,7 @@ const Graphic = ({ data, name, setName, typeGraphic, type }) => {
   useEffect(() => {
     data.sort((a, b) => new Date(a.valueDate) - new Date(b.valueDate));
 
-    const formatDate = d3.timeFormat("%d.%m.%y");
-    const parseDate = d3.timeParse("%Y-%m-%d");
+   
 
     const margin = { top: 40, right: 30, bottom: 80, left: 50 };
 
@@ -97,7 +97,7 @@ const Graphic = ({ data, name, setName, typeGraphic, type }) => {
         data.map((d) =>
           d.valueDate === "" || d.valueDate === null
             ? "дата"
-            : formatDate(parseDate(d.valueDate))
+            : getDateFormatSatatistic(d.valueDate, typeGraphic)
         )
       )
       .range([margin.left, width - margin.right])
@@ -120,7 +120,7 @@ const Graphic = ({ data, name, setName, typeGraphic, type }) => {
         x(
           d.valueDate === "" || d.valueDate === null
             ? "дата"
-            : formatDate(parseDate(d.valueDate))
+            : getDateFormatSatatistic(d.valueDate, typeGraphic)
         )
       )
       .y((d) => y(d.value))
@@ -136,7 +136,7 @@ const Graphic = ({ data, name, setName, typeGraphic, type }) => {
     const tickValues = data.map((d) =>
       d.valueDate === "" || d.valueDate === null
         ? "дата"
-        : formatDate(parseDate(d.valueDate))
+        : getDateFormatSatatistic(d.valueDate, typeGraphic)
     );
 
     // Получаем значения для горизонтальных линий сетки с использованием y.ticks()
@@ -231,7 +231,7 @@ const Graphic = ({ data, name, setName, typeGraphic, type }) => {
           x(
             d.valueDate === "" || d.valueDate === null
               ? "дата"
-              : formatDate(parseDate(d.valueDate))
+              : getDateFormatSatatistic(d.valueDate, typeGraphic)
           )
         )
         .attr("cy", (d) => y(d.value))
@@ -243,12 +243,12 @@ const Graphic = ({ data, name, setName, typeGraphic, type }) => {
           const tooltipX = x(
             d.valueDate === "" || d.valueDate === null
               ? "дата"
-              : formatDate(parseDate(d.valueDate))
+              : getDateFormatSatatistic(d.valueDate, typeGraphic)
           );
           const tooltipY = y(d.value) - 15;
 
           // Формируем текст для тултипа
-          const dateText = `Дата: ${d.valueDate === "" || d.valueDate === null ? "дата" : formatDate(parseDate(d.valueDate))}`;
+          const dateText = `Дата: ${d.valueDate === "" || d.valueDate === null ? "дата" : getDateFormatSatatistic(d.valueDate, typeGraphic)}`;
           const valueText = `Значение: ${d.value}`;
           const textWidth = Math.max(dateText.length, valueText.length) * 6; // Оценочная ширина в пикселях
 
