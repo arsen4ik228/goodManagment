@@ -99,7 +99,6 @@ export default function NewProject() {
   })
   console.log(currentProject)
   const {
-    organizations = [],
     programs = [],
     strategies = [],
     workers = []
@@ -121,10 +120,8 @@ export default function NewProject() {
     },
   ] = useUpdateProjectMutation()
 
-  const reset = () => {
+  const reset = () => { }
 
-
-  }
 
   useEffect(() => {
     if (isSuccessUpdateProjectMutation) {
@@ -394,10 +391,10 @@ export default function NewProject() {
             <div className={classes.saveIcon}>
               {!isArchive && (
                 <img
-                src={listSetting}
-                alt="listSetting"
-                onClick={() => setOpenSelectSettingModal(true)}
-              />
+                  src={listSetting}
+                  alt="listSetting"
+                  onClick={() => setOpenSelectSettingModal(true)}
+                />
               )}
             </div>
           </div>
@@ -765,25 +762,22 @@ export default function NewProject() {
         </div>
 
 
-       {!isArchive && ( 
         <>
           <footer className={classes.inputContainer}>
             <div className={classes.inputRow2}>
-              <div></div>
               <div>
                 <button
+                  disabled={isArchive}
+                  style={{ 'backgroundColor': isArchive ? 'grey' : '' }}
                   onClick={() => saveProject()}
                 >
                   СОХРАНИТЬ
                 </button>
               </div>
-              <div>
-
-              </div>
+ 
             </div>
           </footer>
         </>
-        )}
 
       </div>
 

@@ -19,6 +19,12 @@ export default function MainProject() {
   const [organizationId, setOrganizationId] = useState()
   const [open, setOpen] = useState()
 
+  const activeProgramStyles = {
+    color: '#005475',
+    textDecoration: 'underline',
+    fontWeight: '600'
+  }
+
   const {
     organizations = []
   } = useGetOrganizationsQuery(userId, {
@@ -47,8 +53,8 @@ export default function MainProject() {
   console.log(projects, archivesProjects, projectsWithProgram, archivesProjectsWithProgram, programs, archivesPrograms)
 
   useEffect(() => {
-    if (organizations.length>0 && !organizationId)
-    setOrganizationId(organizations[0].id)
+    if (organizations.length > 0 && !organizationId)
+      setOrganizationId(organizations[0].id)
   }, [organizations])
   // useEffect(() => {
   //   const firstArray = data.filter(item => {
@@ -95,13 +101,13 @@ export default function MainProject() {
             <div className={classes.name}>Организация</div>
             <div className={classes.selectSection}>
               <select name="selectProgram" onChange={(e) => setOrganizationId(e.target.value)}>
-                {organizations.map((item,index) => (
+                {organizations.map((item, index) => (
                   <option key={index} value={item.id}>{item.organizationName}</option>
                 ))}
               </select>
             </div>
           </div>
-          
+
           <div className={classes.ColumnContainer}>
             <div
               className={classes.ContainerElem}
@@ -156,7 +162,13 @@ export default function MainProject() {
                 <ol className={classes.ListOfProjects}>
                   {programs.map((item, index) => (
                     <>
-                      <li key={index} className={classes.ProjectListItem} onClick={() => openProjectsOfProgram(index)}>
+                      <li
+                        key={index}
+                        className={classes.ProjectListItem}
+                        onClick={() => openProjectsOfProgram(index)}
+                        style={open === index ? activeProgramStyles : {}}
+
+                      >
                         {item.projectName}
                       </li>
                       {open === index &&

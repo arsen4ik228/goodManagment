@@ -25,10 +25,13 @@ export default function Programs() {
   const [selectedProjectsForRequest, setSelectedProjectsForRequest] = useState([])
   const [selectedSections, setSelectedSections] = useState([])
   const [openSelectSettingModal, setOpenSelectSettingModal] = useState(false)
+  const [isArchive, setIsArchive] = useState(false)
+
 
   const [projectsList, setProjectsList] = useState([])
   const [allProjects, setAllProjects] = useState([])
 
+  const [projectName, setProjectName] = useState('')
   const [selectedOrg, setSelectedOrg] = useState()
   const [selectedStrategy, setSelectedStrategy] = useState('')
   const [selectedProgram, setSelectedProgram] = useState('')
@@ -209,21 +212,20 @@ export default function Programs() {
       targets.forEach((item) => {
         switch (item.type) {
           case 'Продукт':
-            setProductsArray([...productsArray, { ...item, holderUserIdchange: item.holderUserId }])
+            setProductsArray((prevState) => ([...prevState, { ...item, holderUserIdchange: item.holderUserId }]))
+            if (item.targetState === 'Завершена')
+              setIsArchive(true)
             break;
           case 'Правила':
-            setRulesArray([...rulesArray, { ...item, holderUserIdchange: item.holderUserId }])
+            setRulesArray((prevState) => ([...prevState, { ...item, holderUserIdchange: item.holderUserId }]))
             setSelectedSections((prevState) => ([...prevState, 'Правила']))
             break;
           case 'Организационные мероприятия':
-            setEventArray([...eventArray, { ...item, holderUserIdchange: item.holderUserId }])
+            setEventArray((prevState) => ([...prevState, { ...item, holderUserIdchange: item.holderUserId }]))
             setSelectedSections((prevState) => ([...prevState, 'Организационные мероприятия']))
             break;
-          case 'Обычная':
-            setSimpleArray([...simpleArray, { ...item, holderUserIdchange: item.holderUserId }])
-            break;
           case 'Статистика':
-            setStatisticsArray([...statisticsArray, { ...item, holderUserIdchange: item.holderUserId }])
+            setStatisticsArray((prevState) => ([...prevState, { ...item, holderUserIdchange: item.holderUserId }]))
             setSelectedSections((prevState) => ([...prevState, 'Метрика']))
             break;
           default:
@@ -242,6 +244,9 @@ export default function Programs() {
   console.log('массивчики   ', productsArray, rulesArray, eventArray, simpleArray, statisticsArray)
 
   useEffect(() => { // предустановка значений при загрузке страницы
+    if (currentProject.projectName)
+      setProjectName(currentProject.projectName)
+
     if (currentProject?.organization?.id)
       setSelectedOrg(currentProject?.organization.id)
 
@@ -363,54 +368,65 @@ export default function Programs() {
     const updatedRules = transformArraiesForUpdate(rulesArray)
     const updatedEvent = transformArraiesForUpdate(eventArray)
     const updatedStatistics = transformArraiesForUpdate(statisticsArray)
-    // const updatedSimple = transformArraiesForUpdate(simpleArray)
 
     const Data = {}
 
-    Data._id = programId
-
-    if ((selectedOrg !== currentProject?.organization?.id) && selectedOrg) {
-      Data.organizationId = selectedOrg
+    if (!edit) {
+      Data.targetUpdateDtos = [
+        ...updatedProducts,
+        ...updatedEvent,
+        ...updatedRules,
+        ...updatedStatistics
+      ]
     }
-    if ((selectedProgram !== currentProject?.programId) && selectedProgram) {
-      Data.programId = selectedProgram
+    else {
+      if ((projectName !== currentProject.projectName) && projectName) {
+        Data.projectName = projectName
+      }
+      if ((selectedOrg !== currentProject?.organization?.id) && selectedOrg) {
+        Data.organizationId = selectedOrg
+      }
+      if ((selectedProgram !== currentProject?.programId) && selectedProgram) {
+        Data.programId = selectedProgram
+      }
+      if ((selectedStrategy !== currentProject?.strategy?.id) && selectedStrategy) {
+        Data.strategyId = selectedStrategy
+      }
+      if ((descriptionProject !== currentProject?.content) && descriptionProject) {
+        Data.content = descriptionProject
+      }
+      if (
+        rulesList.length > 0 ||
+        productsList.length > 0 ||
+        statisticsList.length > 0 ||
+        // simpleList.length > 0 ||
+        eventList.length > 0
+      ) {
+        Data.targetCreateDtos = [
+          ...rulesList,
+          ...productsList,
+          ...statisticsList,
+          // ...simpleList,
+          ...eventList,
+        ];
+      }
+      Data.targetUpdateDtos = [
+        // ...updatedSimple,
+        ...updatedProducts,
+        ...updatedEvent,
+        ...updatedRules,
+        ...updatedStatistics
+      ]
+      Data.projectIds = [
+        ...selectedProjectsForRequest
+      ]
     }
-    if ((selectedStrategy !== currentProject?.strategy?.id) && selectedStrategy) {
-      Data.strategyId = selectedStrategy
-    }
-    if ((descriptionProject !== currentProject?.content) && descriptionProject) {
-      Data.content = descriptionProject
-    }
-    if (
-      rulesList.length > 0 ||
-      productsList.length > 0 ||
-      statisticsList.length > 0 ||
-      // simpleList.length > 0 ||
-      eventList.length > 0
-    ) {
-      Data.targetCreateDtos = [
-        ...rulesList,
-        ...productsList,
-        ...statisticsList,
-        // ...simpleList,
-        ...eventList,
-      ];
-    }
-    Data.targetUpdateDtos = [
-      // ...updatedSimple,
-      ...updatedProducts,
-      ...updatedEvent,
-      ...updatedRules,
-      ...updatedStatistics
-    ]
-    Data.projectIds = [
-      ...selectedProjectsForRequest
-    ]
 
     console.log(Data)
     await updateProject({
       userId,
       projectId: programId,
+      _id: programId,
       ...Data,
     })
       .unwrap()
@@ -429,19 +445,37 @@ export default function Programs() {
           <div className={classes.header}>
             <Header create={false} title={'Редактирование программы'}></Header>
             <div className={classes.saveIcon}>
-              <img
-                src={listSetting}
-                alt="listSetting"
-                onClick={() => setOpenSelectSettingModal(true)}
-              />
+              {!isArchive && (
+                <img
+                  src={listSetting}
+                  alt="listSetting"
+                  onClick={() => setOpenSelectSettingModal(true)}
+                />
+              )}
             </div>
           </div>
         </>
         <div className={classes.body}>
           <>
             <div className={classes.selectedType}>
-              {currentProject.projectName}
-              <img src={editIcon} alt="" onClick={() => setEdit(!edit)} />
+              {edit ? (
+                <input
+                  type="text"
+                  value={projectName}
+                  onChange={e => setProjectName(e.target.value)}
+                />
+              ) : (
+                <>
+                  {currentProject.projectName}
+                </>
+              )}
+              {!isArchive && (
+                <img
+                  src={editIcon}
+                  alt="edit"
+                  onClick={() => setEdit(!edit)}
+                />
+              )}
             </div>
 
             <div
@@ -574,7 +608,7 @@ export default function Programs() {
                 <div className={classes.targetsFlex}>
                   {eventArray.map((item, index) => (
                     <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Организационные мероприятия')}>
-                      <Target id={item.id}
+                      <Target
                         item={item}
                         isNew={false}
                         edit={edit ? true : false}
@@ -582,10 +616,10 @@ export default function Programs() {
                         workersList={workers}
                         setSelectedWorker={setSelectedWorker}
                         setDeadlineDate={setDeadlineDate}
+                        setTargetState={setTargetState}
                         targetsList={targets}
-                        selectedWorker={selectedWorker}
-                        deadlineDate={deadlineDate}
-                        setTargetState={setTargetState}>
+                        isArchive={isArchive}
+                      >
                       </Target>
                     </div>
                   ))}
@@ -621,7 +655,7 @@ export default function Programs() {
                 <div className={classes.targetsFlex}>
                   {rulesArray.map((item, index) => (
                     <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Правила')}>
-                      <Target id={item.id}
+                      <Target
                         item={item}
                         isNew={false}
                         edit={edit ? true : false}
@@ -629,10 +663,10 @@ export default function Programs() {
                         workersList={workers}
                         setSelectedWorker={setSelectedWorker}
                         setDeadlineDate={setDeadlineDate}
+                        setTargetState={setTargetState}
                         targetsList={targets}
-                        selectedWorker={selectedWorker}
-                        deadlineDate={deadlineDate}
-                        setTargetState={setTargetState}>
+                        isArchive={isArchive}
+                      >
                       </Target>
                     </div>
                   ))}
@@ -663,7 +697,7 @@ export default function Programs() {
             )}
 
             <>
-              <div className={classes.sectionName} data-section-id={edit ? "1" : "none"} onClick={() => setModalOpen(true)}>Проекты</div>
+              <div className={classes.sectionName} data-section-id={edit ? "1" : "none"} onClick={() => setModalOpen(edit && true)}>Проекты</div>
               <div className={classes.targetsFlex}>
                 {projectsList.map((item, index) => (
                   <>
@@ -699,7 +733,6 @@ export default function Programs() {
                   {statisticsArray.filter(item => item.targetState !== 'Отменена').map((item, index) => (
                     <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Статистика')}>
                       <Target
-                        id={item.id}
                         item={item}
                         isNew={false}
                         edit={edit ? true : false}
@@ -707,10 +740,9 @@ export default function Programs() {
                         workersList={workers}
                         setSelectedWorker={setSelectedWorker}
                         setDeadlineDate={setDeadlineDate}
-                        targetsList={targets}
-                        selectedWorker={selectedWorker}
-                        deadlineDate={deadlineDate}
                         setTargetState={setTargetState}
+                        targetsList={targets}
+                        isArchive={isArchive}
                       >
                       </Target>
                     </div>
@@ -747,13 +779,16 @@ export default function Programs() {
         <>
           <footer className={classes.inputContainer}>
             <div className={classes.inputRow2}>
-              <div></div>
               <div>
-                <button onClick={() => saveProject()}>СОХРАНИТЬ</button>
+                <button
+                  disabled={isArchive}
+                  style={{ 'backgroundColor': isArchive ? 'grey' : '' }}
+                  onClick={() => saveProject()}
+                >
+                  СОХРАНИТЬ
+                </button>
               </div>
-              <div>
 
-              </div>
             </div>
           </footer>
         </>
