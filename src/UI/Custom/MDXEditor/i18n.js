@@ -63,7 +63,7 @@ i18n.use(initReactI18next).init({
     },
     lng: "ru",
     fallbackLng: "en",
-    debug: true, 
+    // debug: true, 
     interpolation: {
       escapeValue: false,
     },

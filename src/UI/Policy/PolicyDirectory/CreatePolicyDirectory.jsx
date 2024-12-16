@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useMemo } from 'react'
 import Header from '../../Custom/Header/Header'
 import classes from "./CreatePolicyDirectory.module.css"
 import { useNavigate, useParams } from 'react-router-dom'
@@ -13,7 +14,8 @@ export default function CreatePolicyDirectory() {
     const navigate = useNavigate()
     const [selectedId, setSelectedId] = useState([])
     const [directoryName, setDirectoryName] = useState('')
-    const [openModal, setOpenModal] =useState(false)
+    const [openModal, setOpenModal] = useState(false)
+    const [searchTerm, setSearchTerm] = useState('');
 
 
     const {
@@ -56,6 +58,7 @@ export default function CreatePolicyDirectory() {
                 : [...prevSelectedId, id]
         )
     };
+    
 
     const addPolicyToSelectedPolicy = (id) => {
 
@@ -66,6 +69,22 @@ export default function CreatePolicyDirectory() {
         setSelectedId([])
         // setOpenModal(false)
     }
+
+    const filteredItems = useMemo(() => {
+        const filterActiveDirectives = activeDirectives.filter(item =>
+            item.policyName.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+
+        const filterActiveInstructions = activeInstructions.filter(item =>
+            item.policyName.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+
+        return {
+            activeDirectives: filterActiveDirectives,
+            activeInstructions: filterActiveInstructions
+        };
+    }, [activeDirectives, activeInstructions, searchTerm]);
+
 
     const savePolicyDirectory = async () => {
         await postDirectory({
@@ -92,14 +111,18 @@ export default function CreatePolicyDirectory() {
 
                 <div className={classes.body}>
                     <>
-                    <div className={classes.first}>
-                            <input 
-                            placeholder=' Введите название'
-                            type={'text'} value={directoryName} onChange={(e) => setDirectoryName(e.target.value)} />
+                        <div className={classes.first}>
+                            <input
+                                placeholder=' Введите название'
+                                type={'text'} value={directoryName} onChange={(e) => setDirectoryName(e.target.value)} />
                         </div>
                         <div className={classes.element_srch}>
-
-                            <input type="search" placeholder="Поиск" />
+                            <input
+                                type="text"
+                                placeholder="Поиск"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
                         </div>
                         <div className={classes.bodyContainer}>
 
@@ -118,14 +141,14 @@ export default function CreatePolicyDirectory() {
                                 <>
 
                                     <ul className={classes.selectList}>
-                                        {!activeDirectives.length > 0 && (
+                                        {!filteredItems.activeDirectives.length > 0 && (
                                             <li
                                                 style={{ color: 'grey', fontStyle: 'italic' }}
                                             >
                                                 Политика отсутствует
                                             </li>
                                         )}
-                                        {activeDirectives?.map((item, index) => (
+                                        {filteredItems.activeDirectives?.map((item, index) => (
                                             <li
                                                 key={index}
                                                 style={{ color: item?.state === 'Активный' ? 'black' : 'grey' }}
@@ -171,14 +194,14 @@ export default function CreatePolicyDirectory() {
                                             </div>
                                         </div> */}
                                     <ul className={classes.selectList}>
-                                        {!activeInstructions.length > 0 && (
+                                        {!filteredItems.activeInstructions.length > 0 && (
                                             <li
                                                 style={{ color: 'grey', fontStyle: 'italic' }}
                                             >
                                                 Политика отсутствует
                                             </li>
                                         )}
-                                        {activeInstructions.map((item, index) => (
+                                        {filteredItems.activeInstructions.map((item, index) => (
                                             <li
                                                 key={index}
                                                 style={{ color: item?.state === 'Активный' ? 'black' : 'grey' }}

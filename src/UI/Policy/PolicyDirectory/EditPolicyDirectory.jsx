@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import Header from '../../Custom/Header/Header'
 import classes from "./EditPolicyDirectory.module.css"
 import { useNavigate, useParams } from 'react-router-dom'
@@ -15,6 +15,8 @@ export default function EditPolicyDirectories() {
     const [selectedId, setSelectedId] = useState([])
     const [directoryName, setDirectoryName] = useState('')
     const [openModal, setOpenModal] = useState(false)
+    const [searchTerm, setSearchTerm] = useState('');
+
 
     const {
         activeDirectives = [],
@@ -83,7 +85,22 @@ export default function EditPolicyDirectories() {
         setSelectedId([])
         setOpenModal(false)
     }
-    console.log(selectedId)
+
+    const filteredItems = useMemo(() => {
+        const filterActiveDirectives = activeDirectives.filter(item =>
+            item.policyName.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+
+        const filterActiveInstructions = activeInstructions.filter(item =>
+            item.policyName.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+
+        return {
+            activeDirectives: filterActiveDirectives,
+            activeInstructions: filterActiveInstructions
+        };
+    }, [activeDirectives, activeInstructions, searchTerm]);
+
     const updatePolicyDirectory = async () => {
         await updatePolicyDirectories({
             userId,
@@ -131,8 +148,12 @@ export default function EditPolicyDirectories() {
                             <input type={'text'} value={directoryName} onChange={(e) => setDirectoryName(e.target.value)} />
                         </div>
                         <div className={classes.element_srch}>
-
-                            <input type="search" placeholder="Поиск" />
+                            <input
+                                type="text"
+                                placeholder="Поиск"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
                         </div>
                         <div className={classes.bodyContainer}>
 
@@ -151,14 +172,14 @@ export default function EditPolicyDirectories() {
                                 <>
 
                                     <ul className={classes.selectList}>
-                                        {!activeDirectives.length > 0 && (
+                                        {!filteredItems.activeDirectives.length > 0 && (
                                             <li
                                                 style={{ color: 'grey', fontStyle: 'italic' }}
                                             >
                                                 Политика отсутствует
                                             </li>
                                         )}
-                                        {activeDirectives?.map((item, index) => (
+                                        {filteredItems.activeDirectives?.map((item, index) => (
                                             <li
                                                 key={index}
                                                 style={{ color: item?.state === 'Активный' ? 'black' : 'grey' }}
@@ -204,14 +225,14 @@ export default function EditPolicyDirectories() {
                                             </div>
                                         </div> */}
                                     <ul className={classes.selectList}>
-                                        {!activeInstructions.length > 0 && (
+                                        {!filteredItems.activeInstructions.length > 0 && (
                                             <li
                                                 style={{ color: 'grey', fontStyle: 'italic' }}
                                             >
                                                 Политика отсутствует
                                             </li>
                                         )}
-                                        {activeInstructions.map((item, index) => (
+                                        {filteredItems.activeInstructions.map((item, index) => (
                                             <li
                                                 key={index}
                                                 style={{ color: item?.state === 'Активный' ? 'black' : 'grey' }}

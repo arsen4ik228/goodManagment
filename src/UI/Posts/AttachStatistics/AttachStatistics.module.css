@@ -21,6 +21,7 @@
     max-height: calc(100vh - 173px);
     padding: 10px 15px;
         /* border: 1px solid red; */
+        overflow: auto;
 
 }
 
@@ -124,22 +125,10 @@
 
 .inputRow2 {
     display: flex;
-    padding: 1rem 2.5rem;
+    padding: 15px;
     /*border: #005475 1px solid;*/
     width: 100%;
     align-items: center;
-
-    @media screen and (max-width: 395px) {
-        padding: 1.5rem 2rem;
-    }
-
-    @media screen and (max-width: 370px) {
-        padding: 1.5rem 1.5rem;
-    }
-
-    @media screen and (max-width: 350px) {
-        padding: 1.5rem 0.5rem;
-    }
 
 
     img {

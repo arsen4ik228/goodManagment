@@ -21,7 +21,7 @@ import { baseUrl } from "../../../BLL/constans";
 import classes from "./Mdxeditor.module.css";
 import { usePostImageMutation } from "../../../BLL/policyApi";
 
-export default function Mdxeditor({ editorState, setEditorState, userId, policyId }) {
+export default function Mdxeditor({ editorState, setEditorState, userId}) {
     const editorRef = useRef(null); // Ссылка на редактор
 
     // Функция для обновления содержимого редактора и состояния
@@ -42,7 +42,6 @@ export default function Mdxeditor({ editorState, setEditorState, userId, policyI
             // Вызов postImage для отправки файла на сервер
             const response = await postImage({
                 userId,
-                policyId,
                 formData,
             }).unwrap();
 

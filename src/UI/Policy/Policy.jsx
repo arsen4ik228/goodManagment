@@ -186,7 +186,6 @@ const Policy = () => {
                             editorState={currentPolicy?.content}
                             setEditorState={setEditorState}
                             userId={userId}
-                            policyId={policyId}
                         >
                         </Mdxeditor>
                     </>

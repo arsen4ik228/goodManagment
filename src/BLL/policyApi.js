@@ -104,8 +104,8 @@ export const policyApi = createApi({
     }),
 
     postImage: build.mutation({
-      query: ({ userId, policyId, formData }) => ({
-        url: `${userId}/file-upload/upload?policyId=${policyId}`,
+      query: ({ userId, formData }) => ({
+        url: `${userId}/file-upload/upload`,
         method: "POST",
         body: formData,
       }),

@@ -223,15 +223,6 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
     align-items: center;
     justify-content: center;
 
-    @media screen and (max-width: 395px) {
-        padding: 1.5rem 2rem;
-    }
-    @media screen and (max-width: 370px) {
-        padding: 1.5rem 1.5rem;
-    }
-    @media screen and (max-width: 350px) {
-        padding: 1.5rem 0.5rem;
-    }
 
 
     img{

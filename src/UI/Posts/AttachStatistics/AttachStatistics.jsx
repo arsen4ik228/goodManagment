@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import classes from './AttachStatistics.module.css'
 import Header from '../../Custom/Header/Header'
 import addIcon from '../../Custom/icon/icon _ add _ blue.svg'
@@ -11,6 +11,7 @@ export default function AttachStatistics() {
     const { userId, postId } = useParams()
     const navigate = useNavigate()
     const [selectedStatistics, setSelectedStatistics] = useState([])
+    const [searchTerm, setSearchTerm] = React.useState('');
 
 
     const {
@@ -86,6 +87,11 @@ export default function AttachStatistics() {
         }
     };
 
+    const filteredItems = useMemo(() =>
+        statistics?.filter(item => item.name?.toLowerCase().includes(searchTerm.toLowerCase())),
+        [statistics, searchTerm]
+    )
+
     const createNewStatistic = () => {
         navigate(`/${userId}/Statistics/new/${postId}`)
     }
@@ -103,8 +109,12 @@ export default function AttachStatistics() {
                         <input type={'text'} value={directoryName} onChange={(e) => setDirectoryName(e.target.value)} />
                     </div> */}
                     <div className={classes.element_srch}>
-
-                        <input type="search" placeholder="Поиск" />
+                        <input
+                            type="text"
+                            placeholder="Поиск"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
                     </div>
 
                     <div
@@ -126,7 +136,7 @@ export default function AttachStatistics() {
                                             Политика отсутствует
                                         </li>
                                     )}*/}
-                                {statistics?.map((item, index) => (
+                                {filteredItems?.map((item, index) => (
                                     <li
                                         key={index}
                                         onClick={() => handleSelectItem(item?.id)}

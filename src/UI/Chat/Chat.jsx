@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import classes from './Chat.module.css';
 import backRow from './icon/icon _ back.svg'
 import star from './icon/icon _ star.svg'
@@ -24,6 +24,16 @@ const Chat = () => {
 
     const navigate = useNavigate()
     const { userId } = useParams()
+    const [searchTerm, setSearchTerm] = useState('');
+
+    // const filteredArray = useMemo(() => {
+    //     return array.filter((item) => item.text.toLowerCase().includes(searchTerm.toLowerCase()));
+    // }, [array, searchTerm]);
+    const filteredArray = useMemo(() => 
+        array.filter((item) => item.text.toLowerCase().includes(searchTerm.toLowerCase())),
+        [searchTerm]
+    );
+    
 
     return (
 
@@ -47,7 +57,7 @@ const Chat = () => {
 
                     <div className={classes.bodyColumn}>
 
-                        {array.map((item) => {
+                        {filteredArray.map((item) => {
                             return (
                                 <div key={item.id} className={classes.bodyRow} onClick={() => navigate(`/${userId}/${item.link}`)}>
                                     <div className={classes.bodyElement}>
@@ -68,12 +78,18 @@ const Chat = () => {
                                 </div>
                             </div>
                         </div>
-                    </div> 
+                    </div>
 
                 </div>
                 <footer className={classes.inputContainer}>
                     <div className={classes.inputRow}>
-                        <div className={classes.inputElement}><input type="search" placeholder="Поиск" /></div>
+                        <div className={classes.inputElement}>
+                            <input type="search"
+                                placeholder="Поиск"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
                     </div>
                 </footer>
             </div>
