@@ -39,7 +39,6 @@ const Posts = () => {
     const [isPurposeChanges, setIsPurposeChanges] = useState(false);
     const [worker, setWorker] = useState(null);
     const [organization, setOrganization] = useState(null);
-    const [selectedPostId, setSelectedPostId] = useState(null);
     const [policy, setPolicy] = useState(null)
 
     const [currentPolicyName, setCurrentPolicyName] = useState(null)
@@ -48,7 +47,6 @@ const Posts = () => {
     // Добавляем флаги для управления ручным сбросом состояния успеха и ошибки
     const [manualSuccessReset, setManualSuccessReset] = useState(false);
     const [manualErrorReset, setManualErrorReset] = useState(false);
-    const [openList, setOpenList] = useState(false);
 
     const {
         currentPost = {},
