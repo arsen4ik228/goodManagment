@@ -29,11 +29,11 @@ const Chat = () => {
     // const filteredArray = useMemo(() => {
     //     return array.filter((item) => item.text.toLowerCase().includes(searchTerm.toLowerCase()));
     // }, [array, searchTerm]);
-    const filteredArray = useMemo(() => 
+    const filteredArray = useMemo(() =>
         array.filter((item) => item.text.toLowerCase().includes(searchTerm.toLowerCase())),
         [searchTerm]
     );
-    
+
 
     return (
 
@@ -59,8 +59,11 @@ const Chat = () => {
 
                         {filteredArray.map((item) => {
                             return (
-                                <div key={item.id} className={classes.bodyRow} onClick={() => navigate(`/${userId}/${item.link}`)}>
-                                    <div className={classes.bodyElement}>
+                                <div key={item.id} className={classes.bodyRow}>
+                                    <div
+                                        className={classes.bodyElement}
+                                        onClick={() => navigate(`/${userId}/${item.link}`)}
+                                    >
                                         <img src={item.icon} alt="icon" />
                                         <div className={classes.bodyElementText}>{item.text}</div>
                                     </div>
