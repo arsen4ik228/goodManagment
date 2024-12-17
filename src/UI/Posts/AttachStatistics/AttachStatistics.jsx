@@ -5,13 +5,16 @@ import addIcon from '../../Custom/icon/icon _ add _ blue.svg'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useGetStatisticsQuery } from '../../../BLL/statisticsApi'
 import { useGetPostIdQuery, useUpdateStatisticsToPostIdMutation } from '../../../BLL/postApi'
+import { arraysEqualWithObjects } from '../../../BLL/constans'
+import ConfirmModal from './confrimModal/ConfirmModal'
 
 export default function AttachStatistics() {
 
     const { userId, postId } = useParams()
     const navigate = useNavigate()
     const [selectedStatistics, setSelectedStatistics] = useState([])
-    const [searchTerm, setSearchTerm] = React.useState('');
+    const [searchTerm, setSearchTerm] = React.useState('')
+    const [openConfirmAttachStatistics, setOpenConfirmAttachStatistics] = useState(false)
 
 
     const {
@@ -59,7 +62,7 @@ export default function AttachStatistics() {
     useEffect(() => {
         if (statisticsIncludedPost.length > 0) {
             const idsToAdd = statisticsIncludedPost.map(item => item.id);
-            setSelectedStatistics(idsToAdd);
+            setSelectedStatistics(statisticsIncludedPost);
         }
     }, [statisticsIncludedPost]);
 
@@ -68,7 +71,7 @@ export default function AttachStatistics() {
         await updateStatisticsToPostId({
             userId,
             postId,
-            ids: selectedStatistics,
+            ids: selectedStatistics.map(item => item.id),
         })
             .unwrap()
             .then(() => {
@@ -79,11 +82,11 @@ export default function AttachStatistics() {
             });
     }
 
-    const handleSelectItem = (itemId) => {
-        if (!selectedStatistics.includes(itemId)) {
-            setSelectedStatistics(prevState => [...prevState, itemId]);
+    const handleSelectItem = (statistic) => {
+        if (!selectedStatistics.includes(statistic)) {
+            setSelectedStatistics(prevState => [...prevState, statistic]);
         } else {
-            setSelectedStatistics(selectedStatistics.filter(stat => stat !== itemId));
+            setSelectedStatistics(selectedStatistics.filter(stat => stat !== statistic));
         }
     };
 
@@ -96,7 +99,14 @@ export default function AttachStatistics() {
         navigate(`/${userId}/Statistics/new/${postId}`)
     }
 
-    console.log(selectedStatistics)
+    const openConfirmModal = () => {
+        if (arraysEqualWithObjects(statisticsIncludedPost, selectedStatistics)) return
+        setOpenConfirmAttachStatistics(true)
+    }
+
+
+    console.log('selectedStatistics', selectedStatistics)
+
     return (
         <div className={classes.wrapper}>
 
@@ -139,14 +149,14 @@ export default function AttachStatistics() {
                                 {filteredItems?.map((item, index) => (
                                     <li
                                         key={index}
-                                        onClick={() => handleSelectItem(item?.id)}
+                                        onClick={() => handleSelectItem(item)}
                                     >
                                         <span>
                                             {item?.name}
                                         </span>
                                         <input
                                             type="checkbox"
-                                            checked={selectedStatistics.includes(item?.id)}
+                                            checked={selectedStatistics.some(stat => stat.id === item?.id)}
                                             disabled={statisticsIncludedPost.some(stat => stat.id === item?.id)}
                                         />
                                     </li>
@@ -158,17 +168,20 @@ export default function AttachStatistics() {
             </div>
             <footer className={classes.inputContainer}>
                 <div className={classes.inputRow2}>
-                    <div></div>
                     <div>
-                        <button onClick={() => saveStatisticsId()}> Сохранить</button>
-                    </div>
-                    <div>
-                        {/* <img src={searchBlack}/> */}
-                        {/*<img src={policy} className={classes.image}/>*/}
-                        {/*<img src={stats}/>*/}
+                        <button onClick={() => openConfirmModal()}> Сохранить</button>
                     </div>
                 </div>
             </footer>
+
+            {openConfirmAttachStatistics && (
+                <ConfirmModal
+                    setModalOpen={setOpenConfirmAttachStatistics}
+                    requestFunc={saveStatisticsId}
+                    selectedStatistics={selectedStatistics}
+                >
+                </ConfirmModal>
+            )}
         </div>
     )
 }

@@ -10,6 +10,7 @@ import { resizeTextarea, transformArraiesForUpdate } from "../../BLL/constans"
 import editIcon from '../Custom/icon/icon _ edit.svg'
 import listSetting from '../Custom/icon/icon _ list setting.svg'
 import CustomSelectSettingModal from "./CustomSelectSettingModal/CustomSelectSettingModal"
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd"
 
 
 export default function NewProject() {
@@ -307,6 +308,39 @@ export default function NewProject() {
     }
   }, [isRemoveProject])
 
+  const handleOnDragEnd = (result, array, setArray) => {
+    const { destination, source } = result;
+    
+    if (!destination) {
+      return;
+    }
+  
+    const items = Array.from(array);
+    const [reorderedItem] = items.splice(source.index, 1);
+    items.splice(destination.index, 0, reorderedItem);
+    console.warn(items)
+    setArray(items);
+  };
+  console.warn(eventList)
+
+  useEffect(() => {
+    console.log('Updated eventList:', eventList);
+  }, [eventList]);
+  
+
+  // const _handleOnDragEnd = (result) => {
+  //   const { source, destination } = result;
+
+  //   if (!destination) {
+  //     return;
+  //   }
+  //   const items = Array.from(_array);
+  //   const [reorderedItem] = items.splice(source.index, 1);
+  //   items.splice(destination.index, 0, reorderedItem);
+
+  //   _setArray(items);
+  // };
+
   const saveProject = async () => {
 
     const updatedProducts = transformArraiesForUpdate(productsArray)
@@ -371,6 +405,7 @@ export default function NewProject() {
       userId,
       projectId,
       _id: projectId,
+      type: 'Проект',
       ...Data,
     })
       .unwrap()
@@ -589,27 +624,59 @@ export default function NewProject() {
                       </div>
                     ))}
                     {edit && (
-                      <>
-                        {eventList.map((item, index) => (
-                          <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Организационные мероприятияNEW')}>
-                            <Target
-                              item={item}
-                              isNew={true}
-                              contentSender={setTargetContent}
-                              workersList={workers}
-                              setSelectedWorker={setSelectedWorker}
-                              setDeadlineDate={setDeadlineDate}
-                            ></Target>
-                          </div>
-                        ))}
-                        {eventList.length > 0 && (
-                          <div className={classes.deleteContainer} onClick={() => deleteTarget(eventList)}>
-                            Удалить
-                            <img src={deleteIcon} alt="delete" />
-                          </div>
-                        )}
-                      </>
+                      <DragDropContext onDragEnd={(result) => handleOnDragEnd(result, eventList, setEventList)}>
+                        <Droppable droppableId="droppable">
+                          {(provided, snapshot) => (
+                            <div
+                              {...provided.droppableProps}
+                              ref={provided.innerRef}
+                            >
+                              <>
+                                {eventList.map((item, index) => (
+                                  <Draggable
+                                    key={item.orderNumber}
+                                    draggableId={`item-${index}`}
+                                    index={index}
+                                  >
+                                    {(provided) => (
+                                      <div
+                                        key={item.orderNumber}
+                                        className={classes.targetContainer}
+                                        onClick={() => targetFormation(index, 'Организационные мероприятияNEW')}
+                                        ref={provided.innerRef}
+                                        {...provided.draggableProps}
+                                        {...provided.dragHandleProps}
+                                      >
+                                        <Target
+                                          item={item}
+                                          isNew={true}
+                                          contentSender={setTargetContent}
+                                          workersList={workers}
+                                          setSelectedWorker={setSelectedWorker}
+                                          setDeadlineDate={setDeadlineDate}
+                                        >
+
+                                        </Target>
+                                      </div>
+
+                                    )}
+                                  </Draggable>
+                                ))}
+                                {eventList.length > 0 && (
+                                  <div className={classes.deleteContainer} onClick={() => deleteTarget(eventList)}>
+                                    Удалить
+                                    <img src={deleteIcon} alt="delete" />
+                                  </div>
+                                )}
+                              </>
+                              {provided.placeholder}
+                            </div>
+                          )}
+                        </Droppable>
+                      </DragDropContext>
                     )}
+
+
                   </div>
                 </>
               )}
@@ -774,7 +841,7 @@ export default function NewProject() {
                   СОХРАНИТЬ
                 </button>
               </div>
- 
+
             </div>
           </footer>
         </>

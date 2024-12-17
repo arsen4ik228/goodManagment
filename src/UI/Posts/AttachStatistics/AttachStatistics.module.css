@@ -1,5 +1,4 @@
-
-.wrapper{
+.wrapper {
     display: flex;
     flex-direction: column;
     height: 100vh;
@@ -8,24 +7,24 @@
 }
 
 
-.body{
+.body {
     flex: 1 1 auto;
     /* max-height: calc(100vh - 173px); */
     margin-top: 60px;
     /* overflow: hidden; */
     /* border: 1px solid red; */
 }
-.bodyContainer{
+
+.bodyContainer {
     display: flex;
     /* width: 100vw; */
-    max-height: calc(100vh - 173px);
+    max-height: calc(100vh - 215px);
     padding: 10px 15px;
-        /* border: 1px solid red; */
-        overflow: auto;
+    overflow: auto;
 
 }
 
-.createNew{
+.createNew {
     display: flex;
     justify-content: space-between;
     width: 92%;
@@ -37,14 +36,14 @@
     font-size: 1.2rem;
 }
 
-.selectList{
+.selectList {
     overflow-y: auto;
     font-size: 1.3em;
     /* height: 100%; */
     /* padding-bottom: 10px; */
     width: 100%;
 
-    li{
+    li {
         /* border: #005475 1px solid; */
         display: flex;
         /* width: 60vw; */
@@ -55,7 +54,8 @@
         div {
             /* padding-left: 5px; */
         }
-        >input{
+
+        >input {
             height: 1.2em;
             width: 1.2em;
         }
@@ -128,6 +128,7 @@
     padding: 15px;
     /*border: #005475 1px solid;*/
     width: 100%;
+    justify-content: center;
     align-items: center;
 
 
@@ -151,10 +152,4 @@
         text-transform: uppercase;
     }
 
-    div {
-        display: flex;
-        flex: 1 1 auto;
-        /*border: 1px solid #005475;*/
-        justify-content: center;
-    }
 }

@@ -380,7 +380,6 @@ const Posts = () => {
                         <div>
                             <button onClick={() => savePosts()}> СОХРАНИТЬ</button>
                         </div>
-                      
                     </div>
                 </footer>
             </div>

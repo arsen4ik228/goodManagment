@@ -62,9 +62,7 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 .selectedType{
     font-size: 24px;
     padding: 5px 20px;
-    font-style: italic;
     color: #005475;
-    text-decoration: underline;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -73,9 +71,6 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
     >input{
         /* border-bottom: #005475 1px solid; */
         font-size: 24px;
-        font-style: italic;
-        text-decoration: underline;
-        text-transform: uppercase;
         color: #005475;
         
     }

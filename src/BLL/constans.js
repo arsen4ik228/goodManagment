@@ -97,3 +97,24 @@ export const getDateFormatSatatistic = (date, typeGraphic) => {
   });
 };
 
+ export function arraysEqualWithObjects(arr1, arr2) {
+  if (arr1.length !== arr2.length) {
+    return false;
+  }
+
+  for (let i = 0; i < arr1.length; i++) {
+    const obj1 = arr1[i];
+    const obj2 = arr2[i];
+
+    // Сравниваем все поля объекта
+    if (
+      typeof obj1 === 'object' &&
+      typeof obj2 === 'object' &&
+      JSON.stringify(obj1) !== JSON.stringify(obj2)
+    ) {
+      return false;
+    }
+  }
+
+  return true;
+}

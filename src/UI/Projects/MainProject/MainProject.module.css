@@ -152,11 +152,11 @@ h6 {
 
     div {
         font-size: 1.1rem;
-        margin-left: 25px;
-        padding: 5px 0;
+        margin-left: 5px;
+        padding: 5px;
         /* text-decoration: underline; */
         color: #005475;
-        border: 1px solid red;
+        /* border: 1px solid red; */
         display: block;
     }
 
@@ -220,4 +220,22 @@ h6 {
     }
 
   
+}
+
+.directoryMenu{
+
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 10px;
+    border-radius: 15px;
+    margin: 0 10px;
+    box-shadow: 0 0 2px black;
+    max-width: 230px;
+
+    >span{
+        font-size: 20px;
+        /* font-style: italic; */
+        color: grey;          
+    }
+
 }

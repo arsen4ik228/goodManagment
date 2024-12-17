@@ -427,6 +427,7 @@ export default function Programs() {
       userId,
       projectId: programId,
       _id: programId,
+      type: 'Программа',
       ...Data,
     })
       .unwrap()

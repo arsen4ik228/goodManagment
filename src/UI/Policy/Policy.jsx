@@ -195,14 +195,8 @@ const Policy = () => {
                 {!disabled && (
                     <footer className={classes.inputContainer}>
                         <div className={classes.inputRow2}>
-                            <div></div>
                             <div>
                                 <button onClick={() => openOrgModal()}> Сохранить</button>
-                            </div>
-                            <div>
-                                {/* <img src={searchBlack} onClick={() => navigate('CreateDirectory')} /> */}
-                                {/*<img src={policy} className={classes.image}/>*/}
-                                {/*<img src={stats}/>*/}
                             </div>
                         </div>
                     </footer>

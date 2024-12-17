@@ -217,7 +217,7 @@ const Graphic = ({ data, name, setName, typeGraphic, type }) => {
           ? (value < prevValue ? "blue" : "red") // Reverse logic for points
           : (value < prevValue ? "red" : "blue"); // Normal logic for points
       } else {
-        return "green";
+        return "blue";
       }
     };
 

@@ -174,9 +174,15 @@ export default function MainProject() {
                       {open === index &&
                         (
                           <div className={classes.projectsOfProgram}>
-                            {/* <div onClick={() => navigate(`program/${item.id}`)}>Раскрыть Программу</div> */}
+                            <div
+                              className={classes.directoryMenu}
+                              onClick={() => navigate(`program/${item.id}`)}
+                            >
+                              <span>Редактировать программу</span>
+                              {/* <img src={edit} alt="edit" /> */}
+                            </div>
                             <ol className={classes.ListOfProgram}>
-                              <li style={{ color: '#005475' }} onClick={() => navigate(`program/${item.id}`)} >Раскрыть программу</li>
+                              {/* <li style={{ color: '#005475' }} onClick={() => navigate(`program/${item.id}`)} >Раскрыть программу</li> */}
                               {projectsWithProgram.filter(project => project.programId === item.id).map((element, index1) => (
                                 <li key={index1} onClick={() => navigate(element.id)}>
                                   {element.projectName}
@@ -221,9 +227,14 @@ export default function MainProject() {
                         {open === index &&
                           (
                             <div className={classes.projectsOfProgram}>
-                              {/* <div onClick={() => navigate(`program/${item.id}`)}>Раскрыть Программу</div> */}
-                              <ol className={classes.ListOfProgram}>
-                                <li style={{ color: '#005475' }} onClick={() => navigate(`program/${item.id}`)} >Раскрыть программу</li>
+                              <div
+                                className={classes.directoryMenu}
+                                onClick={() => navigate(`program/${item.id}`)}
+                              >
+                                <span>Редактировать программу</span>
+                                {/* <img src={edit} alt="edit" /> */}
+                              </div>                              <ol className={classes.ListOfProgram}>
+                                {/* <li style={{ color: '#005475' }} onClick={() => navigate(`program/${item.id}`)} >Раскрыть программу</li> */}
                                 {archivesProjectsWithProgram.filter(project => project.programId === item.id).map((element, index1) => (
                                   <li key={index1} style={{ color: 'grey' }} onClick={() => navigate(element.id)}>
                                     {element.projectName}

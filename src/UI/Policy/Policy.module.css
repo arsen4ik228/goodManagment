@@ -116,6 +116,7 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
     padding: 15px;
     /*border: #005475 1px solid;*/
     width: 100%;
+    justify-content: center;
     align-items: center;
 
 
@@ -137,13 +138,6 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
         border: #005475 1px solid;
         border-radius: 5px;
         text-transform: uppercase;
-    }
-
-    div{
-        display: flex;
-        flex: 1 1 auto;
-        /*border: 1px solid #005475;*/
-        justify-content: center;
     }
 }
 

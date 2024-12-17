@@ -1,10 +1,9 @@
 .wrapper {
-    width: 100%;
+    width: 1200px;
     height: 100%;
     background-color: #ffff;
     padding: 10px;
     box-sizing: border-box;
-    /* border: 1px solid red; */
     border-radius: 10px;
   }
   

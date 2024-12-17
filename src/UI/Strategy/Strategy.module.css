@@ -322,18 +322,7 @@ h6 {
     /*border: #005475 1px solid;*/
     width: 100%;
     align-items: center;
-
-    @media screen and (max-width: 395px) {
-        padding: 1.5rem 2rem;
-    }
-
-    @media screen and (max-width: 370px) {
-        padding: 1.5rem 1.5rem;
-    }
-
-    @media screen and (max-width: 350px) {
-        padding: 1.5rem 0.5rem;
-    }
+    justify-content: center;
 
 
     img {
@@ -354,13 +343,6 @@ h6 {
         border: #005475 1px solid;
         border-radius: 5px;
 
-    }
-
-    div {
-        display: flex;
-        flex: 1 1 auto;
-        /*border: 1px solid #005475;*/
-        justify-content: center;
     }
 }
 

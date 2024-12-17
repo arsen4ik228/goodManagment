@@ -17,12 +17,12 @@ export const speedGoalApi = createApi({
           .sort((a, b) => {
             const stateA = a.state || '';
             const stateB = b.state || '';
+            
+            if (stateA === 'Черновик' && stateB !== 'Черновик') return -1;
+            if (stateB === 'Черновик' && stateA !== 'Черновик') return 1;
 
             if (stateA === 'Активный' && stateB !== 'Активный') return -1;
             if (stateB === 'Активный' && stateA !== 'Активный') return 1;
-
-            if (stateA === 'Черновик' && stateB !== 'Черновик') return -1;
-            if (stateB === 'Черновик' && stateA !== 'Черновик') return 1;
 
             return 0;
           });

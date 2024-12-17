@@ -261,6 +261,7 @@ textarea::placeholder {
     padding: 15px;
     /*border: #005475 1px solid;*/
     width: 100%;
+    justify-content: center;
     align-items: center;
 
 
@@ -282,13 +283,6 @@ textarea::placeholder {
         border: #005475 1px solid;
         border-radius: 5px;
 
-    }
-
-    div{
-        display: flex;
-        flex: 1 1 auto;
-        /*border: 1px solid #005475;*/
-        justify-content: center;
     }
 }
 

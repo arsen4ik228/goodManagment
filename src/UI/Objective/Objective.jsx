@@ -578,20 +578,19 @@ function Objective(props) {
                 </div>
             </div>
 
-            {!isArchive && (
-                <footer className={classes.inputContainer}>
-                    <div className={classes.inputColumn}>
-                        <div className={classes.inputRow2}>
-                            <button
-                                onClick={() => saveUpdateSpeedGoal()}
-                            >
-                                Сохранить
-                            </button>
-                        </div>
+            <footer className={classes.inputContainer}>
+                <div className={classes.inputColumn}>
+                    <div className={classes.inputRow2}>
+                        <button
+                            disabled={isArchive}
+                            onClick={() => saveUpdateSpeedGoal()}
+                            style={{'backgroundColor' : 'grey'}}
+                        >
+                            Сохранить
+                        </button>
                     </div>
-                </footer>
-            )}
-
+                </div>
+            </footer>
         </>
     );
 }

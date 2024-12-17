@@ -63,7 +63,7 @@ export default function AuthorizationPage() {
     const serverData = await response.json();
     
     if (serverData.isLogged) {
-    window.location.href = `#/${serverData.userId}/start`;
+    window.location.href = `#/${serverData.userId}/Chat`;
     }
     console.log("Ответ от /:", serverData);
     setTokenForTG(serverData.tokenForTG);

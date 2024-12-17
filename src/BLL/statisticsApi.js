@@ -13,7 +13,7 @@ export const statisticsApi = createApi({
         url: `${userId}/statistics/?statisticData=${statisticData}`,
       }),
       transformResponse: (response) => {
-        console.log('response:  ' ,response)
+        console.log('response:  ', response)
 
         if (!Array.isArray(response)) {
           console.error('Response is not an array');
@@ -24,17 +24,23 @@ export const statisticsApi = createApi({
           return {
             id: item.id || '',
             name: item.name || '',
+            ...(item.post && {
+              post: {
+                id: item?.post?.id || '',
+                name: item.post?.postName || ''
+              }
+            }),
             organization: {
-              ...(item.post && {
-                id: item?.post.organization.id || '',
-                name: item.post.organization.organizationName || '',
-                reportDay: item.post.organization.reportDay || ''
+              ...(item.post.organization && {
+                id: item?.post.organization?.id || '',
+                name: item.post.organization?.organizationName || '',
+                reportDay: item.post.organization?.reportDay || ''
               })
             } || {},
           }
 
         })
-        
+
         console.log('Transform Data:  ', transformData)
         return transformData
       },
