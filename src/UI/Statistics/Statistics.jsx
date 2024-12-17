@@ -10,6 +10,7 @@ import saveIcon from '../Custom/icon/icon _ save.svg'
 import Graphic from '../Custom/Graph/Graphic'
 import HandlerMutation from '../Custom/HandlerMutation'
 import iconExit from '../Custom/SearchModal/icon/icon _ add.svg'
+import arrowInCircle from '../Custom/icon/arrow in circle.svg'
 
 export default function Statistics() {
 
@@ -1659,10 +1660,10 @@ export default function Statistics() {
                             placeholder='Название статистики'
                         />
                         <img
-                            src={icon}
+                            src={arrowInCircle}
                             alt='icon'
                             onClick={() => setOpenMenu(!openMenu)}
-                            style={{ transform: !openMenu ? 'rotate(180deg)' : 'none' }}
+                            style={{ transform: !openMenu ? 'rotate(270deg)' : 'rotate(90deg)' }}
                         />
                     </div>
                     {openMenu && (
