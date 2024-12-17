@@ -107,9 +107,7 @@ const Policy = () => {
     //         setEditorState(oldEditorState);
     //     }
     // }, [currentPolicy.content]);
-
-    console.log(currentPolicy)
-
+    
     const saveUpdatePolicy = async () => {
         const Data = {}
         if (inputValue !== currentPolicy.policyName) Data.policyName = inputValue
@@ -139,6 +137,8 @@ const Policy = () => {
     const openOrgModal = () => {
         setModalOrgOpen(true)
     }
+    console.log(editorState)
+
     return (
         <>
             <div className={classes.wrapper}>
@@ -186,6 +186,7 @@ const Policy = () => {
                             editorState={currentPolicy?.content}
                             setEditorState={setEditorState}
                             userId={userId}
+                            isArchive={disabled}
                         >
                         </Mdxeditor>
                     </>

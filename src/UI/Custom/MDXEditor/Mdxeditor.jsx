@@ -21,16 +21,18 @@ import { baseUrl } from "../../../BLL/constans";
 import classes from "./Mdxeditor.module.css";
 import { usePostImageMutation } from "../../../BLL/policyApi";
 
-export default function Mdxeditor({ editorState, setEditorState, userId}) {
+export default function Mdxeditor({ editorState, setEditorState, userId, isArchive}) {
     const editorRef = useRef(null); // Ссылка на редактор
 
     // Функция для обновления содержимого редактора и состояния
     const updateEditorContent = (newContent) => {
-        if (editorRef.current) {
+        if (editorRef.current && !isArchive) {
+            console.log('updateEditorContent')
             editorRef.current.setMarkdown(newContent); // Обновляем содержимое через setMarkdown
             setEditorState(newContent); // Обновляем состояние редактора
         }
     };
+  
 
     const [postImage] = usePostImageMutation();
 
@@ -62,8 +64,6 @@ export default function Mdxeditor({ editorState, setEditorState, userId}) {
         }
     };
 
-    const isMobile = window.innerWidth <= 768;
-    console.warn(isMobile)
 
 
     return (
@@ -76,6 +76,7 @@ export default function Mdxeditor({ editorState, setEditorState, userId}) {
                         i18n.t(key, { defaultValue, ...interpolations })
                     }
                     onChange={updateEditorContent}
+                    readOnly={isArchive}
                     plugins={[
                         linkPlugin(),
                         linkDialogPlugin(),
