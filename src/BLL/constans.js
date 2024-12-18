@@ -1,6 +1,6 @@
 // config.js или constants.js
-export const baseUrl = "http://localhost:5002/";
-// export const baseUrl = "https://24academy.ru/gm/";
+// export const baseUrl = "http://localhost:5002/";
+export const baseUrl = "https://24academy.ru/gm/";
 
 export const formattedDate = (date) => {
   return date?.slice(0, 10).split('-').reverse().join('.')
@@ -15,22 +15,22 @@ export const resizeTextarea = (id) => {
 };
 
 
-export const transformArraiesForUpdate = (array) => {
-  const updatedArray = array.map(item => {
-      return {
-        _id: item?.id,
-        content: item?.content,
-        dateStart: item?.dateStart,
-        deadline: item?.deadline,
-        targetState: item?.targetState,
-        type: item?.type,
-        ...(item.holderUserIdchange !== item.holderUserId && {
-          holderUserId: item?.holderUserId,
-        })
-      }
+export const transformArraiesForRequset = (array) => {
+  const updatedArray = array.map((item, index) => {
+    return {
+      _id: item?.id,
+      orderNumber: index + 1,
+      content: item?.content,
+      dateStart: item?.dateStart,
+      deadline: item?.deadline,
+      targetState: item?.targetState,
+      type: item?.type,
+      ...(item.holderUserIdchange !== item.holderUserId && {
+        holderUserId: item?.holderUserId,
+      })
+    }
   }
   )
-
   return updatedArray; // Явно возвращаем массив
 }
 
@@ -70,7 +70,7 @@ export const getDateFormatSatatistic = (date, typeGraphic) => {
   });
 };
 
- export function arraysEqualWithObjects(arr1, arr2) {
+export function arraysEqualWithObjects(arr1, arr2) {
   if (arr1.length !== arr2.length) {
     return false;
   }

@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import "@mdxeditor/editor/style.css";
 import {
     MDXEditor,
@@ -64,8 +64,6 @@ export default function Mdxeditor({ editorState, setEditorState, userId, isArchi
         }
     };
 
-
-
     return (
         <div className={classes.wrapper}>
             <div className={classes.editorContainer}>
@@ -77,18 +75,11 @@ export default function Mdxeditor({ editorState, setEditorState, userId, isArchi
                     }
                     onChange={updateEditorContent}
                     readOnly={isArchive}
+                    contentEditableClassName={classes['markdown-input-comment__editable']}
                     plugins={[
                         linkPlugin(),
                         linkDialogPlugin(),
-                        imagePlugin({
-                            imageUploadHandler,
-                            style: {
-                                width: '90%',
-                                padding: '10px',
-                                maxWidth: "100%",
-                                background: "#f0f0f0",
-                            },
-                        }),
+                        imagePlugin({imageUploadHandler}),
                         tablePlugin(),
                         listsPlugin(),
                         toolbarPlugin({

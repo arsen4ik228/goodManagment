@@ -8,7 +8,7 @@ import CustomSelectModal from "./CustomSelectModal/CustomSelectModal"
 import deleteIcon from '../Custom//icon/icon _ delete.svg'
 import Header from "../Custom/Header/Header"
 import HandlerMutation from "../Custom/HandlerMutation"
-import { formattedDate, transformArraiesForUpdate } from "../../BLL/constans"
+import { formattedDate, transformArraiesForRequset } from "../../BLL/constans"
 import editIcon from '../Custom/icon/icon _ edit.svg'
 import CustomSelectModalProgram from "./CustomSelectModalProgram/CustomSelectModalProgram"
 import CustomSelectSettingModal from "./CustomSelectSettingModal/CustomSelectSettingModal"
@@ -364,10 +364,10 @@ export default function Programs() {
 
   const saveProject = async () => {
 
-    const updatedProducts = transformArraiesForUpdate(productsArray)
-    const updatedRules = transformArraiesForUpdate(rulesArray)
-    const updatedEvent = transformArraiesForUpdate(eventArray)
-    const updatedStatistics = transformArraiesForUpdate(statisticsArray)
+    const updatedProducts = transformArraiesForRequset(productsArray)
+    const updatedRules = transformArraiesForRequset(rulesArray)
+    const updatedEvent = transformArraiesForRequset(eventArray)
+    const updatedStatistics = transformArraiesForRequset(statisticsArray)
 
     const Data = {}
 

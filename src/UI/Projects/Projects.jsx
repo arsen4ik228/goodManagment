@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useRef } from "react"
 import classes from "./Projects.module.css"
 import Target from "./Targets/Target"
 import { useGetProjectIdQuery, useGetProjectNewQuery, useUpdateProjectMutation } from "../../BLL/projectApi"
@@ -6,7 +6,7 @@ import { useParams } from "react-router-dom"
 import deleteIcon from '../Custom//icon/icon _ delete.svg'
 import Header from "../Custom/Header/Header"
 import HandlerMutation from "../Custom/HandlerMutation"
-import { resizeTextarea, transformArraiesForUpdate } from "../../BLL/constans"
+import { resizeTextarea, transformArraiesForRequset } from "../../BLL/constans"
 import editIcon from '../Custom/icon/icon _ edit.svg'
 import listSetting from '../Custom/icon/icon _ list setting.svg'
 import CustomSelectSettingModal from "./CustomSelectSettingModal/CustomSelectSettingModal"
@@ -15,6 +15,8 @@ import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd"
 
 export default function NewProject() {
   const { userId, projectId } = useParams();
+  const uniqueIdRef = useRef(0);
+
   const [edit, setEdit] = useState(false)
   const [dummyKey, setDummyKey] = useState(0)
   const [isRemoveProject, setIsRemoveProject] = useState(false)
@@ -277,7 +279,8 @@ export default function NewProject() {
       const targetType = TARGET_TYPES[type]
       const { array, setFunction } = ADD_TARGET[targetType]
 
-      const newIndex = array.length + 1;
+      // const newIndex = array.length + 1;
+      const newIndex = ++uniqueIdRef.current
       const newTarget = {
         // id: new Date(),
         type: SWITCH_TYPE[type],
@@ -310,23 +313,20 @@ export default function NewProject() {
 
   const handleOnDragEnd = (result, array, setArray) => {
     const { destination, source } = result;
-    
-    if (!destination) {
-      return;
-    }
-  
+
+    if (!destination) return
+
     const items = Array.from(array);
     const [reorderedItem] = items.splice(source.index, 1);
     items.splice(destination.index, 0, reorderedItem);
-    console.warn(items)
-    setArray(items);
+    console.warn('items:   ', items)
+    setArray(items)
   };
-  console.warn(eventList)
 
   useEffect(() => {
-    console.log('Updated eventList:', eventList);
-  }, [eventList]);
-  
+    console.log('Updated rulesList:', rulesList);
+  }, [rulesList]);
+
 
   // const _handleOnDragEnd = (result) => {
   //   const { source, destination } = result;
@@ -343,11 +343,11 @@ export default function NewProject() {
 
   const saveProject = async () => {
 
-    const updatedProducts = transformArraiesForUpdate(productsArray)
-    const updatedRules = transformArraiesForUpdate(rulesArray)
-    const updatedEvent = transformArraiesForUpdate(eventArray)
-    const updatedStatistics = transformArraiesForUpdate(statisticsArray)
-    const updatedSimple = transformArraiesForUpdate(simpleArray)
+    const updatedProducts = transformArraiesForRequset(productsArray)
+    const updatedRules = transformArraiesForRequset(rulesArray)
+    const updatedEvent = transformArraiesForRequset(eventArray)
+    const updatedStatistics = transformArraiesForRequset(statisticsArray)
+    const updatedSimple = transformArraiesForRequset(simpleArray)
 
     const Data = {}
 
@@ -384,13 +384,14 @@ export default function NewProject() {
         eventList.length > 0
       ) {
         Data.targetCreateDtos = [
-          ...rulesList,
-          ...productsList,
-          ...statisticsList,
-          ...simpleList,
-          ...eventList,
+          ...rulesList.map((item, index) => ({ ...item, orderNumber: rulesArray.length + index + 1})),
+          ...productsList.map((item, index) => ({ ...item, orderNumber: productsArray.length + index + 1})),
+          ...statisticsList.map((item, index) => ({ ...item, orderNumber: statisticsArray.length + index + 1})),
+          ...simpleList.map((item, index) => ({ ...item, orderNumber: simpleArray.length + index + 1})),
+          ...eventList.map((item, index) => ({ ...item, orderNumber: eventArray.length + index + 1})),
         ];
       }
+
       Data.targetUpdateDtos = [
         ...updatedSimple,
         ...updatedProducts,
@@ -635,7 +636,7 @@ export default function NewProject() {
                                 {eventList.map((item, index) => (
                                   <Draggable
                                     key={item.orderNumber}
-                                    draggableId={`item-${index}`}
+                                    draggableId={`item-${item.orderNumber}`}
                                     index={index}
                                   >
                                     {(provided) => (
@@ -703,29 +704,59 @@ export default function NewProject() {
                       </div>
                     ))}
                     {edit && (
-                      <>
-                        {rulesList.map((item, index) => (
-                          <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'ПравилаNEW')}>
-                            <Target
-                              item={item}
-                              isNew={true}
-                              contentSender={setTargetContent}
-                              workersList={workers}
-                              setSelectedWorker={setSelectedWorker}
-                              setDeadlineDate={setDeadlineDate}
-                            ></Target>
-                          </div>
-                        ))}
-                        {rulesList.length > 0 && (
-                          <div className={classes.deleteContainer} onClick={() => deleteTarget(rulesList)}>
-                            Удалить
-                            <img src={deleteIcon} alt="delete" />
-                          </div>
-                        )}
-                      </>
+                      <DragDropContext onDragEnd={(result) => handleOnDragEnd(result, rulesList, setRulesList)}>
+                        <Droppable droppableId="droppable">
+                          {(provided, snapshot) => (
+                            <div
+                              {...provided.droppableProps}
+                              ref={provided.innerRef}
+                            >
+                              <>
+                                {rulesList.map((item, index) => (
+                                  <Draggable
+                                    key={item.orderNumber}
+                                    draggableId={`item-${item.orderNumber}`}
+                                    index={index}
+                                  >
+                                    {(provided) => (
+                                      <div
+                                        key={item.orderNumber}
+                                        className={classes.targetContainer}
+                                        onClick={() => targetFormation(index, 'ПравилаNEW')}
+                                        ref={provided.innerRef}
+                                        {...provided.draggableProps}
+                                        {...provided.dragHandleProps}
+                                      >
+                                        <Target
+                                          item={item}
+                                          isNew={true}
+                                          contentSender={setTargetContent}
+                                          workersList={workers}
+                                          setSelectedWorker={setSelectedWorker}
+                                          setDeadlineDate={setDeadlineDate}
+                                        >
+                                        </Target>
+                                      </div>
+
+                                    )}
+                                  </Draggable>
+                                ))}
+                                {rulesList.length > 0 && (
+                                  <div className={classes.deleteContainer} onClick={() => deleteTarget(rulesList)}>
+                                    Удалить
+                                    <img src={deleteIcon} alt="delete" />
+                                  </div>
+                                )}
+                              </>
+                              {provided.placeholder}
+                            </div>
+                          )}
+                        </Droppable>
+                      </DragDropContext>
                     )}
                   </div>
                 </>
+
               )}
 
 
@@ -751,27 +782,59 @@ export default function NewProject() {
                       </div>
                     ))}
                     {edit && (
-                      <>
-                        {simpleList.map((item, index) => (
-                          <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'ОбычнаяNEW')}>
-                            <Target
-                              item={item}
-                              isNew={true}
-                              contentSender={setTargetContent}
-                              workersList={workers}
-                              setSelectedWorker={setSelectedWorker}
-                              setDeadlineDate={setDeadlineDate}
-                            ></Target>
-                          </div>
-                        ))}
-                        {simpleList.length > 0 && (
-                          <div className={classes.deleteContainer} onClick={() => deleteTarget(simpleList)}>
-                            Удалить
-                            <img src={deleteIcon} alt="delete" />
-                          </div>
-                        )}
-                      </>
+                      <DragDropContext onDragEnd={(result) => handleOnDragEnd(result, simpleList, setSimpleList)}>
+                        <Droppable droppableId="droppable">
+                          {(provided, snapshot) => (
+                            <div
+                              {...provided.droppableProps}
+                              ref={provided.innerRef}
+                            >
+                              <>
+                                {simpleList.map((item, index) => (
+                                  <Draggable
+                                    key={item.orderNumber}
+                                    draggableId={`item-${item.orderNumber}`}
+                                    index={index}
+                                  >
+                                    {(provided) => (
+                                      <div
+                                        key={item.orderNumber}
+                                        className={classes.targetContainer}
+                                        onClick={() => targetFormation(index, 'ОбычнаяNEW')}
+                                        ref={provided.innerRef}
+                                        {...provided.draggableProps}
+                                        {...provided.dragHandleProps}
+                                      >
+                                        <Target
+                                          item={item}
+                                          isNew={true}
+                                          contentSender={setTargetContent}
+                                          workersList={workers}
+                                          setSelectedWorker={setSelectedWorker}
+                                          setDeadlineDate={setDeadlineDate}
+                                        >
+
+                                        </Target>
+                                      </div>
+
+                                    )}
+                                  </Draggable>
+                                ))}
+                                {simpleList.length > 0 && (
+                                  <div className={classes.deleteContainer} onClick={() => deleteTarget(simpleList)}>
+                                    Удалить
+                                    <img src={deleteIcon} alt="delete" />
+                                  </div>
+                                )}
+                              </>
+                              {provided.placeholder}
+                            </div>
+                          )}
+                        </Droppable>
+                      </DragDropContext>
                     )}
+
+
                   </div>
                 </>
               )}
@@ -799,26 +862,56 @@ export default function NewProject() {
                       </div>
                     ))}
                     {edit && (
-                      <>
-                        {statisticsList.map((item, index) => (
-                          <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'СтатистикаNEW')}>
-                            <Target
-                              item={item}
-                              isNew={true}
-                              contentSender={setTargetContent}
-                              workersList={workers}
-                              setSelectedWorker={setSelectedWorker}
-                              setDeadlineDate={setDeadlineDate}
-                            ></Target>
-                          </div>
-                        ))}
-                        {statisticsList.length > 0 && (
-                          <div className={classes.deleteContainer} onClick={() => deleteTarget(statisticsList)}>
-                            Удалить
-                            <img src={deleteIcon} alt="delete" />
-                          </div>
-                        )}
-                      </>
+                      <DragDropContext onDragEnd={(result) => handleOnDragEnd(result, statisticsList, setStatisticsList)}>
+                        <Droppable droppableId="droppable">
+                          {(provided, snapshot) => (
+                            <div
+                              {...provided.droppableProps}
+                              ref={provided.innerRef}
+                            >
+                              <>
+                                {statisticsList.map((item, index) => (
+                                  <Draggable
+                                    key={item.orderNumber}
+                                    draggableId={`item-${item.orderNumber}`}
+                                    index={index}
+                                  >
+                                    {(provided) => (
+                                      <div
+                                        key={item.orderNumber}
+                                        className={classes.targetContainer}
+                                        onClick={() => targetFormation(index, 'СтатистикаNEW')}
+                                        ref={provided.innerRef}
+                                        {...provided.draggableProps}
+                                        {...provided.dragHandleProps}
+                                      >
+                                        <Target
+                                          item={item}
+                                          isNew={true}
+                                          contentSender={setTargetContent}
+                                          workersList={workers}
+                                          setSelectedWorker={setSelectedWorker}
+                                          setDeadlineDate={setDeadlineDate}
+                                        >
+
+                                        </Target>
+                                      </div>
+
+                                    )}
+                                  </Draggable>
+                                ))}
+                                {statisticsList.length > 0 && (
+                                  <div className={classes.deleteContainer} onClick={() => deleteTarget(statisticsList)}>
+                                    Удалить
+                                    <img src={deleteIcon} alt="delete" />
+                                  </div>
+                                )}
+                              </>
+                              {provided.placeholder}
+                            </div>
+                          )}
+                        </Droppable>
+                      </DragDropContext>
                     )}
                   </div>
                 </>
