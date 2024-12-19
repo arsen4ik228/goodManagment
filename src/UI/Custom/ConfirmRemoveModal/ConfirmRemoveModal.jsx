@@ -16,7 +16,6 @@ export default function ConfirmRemoveModal({ setTargetState, setOpenModal, item,
         setTargetState('Отменена')
         setOpenModal(false)
         flag && requestFunc(true)
-
     };
     
 

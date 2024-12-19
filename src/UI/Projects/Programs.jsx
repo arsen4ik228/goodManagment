@@ -209,35 +209,36 @@ export default function Programs() {
 
   useEffect(() => { // формирование массивов на основе targets
     if (targets.length > 0) {
-      targets.forEach((item) => {
-        switch (item.type) {
-          case 'Продукт':
-            setProductsArray((prevState) => ([...prevState, { ...item, holderUserIdchange: item.holderUserId }]))
-            if (item.targetState === 'Завершена')
-              setIsArchive(true)
-            break;
-          case 'Правила':
-            setRulesArray((prevState) => ([...prevState, { ...item, holderUserIdchange: item.holderUserId }]))
-            setSelectedSections((prevState) => ([...prevState, 'Правила']))
-            break;
-          case 'Организационные мероприятия':
-            setEventArray((prevState) => ([...prevState, { ...item, holderUserIdchange: item.holderUserId }]))
-            setSelectedSections((prevState) => ([...prevState, 'Организационные мероприятия']))
-            break;
-          case 'Статистика':
-            setStatisticsArray((prevState) => ([...prevState, { ...item, holderUserIdchange: item.holderUserId }]))
-            setSelectedSections((prevState) => ([...prevState, 'Метрика']))
-            break;
-          default:
-            break;
-        }
-        // setEvent(
-        //   targets
-        //   .filter((item) => item.type === "Организационные мероприятия")
-        //   .map((item) => ({ ...item, holderUserIdchange: item.holderUserId }))
-        //   .sort((a, b) => a.orderNumber - b.orderNumber)
-        //   );
-      })
+      const sortedTargets = targets?.map(item => item).sort((a, b) => a.orderNumber - b.orderNumber)
+
+      const product = sortedTargets.find(item => item.type === 'Продукт')
+
+      const rulesArray = sortedTargets.filter(item => item.type === 'Правила')
+        .map(item => ({ ...item, orderNumber: item.orderNumber || 1 }))
+
+      const eventArray = sortedTargets.filter(item => item.type === 'Организационные мероприятия')
+        .map(item => ({ ...item, orderNumber: item.orderNumber || 1 }))
+
+      const statisticsArray = sortedTargets.filter(item => item.type === 'Статистика')
+        .map(item => ({ ...item, orderNumber: item.orderNumber || 1 }))
+
+
+      setProductsArray(prevState => [...prevState, product])
+      if (product.targetState === 'Завершена')
+        setIsArchive(true)
+
+      if (rulesArray.length > 0) {
+        setRulesArray(prevState => [...prevState, ...rulesArray])
+        setSelectedSections(prevState => [...prevState, 'Правила'])
+      }
+      if (statisticsArray.length > 0) {
+        setStatisticsArray(prevState => [...prevState, ...statisticsArray])
+        setSelectedSections(prevState => [...prevState, 'Метрика'])
+      }
+      if (eventArray.length > 0) {
+        setEventArray(prevState => [...prevState, ...eventArray])
+        setSelectedSections(prevState => [...prevState, 'Организационные мероприятия'])
+      }
     }
   }, [targets])
 
@@ -341,9 +342,9 @@ export default function Programs() {
         // id: new Date(),
         type: SWITCH_TYPE[type],
         orderNumber: newIndex,
-        content: "",
-        holderUserId: workers[0].id,
-        deadline: ""
+        content: '',
+        holderUserId: '',
+        deadline: ''
       };
       setTargetIndex(newIndex);
       setFunction(prevState => [...prevState, newTarget]);

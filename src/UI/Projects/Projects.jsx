@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react"
 import classes from "./Projects.module.css"
 import Target from "./Targets/Target"
 import { useGetProjectIdQuery, useGetProjectNewQuery, useUpdateProjectMutation } from "../../BLL/projectApi"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import deleteIcon from '../Custom//icon/icon _ delete.svg'
 import Header from "../Custom/Header/Header"
 import HandlerMutation from "../Custom/HandlerMutation"
@@ -16,6 +16,7 @@ import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd"
 export default function NewProject() {
   const { userId, projectId } = useParams();
   const uniqueIdRef = useRef(0);
+  const navigate = useNavigate()
 
   const [edit, setEdit] = useState(false)
   const [dummyKey, setDummyKey] = useState(0)
@@ -123,7 +124,6 @@ export default function NewProject() {
     },
   ] = useUpdateProjectMutation()
 
-  const reset = () => { }
 
 
   useEffect(() => {
@@ -148,47 +148,78 @@ export default function NewProject() {
     }
   }, [programs, selectedOrg])
 
+  // useEffect(() => { // формирование массивов на основе targets
+  //   if (targets.length > 0) {
+  //     targets.forEach((item) => {
+  //       switch (item.type) {
+  //         case 'Продукт':
+  //           setProductsArray((prevState) => ([...prevState, { ...item, holderUserIdchange: item.holderUserId }]))
+  //           if (item.targetState === 'Завершена')
+  //             setIsArchive(true)
+  //           break;
+  //         case 'Правила':
+  //           setRulesArray((prevState) => ([...prevState, { ...item, holderUserIdchange: item.holderUserId }]))
+  //           setSelectedSections((prevState) => ([...prevState, 'Правила']))
+  //           break;
+  //         case 'Организационные мероприятия':
+  //           setEventArray((prevState) => ([...prevState, { ...item, holderUserIdchange: item.holderUserId }]))
+  //           setSelectedSections((prevState) => ([...prevState, 'Организационные мероприятия']))
+  //           break;
+  //         case 'Обычная':
+  //           setSimpleArray((prevState) => ([...prevState, { ...item, holderUserIdchange: item.holderUserId }]))
+  //           break;
+  //         case 'Статистика':
+  //           setStatisticsArray((prevState) => ([...prevState, { ...item, holderUserIdchange: item.holderUserId }]))
+  //           setSelectedSections((prevState) => ([...prevState, 'Метрика']))
+  //           break;
+  //         default:
+  //           break
+  //       }
+  //     })
+  //   }
+  // }, [targets])
+
   useEffect(() => { // формирование массивов на основе targets
     if (targets.length > 0) {
-      targets.forEach((item) => {
-        // const newElement = {
-        //   _id : item?.id,
-        //   content : item?.content,
-        //   dateStart: item?.dateStart,
-        //   deadline: item?.deadline,
-        //   status: item?.status,
+      const sortedTargets = targets?.map(item => item).sort((a, b) => a.orderNumber - b.orderNumber)
 
-        // }
-        // newElement?._id = item.id
-        switch (item.type) {
-          case 'Продукт':
-            setProductsArray((prevState) => ([...prevState, { ...item, holderUserIdchange: item.holderUserId }]))
-            if (item.targetState === 'Завершена')
-              setIsArchive(true)
-            break;
-          case 'Правила':
-            setRulesArray((prevState) => ([...prevState, { ...item, holderUserIdchange: item.holderUserId }]))
-            setSelectedSections((prevState) => ([...prevState, 'Правила']))
-            break;
-          case 'Организационные мероприятия':
-            setEventArray((prevState) => ([...prevState, { ...item, holderUserIdchange: item.holderUserId }]))
-            setSelectedSections((prevState) => ([...prevState, 'Организационные мероприятия']))
-            break;
-          case 'Обычная':
-            setSimpleArray((prevState) => ([...prevState, { ...item, holderUserIdchange: item.holderUserId }]))
-            break;
-          case 'Статистика':
-            setStatisticsArray((prevState) => ([...prevState, { ...item, holderUserIdchange: item.holderUserId }]))
-            setSelectedSections((prevState) => ([...prevState, 'Метрика']))
-            break;
-          default:
-            break
-        }
-      })
+      const product = sortedTargets.find(item => item.type === 'Продукт')
+
+      const rulesArray = sortedTargets.filter(item => item.type === 'Правила')
+        .map(item => ({ ...item, orderNumber: item.orderNumber || 1 }))
+
+      const eventArray = sortedTargets.filter(item => item.type === 'Организационные мероприятия')
+        .map(item => ({ ...item, orderNumber: item.orderNumber || 1 }))
+
+      const statisticsArray = sortedTargets.filter(item => item.type === 'Статистика')
+        .map(item => ({ ...item, orderNumber: item.orderNumber || 1 }))
+
+      const simpleArray = sortedTargets.filter(item => item.type === 'Обычная')
+        .map(item => ({ ...item, orderNumber: item.orderNumber || 1 }))
+
+
+      setProductsArray(prevState => [...prevState, product])
+      if (product.targetState === 'Завершена')
+        setIsArchive(true)
+
+      if (rulesArray.length > 0) {
+        setRulesArray(prevState => [...prevState, ...rulesArray])
+        setSelectedSections(prevState => [...prevState, 'Правила'])
+      }
+      if (statisticsArray.length > 0) {
+        setStatisticsArray(prevState => [...prevState, ...statisticsArray])
+        setSelectedSections(prevState => [...prevState, 'Метрика'])
+      }
+      if (eventArray.length > 0) {
+        setEventArray(prevState => [...prevState, ...eventArray])
+        setSelectedSections(prevState => [...prevState, 'Организационные мероприятия'])
+      }
+      setSimpleArray(prevState => [...prevState, ...simpleArray])
     }
   }, [targets])
 
   console.log('массивчики   ', productsArray, eventArray, rulesArray, simpleArray, statisticsArray)
+
   useEffect(() => { // предустановка значений при загрузке страницы
     if (currentProject.projectName)
       setProjectName(currentProject.projectName)
@@ -277,7 +308,7 @@ export default function NewProject() {
     if (edit) {
       setTargetType(null)
       const targetType = TARGET_TYPES[type]
-      const { array, setFunction } = ADD_TARGET[targetType]
+      const { setFunction } = ADD_TARGET[targetType]
 
       // const newIndex = array.length + 1;
       const newIndex = ++uniqueIdRef.current
@@ -285,9 +316,9 @@ export default function NewProject() {
         // id: new Date(),
         type: SWITCH_TYPE[type],
         orderNumber: newIndex,
-        content: "",
-        holderUserId: workers[0].id,
-        deadline: ""
+        content: '',
+        holderUserId: '',
+        deadline: ''
       };
       setTargetIndex(newIndex);
       setFunction(prevState => [...prevState, newTarget]);
@@ -305,11 +336,6 @@ export default function NewProject() {
       setSelectedStrategy('')
   }
 
-  useEffect(() => {
-    if (isRemoveProject) {
-      saveProject()
-    }
-  }, [isRemoveProject])
 
   const handleOnDragEnd = (result, array, setArray) => {
     const { destination, source } = result;
@@ -340,7 +366,7 @@ export default function NewProject() {
 
   //   _setArray(items);
   // };
-
+  
   const saveProject = async () => {
 
     const updatedProducts = transformArraiesForRequset(productsArray)
@@ -384,11 +410,11 @@ export default function NewProject() {
         eventList.length > 0
       ) {
         Data.targetCreateDtos = [
-          ...rulesList.map((item, index) => ({ ...item, orderNumber: rulesArray.length + index + 1})),
-          ...productsList.map((item, index) => ({ ...item, orderNumber: productsArray.length + index + 1})),
-          ...statisticsList.map((item, index) => ({ ...item, orderNumber: statisticsArray.length + index + 1})),
-          ...simpleList.map((item, index) => ({ ...item, orderNumber: simpleArray.length + index + 1})),
-          ...eventList.map((item, index) => ({ ...item, orderNumber: eventArray.length + index + 1})),
+          ...rulesList.map((item, index) => ({ ...item, orderNumber: rulesArray.length + index + 1 })),
+          ...productsList.map((item, index) => ({ ...item, orderNumber: productsArray.length + index + 1 })),
+          ...statisticsList.map((item, index) => ({ ...item, orderNumber: statisticsArray.length + index + 1 })),
+          ...simpleList.map((item, index) => ({ ...item, orderNumber: simpleArray.length + index + 1 })),
+          ...eventList.map((item, index) => ({ ...item, orderNumber: eventArray.length + index + 1 })),
         ];
       }
 
@@ -411,7 +437,7 @@ export default function NewProject() {
     })
       .unwrap()
       .then(() => {
-        reset();
+        isRemoveProject && navigate(-1)
       })
       .catch((error) => {
         console.error("Ошибка:", JSON.stringify(error, null, 2));

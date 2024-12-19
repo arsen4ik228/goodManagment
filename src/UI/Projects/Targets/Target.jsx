@@ -39,7 +39,6 @@ function Target({ item, isNew, edit, contentSender, workersList, setSelectedWork
 
   const removeTarget = () => {
     console.log('item:  ', item)
-
     setOpenConfirmRemoveModal(true)
   }
 
@@ -47,21 +46,24 @@ function Target({ item, isNew, edit, contentSender, workersList, setSelectedWork
     <>
       <div className={classes.cardContainer}>
 
-          <div className={classes.header}>
-            {(!isNew && !edit) && (
-              <div className={classes.confirm} onClick={() => completeTarget()}>
-                {item?.targetState === 'Завершена' ? 'Задача завершена' : "Завершить задачу"}
-                <input type="checkbox"
-                  checked={item?.targetState === 'Завершена'}
-                />
-              </div>
-            )}
-            {(edit && !isNew && item?.targetState !== 'Отменена') && (
-              <div className={classes.remove}>
-                <img src={remove} alt="" onClick={removeTarget} />
-              </div>
-            )}
-          </div>
+        <div className={classes.header}>
+          {(!isNew && !edit) && (
+            <div className={classes.confirm} onClick={() => completeTarget()}>
+              {item?.targetState === 'Завершена' ? 'Задача завершена' : "Завершить задачу"}
+              <input
+                type="checkbox"
+                readOnly
+                checked={item.targetState === 'Завершена'}
+              />
+
+            </div>
+          )}
+          {(edit && !isNew && item?.targetState !== 'Отменена') && (
+            <div className={classes.remove}>
+              <img src={remove} alt="" onClick={removeTarget} />
+            </div>
+          )}
+        </div>
         {isNew ?
           (
             <div className={classes.content}>

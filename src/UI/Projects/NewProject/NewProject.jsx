@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import classes from "./NewProject.module.css";
 import Target from "../Targets/Target";
 import { useGetProjectNewQuery, usePostProjectMutation, useGetProgramNewQuery } from "../../../BLL/projectApi";
@@ -12,10 +12,12 @@ import { resizeTextarea } from "../../../BLL/constans";
 import listSetting from '../../Custom/icon/icon _ list setting.svg'
 import AlertOnlyOneProductTarget from "../../Custom/AlertOnlyOneProductTarget/AlertOnlyOneProductTarget";
 import CustomSelectSettingModal from "../CustomSelectSettingModal/CustomSelectSettingModal";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 
 export default function NewProject() {
   const { userId } = useParams();
   const navigate = useNavigate()
+  const uniqueIdRef = useRef(1);
   const [IsTypeProgram, setIsTypeProgram] = useState(false);
   const [selectedSections, setSelectedSections] = useState([])
 
@@ -222,9 +224,10 @@ export default function NewProject() {
   }, [deadlineDate])
 
   useEffect(() => {
-    if (targetType) {
+    if (targetType && selectedWorker !== null) {
       const { array, setFunction } = ADD_TARGET[targetType];
       array[targetIndex].holderUserId = selectedWorker
+      setSelectedWorker(null)
     }
   }, [selectedWorker])
 
@@ -239,9 +242,9 @@ export default function NewProject() {
     setTargetType(null)
     const targetType = TARGET_TYPES[type]
     const { array, setFunction } = ADD_TARGET[targetType]
-    const newIndex = array.length + 1;
+    const newIndex = ++uniqueIdRef.current
 
-    if (targetType === 'products' && newIndex > 1) return setOpenModalAlertOnlyOneProductTarget(true)
+    // if (targetType === 'products' && newIndex > 1) return setOpenModalAlertOnlyOneProductTarget(true)
 
     const newTarget = {
       // id: new Date(),
@@ -297,6 +300,18 @@ export default function NewProject() {
     }
   }, [selectedProgram]);
 
+  const handleOnDragEnd = (result, array, setArray) => {
+    const { destination, source } = result;
+
+    if (!destination) return
+
+    const items = Array.from(array);
+    const [reorderedItem] = items.splice(source.index, 1);
+    items.splice(destination.index, 0, reorderedItem);
+    console.warn('items:   ', items)
+    setArray(items)
+  };
+
 
   const saveProject = async () => {
 
@@ -342,11 +357,11 @@ export default function NewProject() {
     )
     ) {
       Data.targetCreateDtos = [
-        ...rulesArray,
-        ...productsArray,
-        ...statisticsArray,
-        ...simpleArray,
-        ...eventArray,
+        ...rulesArray.map((item, index) => ({ ...item, orderNumber: index + 1})),
+        ...productsArray.map((item, index) => ({ ...item, orderNumber: index + 1})),
+        ...statisticsArray.map((item, index) => ({ ...item, orderNumber: index + 1})),
+        ...simpleArray.map((item, index) => ({ ...item, orderNumber: index + 1})),
+        ...eventArray.map((item, index) => ({ ...item, orderNumber: index + 1})),
       ];
     }
     if (IsTypeProgram) {
@@ -520,24 +535,56 @@ export default function NewProject() {
                     <>
                       <div className={classes.sectionName} onClick={() => addTarget('Организационные мероприятия')}>Организационные мероприятия</div>
                       <div className={classes.targetsFlex}>
-                        {eventArray.map((item, index) => (
-                          <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Организационные мероприятия')}>
-                            <Target
-                              item={item}
-                              isNew={true}
-                              contentSender={setTargetContent}
-                              workersList={workers}
-                              setSelectedWorker={setSelectedWorker}
-                              setDeadlineDate={setDeadlineDate}>
-                            </Target>
-                          </div>
-                        ))}
-                        {eventArray.length > 0 && (
-                          <div className={classes.deleteContainer} onClick={() => deleteTarget(eventArray)}>
-                            Удалить
-                            <img src={deleteIcon} alt="delete" />
-                          </div>
-                        )}
+                        <DragDropContext onDragEnd={(result) => handleOnDragEnd(result, eventArray, setEventArray)}>
+                          <Droppable droppableId="droppable">
+                            {(provided, snapshot) => (
+                              <div
+                                {...provided.droppableProps}
+                                ref={provided.innerRef}
+                              >
+                                <>
+                                  {eventArray.map((item, index) => (
+                                    <Draggable
+                                      key={item.orderNumber}
+                                      draggableId={`item-${item.orderNumber}`}
+                                      index={index}
+                                    >
+                                      {(provided) => (
+                                        <div
+                                          key={item.orderNumber}
+                                          className={classes.targetContainer}
+                                          onClick={() => targetFormation(index, 'Организационные мероприятия')}
+                                          ref={provided.innerRef}
+                                          {...provided.draggableProps}
+                                          {...provided.dragHandleProps}
+                                        >
+                                          <Target
+                                            item={item}
+                                            isNew={true}
+                                            contentSender={setTargetContent}
+                                            workersList={workers}
+                                            setSelectedWorker={setSelectedWorker}
+                                            setDeadlineDate={setDeadlineDate}
+                                          >
+
+                                          </Target>
+                                        </div>
+
+                                      )}
+                                    </Draggable>
+                                  ))}
+                                  {eventArray.length > 0 && (
+                                    <div className={classes.deleteContainer} onClick={() => deleteTarget(eventArray)}>
+                                      Удалить
+                                      <img src={deleteIcon} alt="delete" />
+                                    </div>
+                                  )}
+                                </>
+                                {provided.placeholder}
+                              </div>
+                            )}
+                          </Droppable>
+                        </DragDropContext>
                       </div>
                     </>
                   )}
@@ -546,24 +593,56 @@ export default function NewProject() {
                     <>
                       <div className={classes.sectionName} onClick={() => addTarget('Правила')}>Правила</div>
                       <div className={classes.targetsFlex}>
-                        {rulesArray.map((item, index) => (
-                          <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Правила')}>
-                            <Target
-                              item={item}
-                              isNew={true}
-                              contentSender={setTargetContent}
-                              workersList={workers}
-                              setSelectedWorker={setSelectedWorker}
-                              setDeadlineDate={setDeadlineDate}>
-                            </Target>
-                          </div>
-                        ))}
-                        {rulesArray.length > 0 && (
-                          <div className={classes.deleteContainer} onClick={() => deleteTarget(rulesArray)}>
-                            Удалить
-                            <img src={deleteIcon} alt="delete" />
-                          </div>
-                        )}
+                        <DragDropContext onDragEnd={(result) => handleOnDragEnd(result, rulesArray, setRulesArray)}>
+                          <Droppable droppableId="droppable">
+                            {(provided, snapshot) => (
+                              <div
+                                {...provided.droppableProps}
+                                ref={provided.innerRef}
+                              >
+                                <>
+                                  {rulesArray.map((item, index) => (
+                                    <Draggable
+                                      key={item.orderNumber}
+                                      draggableId={`item-${item.orderNumber}`}
+                                      index={index}
+                                    >
+                                      {(provided) => (
+                                        <div
+                                          key={item.orderNumber}
+                                          className={classes.targetContainer}
+                                          onClick={() => targetFormation(index, 'Правила')}
+                                          ref={provided.innerRef}
+                                          {...provided.draggableProps}
+                                          {...provided.dragHandleProps}
+                                        >
+                                          <Target
+                                            item={item}
+                                            isNew={true}
+                                            contentSender={setTargetContent}
+                                            workersList={workers}
+                                            setSelectedWorker={setSelectedWorker}
+                                            setDeadlineDate={setDeadlineDate}
+                                          >
+
+                                          </Target>
+                                        </div>
+
+                                      )}
+                                    </Draggable>
+                                  ))}
+                                  {rulesArray.length > 0 && (
+                                    <div className={classes.deleteContainer} onClick={() => deleteTarget(rulesArray)}>
+                                      Удалить
+                                      <img src={deleteIcon} alt="delete" />
+                                    </div>
+                                  )}
+                                </>
+                                {provided.placeholder}
+                              </div>
+                            )}
+                          </Droppable>
+                        </DragDropContext>
                       </div>
                     </>
                   )}
@@ -572,24 +651,56 @@ export default function NewProject() {
                     <>
                       <div className={classes.sectionName} onClick={() => addTarget('Обычная')}>Задачи</div>
                       <div className={classes.targetsFlex}>
-                        {simpleArray.map((item, index) => (
-                          <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Обычная')}>
-                            <Target
-                              item={item}
-                              isNew={true}
-                              contentSender={setTargetContent}
-                              workersList={workers}
-                              setSelectedWorker={setSelectedWorker}
-                              setDeadlineDate={setDeadlineDate}>
-                            </Target>
-                          </div>
-                        ))}
-                        {simpleArray.length > 0 && (
-                          <div className={classes.deleteContainer} onClick={() => deleteTarget(simpleArray)}>
-                            Удалить
-                            <img src={deleteIcon} alt="delete" />
-                          </div>
-                        )}
+                        <DragDropContext onDragEnd={(result) => handleOnDragEnd(result, simpleArray, setSimpleArray)}>
+                          <Droppable droppableId="droppable">
+                            {(provided, snapshot) => (
+                              <div
+                                {...provided.droppableProps}
+                                ref={provided.innerRef}
+                              >
+                                <>
+                                  {simpleArray.map((item, index) => (
+                                    <Draggable
+                                      key={item.orderNumber}
+                                      draggableId={`item-${item.orderNumber}`}
+                                      index={index}
+                                    >
+                                      {(provided) => (
+                                        <div
+                                          key={item.orderNumber}
+                                          className={classes.targetContainer}
+                                          onClick={() => targetFormation(index, 'Обычная')}
+                                          ref={provided.innerRef}
+                                          {...provided.draggableProps}
+                                          {...provided.dragHandleProps}
+                                        >
+                                          <Target
+                                            item={item}
+                                            isNew={true}
+                                            contentSender={setTargetContent}
+                                            workersList={workers}
+                                            setSelectedWorker={setSelectedWorker}
+                                            setDeadlineDate={setDeadlineDate}
+                                          >
+
+                                          </Target>
+                                        </div>
+
+                                      )}
+                                    </Draggable>
+                                  ))}
+                                  {simpleArray.length > 0 && (
+                                    <div className={classes.deleteContainer} onClick={() => deleteTarget(simpleArray)}>
+                                      Удалить
+                                      <img src={deleteIcon} alt="delete" />
+                                    </div>
+                                  )}
+                                </>
+                                {provided.placeholder}
+                              </div>
+                            )}
+                          </Droppable>
+                        </DragDropContext>
                       </div>
                     </>
                   ) : (
@@ -627,24 +738,56 @@ export default function NewProject() {
                     <>
                       <div className={classes.sectionName} onClick={() => addTarget('Статистика')}>Метрика</div>
                       <div className={classes.targetsFlex}>
-                        {statisticsArray.map((item, index) => (
-                          <div key={index} className={classes.targetContainer} onClick={() => targetFormation(index, 'Статистика')}>
-                            <Target
-                              item={item}
-                              isNew={true}
-                              contentSender={setTargetContent}
-                              workersList={workers}
-                              setSelectedWorker={setSelectedWorker}
-                              setDeadlineDate={setDeadlineDate}>
-                            </Target>
-                          </div>
-                        ))}
-                        {statisticsArray.length > 0 && (
-                          <div className={classes.deleteContainer} onClick={() => deleteTarget(statisticsArray)}>
-                            Удалить
-                            <img src={deleteIcon} alt="delete" />
-                          </div>
-                        )}
+                        <DragDropContext onDragEnd={(result) => handleOnDragEnd(result, statisticsArray, setStatisticsArray)}>
+                          <Droppable droppableId="droppable">
+                            {(provided, snapshot) => (
+                              <div
+                                {...provided.droppableProps}
+                                ref={provided.innerRef}
+                              >
+                                <>
+                                  {statisticsArray.map((item, index) => (
+                                    <Draggable
+                                      key={item.orderNumber}
+                                      draggableId={`item-${item.orderNumber}`}
+                                      index={index}
+                                    >
+                                      {(provided) => (
+                                        <div
+                                          key={item.orderNumber}
+                                          className={classes.targetContainer}
+                                          onClick={() => targetFormation(index, 'Статистика')}
+                                          ref={provided.innerRef}
+                                          {...provided.draggableProps}
+                                          {...provided.dragHandleProps}
+                                        >
+                                          <Target
+                                            item={item}
+                                            isNew={true}
+                                            contentSender={setTargetContent}
+                                            workersList={workers}
+                                            setSelectedWorker={setSelectedWorker}
+                                            setDeadlineDate={setDeadlineDate}
+                                          >
+
+                                          </Target>
+                                        </div>
+
+                                      )}
+                                    </Draggable>
+                                  ))}
+                                  {statisticsArray.length > 0 && (
+                                    <div className={classes.deleteContainer} onClick={() => deleteTarget(statisticsArray)}>
+                                      Удалить
+                                      <img src={deleteIcon} alt="delete" />
+                                    </div>
+                                  )}
+                                </>
+                                {provided.placeholder}
+                              </div>
+                            )}
+                          </Droppable>
+                        </DragDropContext>
                       </div>
                     </>
                   )}
