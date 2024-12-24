@@ -46,16 +46,14 @@ const Policy = () => {
 
     const {
         currentPolicy = {},
-        organizations = [],
         isLoadingGetPoliciesId,
         isFetchingGetPoliciesId,
         isErrorGetPoliciesId,
     } = useGetPoliciesIdQuery(
-        { userId, policyId },
+        { policyId },
         {
             selectFromResult: ({ data, isLoading, isError, isFetching }) => ({
                 currentPolicy: data?.currentPolicy || {},
-                organizations: data?.organizations || [],
                 isLoadingGetPoliciesId: isLoading,
                 isErrorGetPoliciesId: isError,
                 isFetchingGetPoliciesId: isFetching,
@@ -79,20 +77,6 @@ const Policy = () => {
         if (currentPolicy.state === 'Отменён') setDisabled(true)
     }, [policyId, currentPolicy.policyName, currentPolicy.type, currentPolicy.state])
 
-    useEffect(() => {
-        setExtractedOrganizations(currentPolicy.policyToOrganizations?.map(item => item.organization))
-    }, [currentPolicy.policyToOrganizations,]);
-
-    useEffect(() => {
-        setPolicyToOrganizations(extractedOrganizations?.map(item => item.id))
-    }, [extractedOrganizations])
-
-    // useEffect(() => {//Editor
-    //     const rawContent = draftToHtml(
-    //         convertToRaw(editorState.getCurrentContent())
-    //     );
-    //     setHtmlContent(rawContent);
-    // }, [editorState]);
 
     // useEffect(() => {//Editor content
     //     if (currentPolicy.content) {
@@ -113,13 +97,10 @@ const Policy = () => {
         if (inputValue !== currentPolicy.policyName) Data.policyName = inputValue
         if (policyState !== currentPolicy.state) Data.state = policyState
         if (valueType !== currentPolicy.type) Data.type = valueType
-         Data.content = editorState
-        if (policyToOrganizations !== currentPolicy.organization?.id) Data.policyToOrganizations = policyToOrganizations
+        if (editorState !== currentPolicy.content) Data.content = editorState
         console.log(Data)
         if (Object.keys(Data).length > 0) {
             await updatePolicy({
-                policyId: policyId,
-                userId: userId,
                 _id: policyId,
                 ...Data,
             })
@@ -152,12 +133,7 @@ const Policy = () => {
                     <div className={classes.first}>
                         <input value={inputValue} disabled={disabled} type={'text'} onChange={(e) => setInputValue(e.target.value)} />
                     </div>
-                    {disabled && (
-                        <div className={classes.organizationInfo}>
-                            <span>Организация:</span>
-                            <span>Soplya firma</span>
-                        </div>
-                    )}
+                    
                     <div className={classes.second}>
                         <select value={valueType} disabled={disabled} onChange={(e) => setValueType(e.target.value)}>
                             {/*<option value={''}></option>*/}
@@ -197,7 +173,7 @@ const Policy = () => {
                     <footer className={classes.inputContainer}>
                         <div className={classes.inputRow2}>
                             <div>
-                                <button onClick={() => openOrgModal()}> Сохранить</button>
+                                <button onClick={() => saveUpdatePolicy()}> Сохранить</button>
                             </div>
                         </div>
                     </footer>
@@ -211,7 +187,6 @@ const Policy = () => {
                 textError={ErrorUpdatePoliciesMutation?.data?.errors[0]?.errors}
             ></HandlerMutation>
             {openAlertModal && <AlertUpdateData setModalOpen={setOpenAlertModal}></AlertUpdateData>}
-            {ModalOrgOpen && <CustomSelect setModalOpen={setModalOrgOpen} organizations={organizations} requestFunc={saveUpdatePolicy} setToOrganizations={setPolicyToOrganizations} isToOrganizations={policyToOrganizations} ></CustomSelect>}
         </>
     );
 };

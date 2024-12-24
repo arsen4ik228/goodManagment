@@ -24,23 +24,22 @@ import ModalWindow from '../Custom/ConfirmStrategyToComplited/ModalWindow';
 import addIcon from '../Custom/icon/icon _ add _ blue.svg'
 import AlertDraftIsExists from '../Custom/AlertDraftIsExists/AlertDraftIsExists';
 import ModalChangeReportDay from './ModalChangeReportDay/ModalChangeReportday';
+import { selectedOrganizationId } from '../../BLL/constans';
 
 const MainStatistics = () => {
 
-    const { userId } = useParams()
     const navigate = useNavigate()
 
     const [selectedOrg, setSelectedOrg] = useState()
     const [modalOpen, setModalOpen] = useState(false)
     const [reportDay, setReportDay] = useState()
-    const [filtredStatistics, setFiltredStatistics] = useState([])
 
     const {
         statistics = [],
         isLoadingGetStatistics,
         isFetchingGetStatistics,
         isErrorGetStatistics,
-    } = useGetStatisticsQuery({ userId, statisticData: true }, {
+    } = useGetStatisticsQuery({ statisticData: false }, {
         selectFromResult: ({ data, isError, isFetching, isLoading }) => ({
             statistics: data || [],
             isLoadingGetStatistics: isLoading,
@@ -48,18 +47,12 @@ const MainStatistics = () => {
             isErrorGetStatistics: isError
         })
     })
-    console.log()
+
     const {
-        organizations = [],
-        isLoadindGetOrganizations,
-        isFetchingGetOrganizations,
-        isErrorGetOrganizations,
-    } = useGetOrganizationsQuery(userId, {
-        selectFromResult: ({ data, isLoading, isFetching, isError }) => ({
-            organizations: data?.transformOrganizations || [],
-            isLoadindGetOrganizations: isLoading,
-            isFetchingGetOrganizations: isFetching,
-            isErrorGetOrganizations: isError
+        organizations = []
+    } = useGetOrganizationsQuery(undefined, {
+        selectFromResult: ({ data }) => ({
+            organizations: data?.organizations || []
         })
     })
 
@@ -74,16 +67,9 @@ const MainStatistics = () => {
     }
 
     useEffect(() => {
-        const sortStatistics = () => {
-            if (!selectedOrg || !organizations.length>0) return 
-            setFiltredStatistics(statistics?.filter(item => item?.organization.id === selectedOrg))
-            setReportDay(
-                organizations?.find(item => item?.id === selectedOrg)?.reportDay
-            )
-        }
-
-        sortStatistics()
-    }, [selectedOrg, organizations])
+        if (!Object.keys(organizations).length > 0) return 
+        setReportDay(organizations?.find(item => item.id === selectedOrganizationId).reportDay)
+    }, [organizations])
 
     return (
         <>
@@ -95,45 +81,11 @@ const MainStatistics = () => {
                 <div className={classes.body}>
                     <>
                         <div className={classes.bodyContainer}>
-                            <div className={classes.left}> {selectedOrg ? 'Выберите Статитстику:' : 'Выберите Организацию:'} </div>
+                            <div className={classes.left}>Выберите Статитстику:</div>
                             <div className={classes.right}>
-                                <ul className={classes.selectList}>
-                                    {organizations?.map((item) => (
-                                        <li key={item.id} onClick={(e) => setSelectedOrg(item.id)}>
-                                            {(selectedOrg === item.id) ?
-                                                (
-                                                    <>
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={item?.id === selectedOrg}
-                                                            readOnly
 
-                                                        />
-                                                        <div> {item.organizationName} </div>
-                                                        {/* <div className={classes.addDraft}>
-                                                            <span>
-                                                                Создать
-                                                            </span>
-                                                            <img src={addIcon} />
-                                                        </div> */}
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={item?.id === selectedOrg}
-                                                            readOnly
-                                                        />
-                                                        <div style={{ 'color': 'grey' }}> {item.organizationName} </div>
-                                                    </>
-                                                )}
-                                        </li>
-                                    ))}
-                                </ul>
-
-                                {selectedOrg && (
                                     <>
-                                        <div className={classes.titleStrategy}>Статитстики:</div>
+                                        {/* <div className={classes.titleStrategy}>Статитстики:</div> */}
                                         <div className={classes.addDraft} onClick={() => setModalOpen(true)}>
                                             <span>
                                                 Отчётный день: {REPORT_DAY[reportDay]}
@@ -141,7 +93,7 @@ const MainStatistics = () => {
                                             {/* <img src={addIcon} /> */}
                                         </div>
                                         <ul className={classes.selectList}>
-                                            {filtredStatistics?.map((item, index) => (
+                                            {statistics?.map((item, index) => (
                                                 <li key={index}
                                                     // style={{ color: item?.state === 'Активный' ? '#005475' : 'none' }}
                                                     onClick={() => navigate(item.id)}
@@ -163,7 +115,7 @@ const MainStatistics = () => {
 
                                         </ul>
                                     </>
-                                )}
+                                
                             </div>
                         </div>
                     </>

@@ -25,7 +25,7 @@ import AttachStatistics from './AttachStatistics/AttachStatistics.jsx';
 const Posts = () => {
 
     const navigate = useNavigate();
-    const { userId, postId } = useParams();
+    const { postId } = useParams();
 
     const [postName, setPostName] = useState(null);
     const [postNameChanges, setPostNameChanges] = useState(false);
@@ -60,7 +60,7 @@ const Posts = () => {
         isErrorGetPostId,
         isFetchingGetPostId,
     } = useGetPostIdQuery(
-        { userId, postId: postId },
+        { postId },
         {
             selectFromResult: ({ data, isLoading, isError, isFetching }) => ({
                 currentPost: data?.currentPost || {},
@@ -98,7 +98,6 @@ const Posts = () => {
     useEffect(() => {
         if (parentPost && Object.keys(parentPost).length > 0) {
             setParentDivisionName(parentPost?.divisionName)
-            setDisplayOrganizationName(parentPost?.organization?.organizationName)
         }
     }, [parentPost])
 
@@ -160,12 +159,6 @@ const Posts = () => {
         if (worker !== currentPost?.user?.id) {
             updatedData.responsibleUserId = worker;
         }
-        if (
-            organization !== currentPost?.organization?.id &&
-            organization !== null
-        ) {
-            updatedData.organizationId = organization;
-        }
         if (parentId !== currentPost?.parentId) {
             updatedData.parentId = parentId
         }
@@ -176,8 +169,6 @@ const Posts = () => {
         // Проверяем, если есть данные для обновления
         if (Object.keys(updatedData).length > 0) {
             await updatePost({
-                userId,
-                postId: postId,
                 _id: postId,
                 ...updatedData, // отправляем только измененные поля
             })
@@ -345,42 +336,6 @@ const Posts = () => {
                                     })}
                                 </select>
                             </div>
-                        </div>
-
-                        <div className={classes.bodyContainer}>
-                            <div className={classes.name}>
-                                Организация <span style={{ color: "red" }}>*</span>
-                            </div>
-                            {!parentId ? (
-                                <div className={classes.selectSection}>
-                                    <select
-                                        name="mySelect"
-                                        className={classes.select}
-                                        value={organization}
-                                        disabled={parentId}
-
-                                        onChange={(e) => {
-                                            setOrganization(e.target.value);
-                                        }}
-                                    >
-                                        <option value="" disabled>Выберите опцию</option>
-                                        {organizations?.map((item) => {
-                                            return (
-                                                <option key={item.id}
-                                                    value={item.id}>{item.organizationName}</option>
-                                            );
-                                        })}
-                                    </select>
-                                </div>
-                            ) : (
-                                <div className={classes.selectSection}>
-                                    <input
-                                        type="text"
-                                        value={displayOrganizationName}
-                                        disabled={parentId}
-                                    />
-                                </div>
-                            )}
                         </div>
 
                         {/* <div className={classes.bodyContainer}>

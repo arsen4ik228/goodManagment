@@ -1,7 +1,7 @@
 import './App.css';
 import React from 'react';
 import { Route, Routes } from "react-router-dom";
-// import AuthorizationPage from './UI/Authorization/AuthorizationPage.jsx'
+import AuthorizationPage from './UI/Authorization/AuthorizationPage.jsx'
 import Main from './UI/Main/Main.jsx'
 import Chat from './UI/Chat/Chat.jsx'
 import MainPolicy from './UI/Policy/MainPolicy.jsx'
@@ -15,10 +15,8 @@ import NewPosts from "./UI/Posts/NewPosts";
 import AttachStatistics from './UI/Posts/AttachStatistics/AttachStatistics.jsx';
 import MainStrategy from './UI/Strategy/MainStartegy.jsx';
 import Strategy from "./UI/Strategy/Strategy";
-import NewStrategy from "./UI/Strategy/NewStrategy";
 import Goal from "./UI/Goal/Goal";
 import Objective from "./UI/Objective/Objective.jsx"
-import NewObjective from "./UI/Objective/NewObjective";
 import Projects from './UI/Projects/Projects.jsx';
 import MainProject from './UI/Projects/MainProject/MainProject.jsx';
 import Target from './UI/Projects/Targets/Target.jsx';
@@ -34,34 +32,32 @@ function App() {
         <>
             <Routes>
                 {/* <Route path={'/'} element={<Navigate replace to="Main" />}></Route> */}
-                {/* <Route path={'/'} element={<AuthorizationPage/>}></Route> */}
+                <Route path={'/'} element={<AuthorizationPage/>}></Route>
                 <Route path="/*"
                     element={
                         <Routes>
 
                             <Route path="Main" element={<Main />} />
 
-                            <Route path=":userId/Chat" element={<Chat />} />
+                            <Route path="Chat" element={<Chat />} />
 
-                            <Route path=":userId/Policy" element={<MainPolicy />} />
-                            <Route path=":userId/Policy/:policyId" element={<Policy />} />
-                            <Route path=":userId/Policy/new" element={<NewPolicy />} />
-                            <Route path=":userId/Policy/CreateDirectory" element={<CreatePolicyDirectory />} />
-                            <Route path=":userId/Policy/EditDirectory/:policyDirectoryId" element={<EditPolicyDirectories />} />
+                            <Route path="Policy" element={<MainPolicy />} />
+                            <Route path="Policy/:policyId" element={<Policy />} />
+                            <Route path="Policy/new" element={<NewPolicy />} />
+                            <Route path="Policy/CreateDirectory" element={<CreatePolicyDirectory />} />
+                            <Route path="Policy/EditDirectory/:policyDirectoryId" element={<EditPolicyDirectories />} />
 
-                            <Route path=":userId/Posts" element={<MainPost />} />
-                            <Route path=":userId/Posts/:postId" element={<Posts />} />
-                            <Route path=":userId/Posts/new" element={<NewPosts />} />
-                            <Route path=":userId/Posts/:postId/attachStatistics" element={<AttachStatistics />} />
+                            <Route path="Posts" element={<MainPost />} />
+                            <Route path="Posts/:postId" element={<Posts />} />
+                            <Route path="Posts/new" element={<NewPosts />} />
+                            <Route path="Posts/:postId/attachStatistics" element={<AttachStatistics />} />
 
-                            <Route path=":userId/Strategy" element={<MainStrategy />} />
-                            <Route path=":userId/Strategy/new/:organizationId" element={<NewStrategy />} />
-                            <Route path=":userId/Strategy/:strategyId" element={<Strategy />} />
+                            <Route path="Strategy" element={<MainStrategy />} />
+                            <Route path="Strategy/:strategyId" element={<Strategy />} />
 
-                            <Route path=":userId/Goal" element={<Goal />} />
+                            <Route path="Goal" element={<Goal />} />
 
-                            <Route path=":userId/Objective" element={<Objective />} />
-                            <Route path=":userId/Objective/new" element={<NewObjective />} />
+                            <Route path="Objective" element={<Objective />} />
 
                             <Route path=":userId/Projects" element={<MainProject />} />
                             <Route path=":userId/Projects/:projectId" element={<Projects />} />
@@ -70,9 +66,9 @@ function App() {
                             <Route path=":userId/Projects/program/:programId" element={<Programs />} />
                             <Route path=":userId/Projects/archive/:projectId" element={<ProjectArchive />} />
 
-                            <Route path=":userId/Statistics" element={<MainStatistics />} />
-                            <Route path=":userId/Statistics/:statisticId" element={<Statistics />} />
-                            <Route path=":userId/Statistics/new/:paramPostID?" element={<NewStatistic />} />
+                            <Route path="Statistics" element={<MainStatistics />} />
+                            <Route path="Statistics/:statisticId" element={<Statistics />} />
+                            <Route path="Statistics/new/:paramPostID?" element={<NewStatistic />} />
 
 
 

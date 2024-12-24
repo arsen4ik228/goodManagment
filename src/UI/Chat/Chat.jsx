@@ -23,7 +23,6 @@ const Chat = () => {
     ]
 
     const navigate = useNavigate()
-    const { userId } = useParams()
     const [searchTerm, setSearchTerm] = useState('');
 
     // const filteredArray = useMemo(() => {
@@ -62,7 +61,7 @@ const Chat = () => {
                                 <div key={item.id} className={classes.bodyRow}>
                                     <div
                                         className={classes.bodyElement}
-                                        onClick={() => navigate(`/${userId}/${item.link}`)}
+                                        onClick={() => navigate(`/${item.link}`)}
                                     >
                                         <img src={item.icon} alt="icon" />
                                         <div className={classes.bodyElementText}>{item.text}</div>

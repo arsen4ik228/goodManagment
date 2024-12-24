@@ -15,6 +15,7 @@ import leftArrow from '../Custom/icon/icon _ leftarrow.svg'
 import rightArrow from '../Custom/icon/icon _ rightarrow.svg'
 import CustomSelect from '../Custom/CustomSelect/CustomSelect';
 import { useGetPostsQuery } from '../../BLL/postApi';
+import { organizationId } from '../../BLL/constans';
 
 
 
@@ -28,7 +29,7 @@ const MainPost = () => {
         data = [],
         isLoadingGetPosts,
         isErrorGetPosts,
-    } = useGetPostsQuery(userId, {
+    } = useGetPostsQuery(undefined, {
         selectFromResult: ({ data, isLoading, isError }) => ({
             data: data || [],
             isLoadingGetPosts: isLoading,

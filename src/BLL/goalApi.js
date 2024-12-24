@@ -1,67 +1,44 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import {baseUrl} from "./constans";
+import {prepareHeaders} from "./Function/prepareHeaders.js"
+
 
 export const goalApi = createApi({
   reducerPath: "goal",
   tagTypes: ["Goal"],
-  baseQuery: fetchBaseQuery({ baseUrl }),
+  baseQuery: fetchBaseQuery({ baseUrl, prepareHeaders }),
   endpoints: (build) => ({
+
     getGoal: build.query({
-      query: (userId = "") => ({
-        url: `${userId}/goals`,
-      }),
-      transformResponse: (response) => ({
-        organizationsWithGoal: response?.organizationsWithGoal || [],
-        organizationsWithoutGoal: response?.organizationsWithoutGoal || [],
-        goals: response?.organizationsWithGoal?.flatMap(org => org.goal) || []
-      }),
-      providesTags: (result) =>
-        result && Array.isArray(result.organizations)
-          ? [
-              ...result.organizations.map(({ id }) => ({ type: "Goal", id })),
-              { type: "Goal", id: "LIST" },
-            ]
-          : [{ type: "Goal", id: "LIST" }],
-    }),
-    getGoalNew: build.query({
-      query: (userId = "") => ({
-        url: `${userId}/goals/new`,
-      }),
-      transformResponse: (response) => ({
-        organizations: response || [],
-      }),
-    }),
-    getGoalId: build.query({
-      query: ({ userId, goalId }) => ({
-        url: `${userId}/goals/${goalId}`,
+      query: () => ({
+        url: `goals/${localStorage.getItem('selectedOrganizationId')}`,
       }),
       transformResponse: (response) => {
         console.log(response); // Отладка ответа
         return {
-          currentGoal: response?.currentGoal || {},
-          organizations: response?.organizations || [],
+          currentGoal: response || {},
         };
       },
-      providesTags: (result, error, { goalId }) =>
-        result ? [{ type: "Goal", id: goalId }] : [],
+      providesTags: [{type: "Goal", id: "LIST" }],
     }),
+   
     postGoal: build.mutation({
-      query: ({ userId, ...body }) => ({
-        url: `${userId}/goals/new`,
+      query: ({...body }) => ({
+        url: `goals/new`,
         method: "POST",
         body,
       }),
       invalidatesTags: [{ type: "Goal", id: "LIST" }],
     }),
+
     updateGoal: build.mutation({
-      query: ({ userId, goalId, ...body }) => ({
-        url: `${userId}/goals/${goalId}/update`,
+      query: (body) => ({
+        url: `goals/${body._id}/update`,
         method: "PATCH",
         body,
       }),
       // Обновляем теги, чтобы перезагрузить getGoal и getGoalId
-      invalidatesTags: (result, error, { goalId }) => [
-        { type: "Goal", id: goalId }, // обновляет конкретную цель
+      invalidatesTags: [
         { type: "Goal", id: "LIST" }, // обновляет общий список целей
       ],
     }),
@@ -70,8 +47,6 @@ export const goalApi = createApi({
 
 export const {
   useGetGoalQuery,
-  usePostGoalMutation,
-  useGetGoalNewQuery,
-  useGetGoalIdQuery,
   useUpdateGoalMutation,
+  usePostGoalMutation,
 } = goalApi;

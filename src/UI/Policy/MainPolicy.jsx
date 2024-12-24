@@ -20,7 +20,7 @@ import CustomSelect from '../Custom/CustomSelect/CustomSelect';
 
 
 
-const MainStrategy = () => {
+const MainPolicy = () => {
 
     const { userId } = useParams()
     const navigate = useNavigate()
@@ -33,7 +33,6 @@ const MainStrategy = () => {
     const [openModal, setOpenModal] = useState(false)
     const [selectedOrganization, setSelectedOrganization] = useState([])
 
-
     const {
         activeDirectives = [],
         draftDirectives = [],
@@ -44,7 +43,7 @@ const MainStrategy = () => {
         isLoadingGetPolicies,
         isErrorGetPolicies,
         isFetchingGetPolicies
-    } = useGetPoliciesQuery(userId, {
+    } = useGetPoliciesQuery({organizationId: localStorage.getItem('selectedOrganizationId')}, {
         selectFromResult: ({ data, isLoading, isError, isFetching }) => ({
             activeDirectives: data?.activeDirectives || [],
             draftDirectives: data?.draftDirectives || [],
@@ -70,21 +69,13 @@ const MainStrategy = () => {
         policyDirectories = [],
         isLoadingNewSpeedGoal,
         isErrorNewSpeedGoal,
-    } = useGetPolicyDirectoriesQuery(userId, {
+    } = useGetPolicyDirectoriesQuery({organizationId: localStorage.getItem('selectedOrganizationId')}, {
         selectFromResult: ({ data, isLoading, isError }) => ({
             policyDirectories: data || [],
             isLoadingNewSpeedGoal: isLoading,
             isErrorNewSpeedGoal: isError,
         }),
     });
-
-    const {
-        organizations = []
-    } = useGetOrganizationsQuery(userId, {
-        selectFromResult: ({ data }) => ({
-            organizations: data?.organizations || []
-        })
-    })
 
     const [
         postPolicy,
@@ -98,10 +89,9 @@ const MainStrategy = () => {
 
     const savePolicy = async () => {
         await postPolicy({
-            userId,
             policyName: 'Политика',
             content: ' ',
-            organizationId: selectedOrganization,
+            organizationId: localStorage.getItem('selectedOrganizationId'),
         })
             .unwrap()
             .then((result) => {
@@ -112,12 +102,7 @@ const MainStrategy = () => {
             });
     };
 
-    useEffect(() => {
-        if (newPolicyDraftId !== null) {
-            navigate(newPolicyDraftId)
-        }
-    }, [newPolicyDraftId])
-
+    
     const switchDisplayType = (direction, type) => {
         const directionValue = direction === 'right' ? 1 : -1
         if (type === 'directives') {
@@ -133,14 +118,19 @@ const MainStrategy = () => {
             });
         }
     }
-
+    
+    useEffect(() => {
+        if (newPolicyDraftId !== null) {
+            navigate(newPolicyDraftId)
+        }
+    }, [newPolicyDraftId])
     return (
         <>
             <div className={classes.wrapper}>
                 <>
                     <Header create={false} title={'Политики'}></Header>
                     <div className={classes.iconAdd}>
-                        <img src={iconAdd} alt="" onClick={() => setOpenModal(true)} />
+                        <img src={iconAdd} alt="" onClick={() => savePolicy()} />
                     </div>
                 </>
 
@@ -307,7 +297,7 @@ const MainStrategy = () => {
                     </>
                 </div>
             </div>
-            {openModal &&
+            {/* {openModal &&
 
                 <CustomSelect
                     organizations={organizations}
@@ -316,9 +306,9 @@ const MainStrategy = () => {
                     setModalOpen={setOpenModal}
                     requestFunc={savePolicy}
                 ></CustomSelect>
-            }
+            } */}
         </>
     );
 };
 
-export default MainStrategy;
+export default MainPolicy;

@@ -49,17 +49,6 @@ const MainStrategy = () => {
     const [selectedOrg, setSelectedOrg] = useState('')
     const [selectedStrategy, setSelectedStrategy] = useState('')
 
-    const {
-        organizations = [],
-        isLoadingNewStrategy,
-        isErrorNewStrategy,
-    } = useGetStrategyNewQuery(userId, {
-        selectFromResult: ({ data, isLoading, isError }) => ({
-            organizations: data, // Если нет данных или organizations, вернем пустой массив
-            isLoadingNewPolicies: isLoading,
-            isErrorNewPolicies: isError,
-        }),
-    });
 
     const {
         activeAndDraftStrategies = [],
@@ -67,7 +56,7 @@ const MainStrategy = () => {
         isLoadingStrateg,
         isErrorStrateg,
     } = useGetStrategyQuery(
-        { userId, organizationId: selectedOrg },
+        { organizationId: localStorage.getItem('selectedOrganizationId') },
         {
             selectFromResult: ({ data, isLoading, isError }) => ({
                 archiveStrategies: data?.archiveStrategies || [],
@@ -75,7 +64,6 @@ const MainStrategy = () => {
                 isLoadingStrateg: isLoading,
                 isErrorStrateg: isError,
             }),
-            skip: !selectedOrg,
         }
     );
 
@@ -91,9 +79,8 @@ const MainStrategy = () => {
 
     const saveNewStrategy = async () => {
         await postStrategy({
-            userId,
             content: ' ',
-            organizationId: selectedOrg,
+            organizationId: localStorage.getItem('selectedOrganizationId'),
         })
             .unwrap()
             .then((result) => {
@@ -131,35 +118,9 @@ const MainStrategy = () => {
                 <div className={classes.body}>
                     <>
                         <div className={classes.bodyContainer}>
-                            <div className={classes.left}> {selectedOrg ? 'Выберите Стратегию:' : 'Выберите Организацию:'} </div>
+                            <div className={classes.left}> Выберите Стратегию: </div>
                             <div className={classes.right}>
-                                <ul className={classes.selectList}>
-                                    {organizations?.map((item) => (
-                                        <li key={item.id} onClick={(e) => setSelectedOrg(item.id)}>
-                                            {(selectedOrg == item.id) ?
-                                                (<>
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={selectedOrg.includes(item.id)}
-                                                        readOnly
 
-                                                    />
-                                                    <div> {item.organizationName} </div>
-                                                </>) : (
-                                                    <>
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={selectedOrg.includes(item.id)}
-                                                            readOnly
-                                                        />
-                                                        <div style={{ 'color': 'grey' }}> {item.organizationName} </div>
-                                                    </>
-                                                )}
-                                        </li>
-                                    ))}
-                                </ul>
-
-                                {selectedOrg && (
                                     <>
                                         <div className={classes.titleStrategy}>Стратегии:</div>
                                         <ul className={classes.selectList}>
@@ -185,7 +146,7 @@ const MainStrategy = () => {
 
                                         </ul>
                                     </>
-                                )}
+                                
                             </div>
                         </div>
                     </>

@@ -10,23 +10,22 @@ import SetPolicyDirectoryName from '../../Custom/SetPolicyDirectoyName/SetPolicy
 
 export default function EditPolicyDirectories() {
 
-    const { userId, policyDirectoryId } = useParams()
+    const { policyDirectoryId } = useParams()
     const navigate = useNavigate()
     const [selectedId, setSelectedId] = useState([])
     const [directoryName, setDirectoryName] = useState('')
-    const [openModal, setOpenModal] = useState(false)
     const [searchTerm, setSearchTerm] = useState('');
 
 
     const {
         activeDirectives = [],
         activeInstructions = [],
-        policyDirectory = [],
+        policyDirectory = {},
         data = [],
         isLoadingGetPolicyDirectories,
         isErrorGetPolicyDirectories,
         isFetchingGetPolicyDirectories,
-    } = useGetPolicyDirectoriesIdQuery({ userId, policyDirectoryId }, {
+    } = useGetPolicyDirectoriesIdQuery({ organizationId: localStorage.getItem('selectedOrganizationId'), policyDirectoryId }, {
         selectFromResult: ({ data, isLoading, isError, isFetching }) => ({
             activeDirectives: data?.activeDirectives || [],
             activeInstructions: data?.activeInstructions || [],
@@ -60,11 +59,13 @@ export default function EditPolicyDirectories() {
     ] = useDeletePolicyDirectoriesMutation();
 
     useEffect(() => {
-        setDirectoryName(policyDirectory.directoryName)
-        if (policyDirectory?.policies?.length > 0) {
-            setSelectedId(prevSelectedId =>
-                [...prevSelectedId, ...policyDirectory?.policies?.map(item => item.id)]
-            );
+        if (Object.keys(policyDirectory).length > 0) {
+            setDirectoryName(policyDirectory.directoryName)
+            if (policyDirectory?.policies?.length > 0) {
+                setSelectedId(prevSelectedId =>
+                    [...prevSelectedId, ...policyDirectory?.policies?.map(item => item.id)]
+                );
+            }
         }
     }, [policyDirectory])
 
@@ -76,15 +77,6 @@ export default function EditPolicyDirectories() {
         )
     };
 
-    const addPolicyToSelectedPolicy = (id) => {
-
-    }
-
-    const reset = () => {
-        setDirectoryName('')
-        setSelectedId([])
-        setOpenModal(false)
-    }
 
     const filteredItems = useMemo(() => {
         const filterActiveDirectives = activeDirectives.filter(item =>
@@ -103,7 +95,6 @@ export default function EditPolicyDirectories() {
 
     const updatePolicyDirectory = async () => {
         await updatePolicyDirectories({
-            userId,
             policyDirectoryId,
             directoryName,
             policyToPolicyDirectories: selectedId,
@@ -119,7 +110,6 @@ export default function EditPolicyDirectories() {
 
     const deletePolicyDirectory = async () => {
         await deletePolicyDirectories({
-            userId,
             policyDirectoryId,
         })
             .unwrap()
@@ -188,7 +178,10 @@ export default function EditPolicyDirectories() {
                                                 <span>
                                                     {item?.policyName}
                                                 </span>
-                                                <input checked={selectedId.includes(item?.id)} type="checkbox" />
+                                                <input 
+                                                readOnly
+                                                checked={selectedId.includes(item?.id)} 
+                                                type="checkbox" />
                                             </li>
                                         ))}
                                     </ul>
@@ -241,7 +234,9 @@ export default function EditPolicyDirectories() {
                                                 <span>
                                                     {item?.policyName}
                                                 </span>
-                                                <input checked={selectedId.includes(item?.id)} type="checkbox" />
+                                                <input 
+                                                readOnly
+                                                checked={selectedId.includes(item?.id)} type="checkbox" />
                                             </li>
                                         ))}
                                     </ul>

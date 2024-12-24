@@ -99,9 +99,9 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 }
 
 .body{
-
+    margin-top: 52px;
     flex: 1 1 auto;
-    max-height: calc(100vh - 173px);
+    max-height: calc(100vh - 117px);
     overflow: auto;
     padding: 10px 0;
     background-color: #F0F0F0;

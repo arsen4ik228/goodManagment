@@ -1,18 +1,21 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import {baseUrl} from "./constans";
+import { baseUrl } from "./constans";
+import { prepareHeaders } from "./Function/prepareHeaders.js"
+
 
 export const strategyApi = createApi({
     reducerPath: "strategy",
     tagTypes: ["Strategy"],
-    baseQuery: fetchBaseQuery({ baseUrl }),
-    endpoints:(build) => ({
+    baseQuery: fetchBaseQuery({ baseUrl, prepareHeaders }),
+    endpoints: (build) => ({
         getStrategy: build.query({
-            query: ({userId, organizationId}) => ({
-                url: `${userId}/strategies/organization/${organizationId}`,
+            query: ({ organizationId }) => ({
+                url: `strategies/${organizationId}`,
             }),
             transformResponse: (response) => {
-                const sortedStrategies = response?.strategies
-                sortedStrategies?.sort((a, b) => {
+                console.log('getstrategy:    ', response)
+                const strategies = response
+                strategies?.sort((a, b) => {
                     const stateA = a.state || '';
                     const stateB = b.state || '';
 
@@ -23,61 +26,59 @@ export const strategyApi = createApi({
                     if (stateB === 'Активный' && stateA !== 'Активный') return 1;
 
                     return 0;
-                  });
-              
-                const activeAndDraftStrategies = sortedStrategies.filter(strategy => 
-                  strategy.state === 'Активный' || strategy.state === 'Черновик'
-                );
-              
-                const otherStrategies = sortedStrategies.filter(strategy => 
-                  strategy.state !== 'Активный' && strategy.state !== 'Черновик'
-                );
-              
-                return {
-                  activeAndDraftStrategies: activeAndDraftStrategies,
-                  archiveStrategies: otherStrategies,  
-                };
-              },
+                });
 
-              providesTags: (result) => result ? [{ type: "Strateg", id: "LIST" }] : [],
+                const activeAndDraftStrategies = strategies.filter(strategy =>
+                    strategy.state === 'Активный' || strategy.state === 'Черновик'
+                );
+
+                const otherStrategies = strategies.filter(strategy =>
+                    strategy.state !== 'Активный' && strategy.state !== 'Черновик'
+                );
+
+                return {
+                    activeAndDraftStrategies: activeAndDraftStrategies,
+                    archiveStrategies: otherStrategies,
+                };
+            },
+
+            providesTags: (result) => result ? [{ type: "Strateg", id: "LIST" }] : [],
         }),
 
         getStrategyId: build.query({
-            query: ({ userId, strategyId }) => ({
-                url: `${userId}/strategies/${strategyId}`,
+            query: ({ strategyId }) => ({
+                url: `strategies/${strategyId}/strategy`,
             }),
+            transformResponse: (response) => {
+                console.log(response)
+                return {
+                    currentStrategy: response || []
+                }
+            },
 
             // Добавляем теги для этой query
-            providesTags: (result, error,  {strategyId}) => result ? [{type: "Strateg1", id: strategyId }]: []
+            providesTags: (result, error, { strategyId }) => result ? [{ type: "Strateg1", id: strategyId }] : []
         }),
+
         updateStrategy: build.mutation({
-            query: ({ userId, strategyId, ...body }) => ({
-                url: `${userId}/strategies/${strategyId}/update`,
+            query: (body) => ({
+                url: `strategies/${body._id}/update`,
                 method: "PATCH",
                 body,
             }),
             // Обновляем теги, чтобы перезагрузить getStrategiesId
-            invalidatesTags: (result,  error,  {strategyId}) => result ? [{type: "Strateg1", id: strategyId},{ type: "Strateg", id: "LIST" }]: []
+            invalidatesTags: (result, error, { strategyId }) => result ? [{ type: "Strateg1", id: strategyId }, { type: "Strateg", id: "LIST" }] : []
         }),
         postStrategy: build.mutation({
-            query: ({ userId, ...body }) => ({
-                url: `${userId}/strategies/new`,
+            query: (body) => ({
+                url: `strategies/new`,
                 method: "POST",
                 body,
             }),
             transformResponse: (response) => ({
                 id: response.id
             }),
-            invalidatesTags: (result) => result ? [{type: "Strateg", id: "LIST" }] : []
-        }),
-        getStrategyNew: build.query({
-            query: (userId = "") => ({
-                url: `${userId}/strategies/new`,
-            }),
-            // transformResponse: (response) => ({
-            //     organizations: response.organizations || [],
-            // }),
-            providesTags: (result) => result ? [{ type: "Strateg", id: "LIST" }] : [],
+            invalidatesTags: (result) => result ? [{ type: "Strateg", id: "LIST" }] : []
         }),
     })
 })
@@ -86,6 +87,5 @@ export const {
     useGetStrategyQuery,
     useGetStrategyIdQuery,
     useUpdateStrategyMutation,
-    useGetStrategyNewQuery,
     usePostStrategyMutation,
 } = strategyApi;

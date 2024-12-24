@@ -1,19 +1,19 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { baseUrl } from "./constans";
-
+import { baseUrl, selectedOrganizationId } from "./constans";
+import { prepareHeaders } from "./Function/prepareHeaders.js"
 
 export const statisticsApi = createApi({
   reducerPath: "statisticsApi",
   tagTypes: ["Statistics", "Statistics1"],
-  baseQuery: fetchBaseQuery({ baseUrl }),
+  baseQuery: fetchBaseQuery({ baseUrl, prepareHeaders}),
   endpoints: (build) => ({
 
     getStatistics: build.query({
-      query: ({ userId, statisticData = true }) => ({
-        url: `${userId}/statistics/?statisticData=${statisticData}`,
+      query: ({ statisticData = true }) => ({
+        url: `statistics/${selectedOrganizationId}/?statisticData=${statisticData}`,
       }),
       transformResponse: (response) => {
-        console.log('response:  ', response)
+        console.log('getStatistics:  ', response)
 
         if (!Array.isArray(response)) {
           console.error('Response is not an array');
@@ -30,13 +30,6 @@ export const statisticsApi = createApi({
                 name: item.post?.postName || ''
               }
             }),
-            organization: {
-              ...(item.post.organization && {
-                id: item?.post.organization?.id || '',
-                name: item.post.organization?.organizationName || '',
-                reportDay: item.post.organization?.reportDay || ''
-              })
-            } || {},
           }
 
         })
@@ -68,10 +61,11 @@ export const statisticsApi = createApi({
     }),
 
     getStatisticsId: build.query({
-      query: ({ userId, statisticId }) => ({
-        url: `${userId}/statistics/${statisticId}`,
+      query: ({statisticId }) => ({
+        url: `statistics/${statisticId}/statistic`,
       }),
       transformResponse: (response) => {
+        console.log('getStatisticsId    ', response )
         return {
           currentStatistic: response || {},
           statisticDatas: response.statisticDatas || [],

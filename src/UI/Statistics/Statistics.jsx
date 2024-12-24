@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import classes from './Statistics.module.css'
 import Header from '../Custom/Header/Header'
 import icon from '../Custom/icon/icon _ downarrow _ 005475.svg'
-import { getDateFormatSatatistic, } from '../../BLL/constans'
+import { getDateFormatSatatistic, selectedOrganizationId, } from '../../BLL/constans'
 import { useParams } from 'react-router-dom'
 import { useGetStatisticsIdQuery, useGetStatisticsNewQuery, useUpdateStatisticsMutation } from '../../BLL/statisticsApi'
 import { useGetOrganizationsQuery, useUpdateOrganizationsMutation } from '../../BLL/organizationsApi'
@@ -11,6 +11,7 @@ import Graphic from '../Custom/Graph/Graphic'
 import HandlerMutation from '../Custom/HandlerMutation'
 import iconExit from '../Custom/SearchModal/icon/icon _ add.svg'
 import arrowInCircle from '../Custom/icon/arrow in circle.svg'
+import { useGetPostsQuery } from '../../BLL/postApi'
 
 export default function Statistics() {
 
@@ -84,18 +85,19 @@ export default function Statistics() {
     //   }
     // );
 
+
     const {
         posts = [],
-        isLoadingNewStatistic,
-        isErrorNewStatistic,
-    } = useGetStatisticsNewQuery(userId, {
+        isLoadingGetPosts,
+        isErrorGetPosts,
+    } = useGetPostsQuery(undefined, {
         selectFromResult: ({ data, isLoading, isError }) => ({
-            posts: data?.posts || [],
-            isLoadingNewStatistic: isLoading,
-            isErrorNewStatistic: isError,
+            posts: data || [],
+            isLoadingGetPosts: isLoading,
+            isErrorGetPosts: isError,
         }),
     });
-
+    console.log(posts)
     const {
         currentStatistic = {},
         statisticDatas = [],
@@ -103,7 +105,7 @@ export default function Statistics() {
         isErrorGetStatisticId,
         isFetchingGetStatisticId,
     } = useGetStatisticsIdQuery(
-        { userId, statisticId },
+        { statisticId },
         {
             selectFromResult: ({ data, isLoading, isError, isFetching }) => ({
                 currentStatistic: data?.currentStatistic || {},
@@ -152,7 +154,7 @@ export default function Statistics() {
 
     useEffect(() => { // Установка organizationId для поиска постов и отчётного дня
         if (Object.keys(currentStatistic).length > 0 && posts.length > 0 && organizations.length > 0) {
-            const orgId = currentStatistic?.post?.organization?.id
+            const orgId = selectedOrganizationId
             if (orgId) {
                 setOrganizationId(orgId)
 
@@ -1708,7 +1710,7 @@ export default function Statistics() {
                                         <option value='null' disabled>
                                             Выберите пост
                                         </option>
-                                        {postsToOrganization?.map((item) => {
+                                        {posts?.map((item) => {
                                             return (
                                                 <option value={item.id}>
                                                     {item.postName}

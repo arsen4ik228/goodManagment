@@ -21,6 +21,7 @@ import Header from "../Custom/Header/Header";
 import blackStatistic from "../Custom/icon/blackStatistic.svg";
 import AttachPolicy from '../Custom/AttachPolicy/AttachPolicy.jsx';
 import AlertSavePost from '../Custom/AlertSavePost/AlertSavePost.jsx';
+import { selectedOrganizationId } from '../../BLL/constans.js';
 
 
 const Posts = () => {
@@ -53,7 +54,7 @@ const Posts = () => {
         isLoadingGetNew,
         isErrorGetNew,
         data = []
-    } = useGetPostNewQuery(userId, {
+    } = useGetPostNewQuery(undefined, {
         selectFromResult: ({ data, isLoading, isError }) => ({
             workers: data?.workers || [],
             policies: data?.policies || [],
@@ -126,19 +127,18 @@ const Posts = () => {
             Data.addPolicyId = policy
         }
         await postPosts({
-            userId: userId,
             // addPolicyId: policy,
             postName: postName,
             divisionName: divisionName,
             product: product,
             purpose: purpose,
-            organizationId: organization,
+            organizationId: selectedOrganizationId,
             ...Data
         })
             .unwrap()
             .then((result) => {
                 // reset();
-                navigate(`/${userId}/Posts/${result?.id}`)
+                navigate(`/Posts/${result?.id}`)
             })
             .catch((error) => {
                 console.error("Ошибка:", JSON.stringify(error, null, 2)); // выводим детализированную ошибку
@@ -238,42 +238,6 @@ const Posts = () => {
                                         </select>
                                     </div>
 
-                                </div>
-
-                                <div className={classes.bodyContainer}> {/* Организация organization */}
-                                    <div className={classes.name}>
-                                        Организация <span style={{ color: "red" }}>*</span>
-                                    </div>
-                                    {!parentId ? (
-                                        <div className={classes.selectSection}>
-                                            <select
-                                                name="mySelect"
-                                                className={classes.select}
-                                                value={organization}
-                                                disabled={parentId}
-
-                                                onChange={(e) => {
-                                                    setOrganization(e.target.value);
-                                                }}
-                                            >
-                                                <option value="" disabled>Выберите опцию</option>
-                                                {organizations?.map((item) => {
-                                                    return (
-                                                        <option key={item.id}
-                                                            value={item.id}>{item.organizationName}</option>
-                                                    );
-                                                })}
-                                            </select>
-                                        </div>
-                                    ) : (
-                                        <div className={classes.selectSection}>
-                                            <input
-                                                type="text"
-                                                value={displayOrganizationName}
-                                                disabled={parentId}
-                                            />
-                                        </div>
-                                    )}
                                 </div>
 
 

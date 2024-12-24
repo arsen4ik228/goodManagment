@@ -3,6 +3,7 @@ import classes from "./ModalChangeReportDay.module.css"
 import close from '../../Custom/SearchModal/icon/icon _ add.svg'
 import { useUpdateOrganizationsMutation } from '../../../BLL/organizationsApi';
 import { useParams } from 'react-router-dom';
+import { selectedOrganizationId } from '../../../BLL/constans';
 
 export default function ModalChangeReportDay({ setModalOpen, organizationId, parenReportDay }) {
 
@@ -27,9 +28,7 @@ export default function ModalChangeReportDay({ setModalOpen, organizationId, par
 
     const saveUpdateOrganization = async () => {
         await updateOrganization({
-            userId,
-            organizationId,
-            _id: organizationId,
+            _id: selectedOrganizationId,
             reportDay: +reportDay,
         })
             .unwrap()

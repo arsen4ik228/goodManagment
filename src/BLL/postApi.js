@@ -1,21 +1,23 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { baseUrl } from "./constans";
+import { baseUrl, selectedOrganizationId } from "./constans";
+import { prepareHeaders } from "./Function/prepareHeaders.js"
+
 
 export const postApi = createApi({
   reducerPath: "postApi",
   tagTypes: ["Post", "PostNew"],
-  baseQuery: fetchBaseQuery({ baseUrl }),
+  baseQuery: fetchBaseQuery({ baseUrl, prepareHeaders }),
   endpoints: (build) => ({
     getPosts: build.query({
-      query: (userId = "") => ({
-        url: `${userId}/posts`,
+      query: () => ({
+        url: `posts/${selectedOrganizationId}`,
       }),
-      providesTags: (result, error, userId) => [{ type: "Post", id: "LIST" }],
+      providesTags: (result, error) => [{ type: "Post", id: "LIST" }],
     }),
 
     postPosts: build.mutation({
-      query: ({ userId, addPolicyId = "null", ...body }) => ({
-        url: `${userId}/posts/new?addPolicyId=${addPolicyId}`,
+      query: ({addPolicyId = "null", ...body }) => ({
+        url: `posts/new?addPolicyId=${addPolicyId}`,
         method: "POST",
         body,
       }),
@@ -26,8 +28,8 @@ export const postApi = createApi({
     }),
 
     getPostNew: build.query({
-      query: (userId = "") => ({
-        url: `${userId}/posts/new`,
+      query: () => ({
+        url: `posts/${selectedOrganizationId}/new`,
       }),
       transformResponse: (response) => {
         console.log(response); // Отладка ответа
@@ -43,12 +45,12 @@ export const postApi = createApi({
     }),
 
     getPostId: build.query({
-      query: ({ userId, postId }) => ({
-        url: `${userId}/posts/${postId}`,
+      query: ({postId }) => ({
+        url: `posts/${postId}/post`,
       }),
       providesTags: (result, error, { postId }) => [{ type: 'Post', id: postId },{type: "Statistics", id: "LIST" }],
       transformResponse: (response) => {
-        console.log(response); // Отладка ответа
+        console.log('getPostId    ',response); // Отладка ответа
         return {
           currentPost: response?.currentPost || {},
           parentPost: response?.parentPost || {},
@@ -62,8 +64,8 @@ export const postApi = createApi({
     }),
 
     updatePosts: build.mutation({
-      query: ({ userId, postId, ...body }) => ({
-        url: `${userId}/posts/${postId}/update`,
+      query: (body) => ({
+        url: `/posts/${body._id}/update`,
         method: "PATCH",
         body,
       }),

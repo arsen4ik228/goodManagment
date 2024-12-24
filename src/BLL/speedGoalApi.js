@@ -1,10 +1,12 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { baseUrl } from "./constans";
+import {prepareHeaders} from "./Function/prepareHeaders.js"
+
 
 export const speedGoalApi = createApi({
   reducerPath: "speedSpeedGoalApi",
   tagTypes: ["SpeedGoal"],
-  baseQuery: fetchBaseQuery({ baseUrl }),
+  baseQuery: fetchBaseQuery({ baseUrl,prepareHeaders }),
   endpoints: (build) => ({
 
     getSpeedGoals: build.query({
@@ -47,53 +49,25 @@ export const speedGoalApi = createApi({
     }),
 
 
-    getSpeedGoalNew: build.query({
-      query: (userId = "") => ({
-        url: `${userId}/objectives/new`,
-      }),
-      providesTags: (result, error, userId) =>
-        result ? [{ type: "SpeedGoal", id: userId }] : [],
-    }),
-
-
-    postSpeedGoal: build.mutation({
-      query: ({ userId, ...body }) => ({
-        url: `${userId}/objectives/new`,
-        method: "POST",
-        body,
-      }),
-      invalidatesTags: (result, error, { userId }) =>
-        [{ type: "SpeedGoal", id: userId }],
-    }),
-
-
-    getSpeedGoalUpdate: build.query({
-      query: (userId = "") => ({
-        url: `${userId}/objectives/update`,
-      }),
-      providesTags: (result, error, userId) =>
-        result ? [{ type: "SpeedGoal", id: userId }] : [],
-    }),
-
     getSpeedGoalId: build.query({
-      query: ({ userId, strategId }) => ({
-        url: `${userId}/objectives/${strategId}`,
+      query: ({strategyId}) => ({
+        url: `objectives/${strategyId}/objective`,
       }),
       transformResponse: (response) => {
-        console.log('response   ', response)
-        const isArchive = response?.strategy.state === 'Завершено' ? true : false
+        console.log('getSpeedGoalId   ', response)
+        // const isArchive = response?.strategy.state === 'Завершено' ? true : false
         return {
           currentSpeedGoal: response || {},
-          isArchive
+          // isArchive
         };
       },
-      providesTags: (result, error, { strategId }) =>
-        result ? [{ type: "SpeedGoal", id: strategId }] : [],
+      providesTags: (result, error, { strategyId }) =>
+        result ? [{ type: "SpeedGoal", id: strategyId }] : [],
     }),
 
     updateSpeedGoal: build.mutation({
-      query: ({ userId, objectiveId, ...body }) => ({
-        url: `${userId}/objectives/${objectiveId}/update`,
+      query: (body) => ({
+        url: `objectives/${body._id}/update`,
         method: "PATCH",
         body,
       }),
@@ -107,10 +81,7 @@ export const speedGoalApi = createApi({
 });
 
 export const {
-  useGetSpeedGoalNewQuery,
-  usePostSpeedGoalMutation,
   useGetSpeedGoalIdQuery,
   useUpdateSpeedGoalMutation,
-  useGetSpeedGoalUpdateQuery,
   useGetSpeedGoalsQuery
 } = speedGoalApi;

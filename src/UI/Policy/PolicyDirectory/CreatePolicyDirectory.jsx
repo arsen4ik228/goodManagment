@@ -10,37 +10,27 @@ import SetPolicyDirectoryName from '../../Custom/SetPolicyDirectoyName/SetPolicy
 
 export default function CreatePolicyDirectory() {
 
-    const { userId } = useParams()
     const navigate = useNavigate()
     const [selectedId, setSelectedId] = useState([])
     const [directoryName, setDirectoryName] = useState('')
-    const [openModal, setOpenModal] = useState(false)
     const [searchTerm, setSearchTerm] = useState('');
-
 
     const {
         activeDirectives = [],
-        draftDirectives = [],
-        archiveDirectives = [],
         activeInstructions = [],
-        draftInstructions = [],
-        archiveInstructions = [],
         isLoadingGetPolicies,
         isErrorGetPolicies,
         isFetchingGetPolicies
-    } = useGetPoliciesQuery(userId, {
+    } = useGetPoliciesQuery({organizationId: localStorage.getItem('selectedOrganizationId')}, {
         selectFromResult: ({ data, isLoading, isError, isFetching }) => ({
             activeDirectives: data?.activeDirectives || [],
-            draftDirectives: data?.draftDirectives || [],
-            archiveDirectives: data?.archiveDirectives || [],
             activeInstructions: data?.activeInstructions || [],
-            draftInstructions: data?.draftInstructions || [],
-            archiveInstructions: data?.archiveInstructions || [],
             isLoadingGetPolicies: isLoading,
             isErrorGetPolicies: isError,
             isFetchingGetPolicies: isFetching,
         }),
     });
+    
     const [
         postDirectory,
         {
@@ -60,16 +50,6 @@ export default function CreatePolicyDirectory() {
     };
     
 
-    const addPolicyToSelectedPolicy = (id) => {
-
-    }
-
-    const reset = () => {
-        setDirectoryName('')
-        setSelectedId([])
-        // setOpenModal(false)
-    }
-
     const filteredItems = useMemo(() => {
         const filterActiveDirectives = activeDirectives.filter(item =>
             item.policyName.toLowerCase().includes(searchTerm.toLowerCase())
@@ -88,20 +68,21 @@ export default function CreatePolicyDirectory() {
 
     const savePolicyDirectory = async () => {
         await postDirectory({
-            userId,
             directoryName,
             policyToPolicyDirectories: selectedId,
         })
             .unwrap()
             .then((result) => {
                 // reset();
-                navigate(`/${userId}/Policy/EditDirectory/${result?.id}`)
+                navigate(`/Policy/EditDirectory/${result?.id}`)
             })
             .catch((error) => {
                 console.error("Ошибка:", JSON.stringify(error, null, 2)); // выводим детализированную ошибку
             });
     };
+
     console.log(selectedId)
+
     return (
         <>
             <div className={classes.wrapper}>
@@ -234,9 +215,6 @@ export default function CreatePolicyDirectory() {
                 </footer>
             </div>
 
-            {openModal && (
-                <SetPolicyDirectoryName name={directoryName} setName={setDirectoryName} setModalOpen={setOpenModal} requestFunction={savePolicyDirectory}></SetPolicyDirectoryName>
-            )}
             <HandlerMutation
                 Loading={isLoadingUpdatePoliciesMutation}
                 Error={isErrorUpdatePoliciesMutation}

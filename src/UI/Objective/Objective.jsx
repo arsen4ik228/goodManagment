@@ -11,6 +11,8 @@ import { EditorState, convertFromHTML, ContentState } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import { convertToRaw } from "draft-js";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { useGetStrategyQuery } from '../../BLL/strategyApi';
+import { organizationsApi } from '../../BLL/organizationsApi';
 
 
 function Objective(props) {
@@ -31,19 +33,19 @@ function Objective(props) {
     const [htmlRootCause, setHtmlRootCause] = useState([]);
 
 
-    const {
-        activeAndDraftStrategies = [],
-        archiveStrategies = [],
-        isLoadingGetUpdateSpeedGoal,
-        isErrorGetUpdateSpeedGoal,
-    } = useGetSpeedGoalsQuery(userId, {
-        selectFromResult: ({ data, isLoading, isError }) => ({
-            activeAndDraftStrategies: data?.activeAndDraftStrategies || [],
-            archiveStrategies: data?.archiveStrategies || [],
-            isLoadingGetUpdateSpeedGoal: isLoading,
-            isErrorGetUpdateSpeedGoal: isError,
-        }),
-    });
+    // const {
+    //     activeAndDraftStrategies = [],
+    //     archiveStrategies = [],
+    //     isLoadingGetUpdateSpeedGoal,
+    //     isErrorGetUpdateSpeedGoal,
+    // } = useGetSpeedGoalsQuery(userId, {
+    //     selectFromResult: ({ data, isLoading, isError }) => ({
+    //         activeAndDraftStrategies: data?.activeAndDraftStrategies || [],
+    //         archiveStrategies: data?.archiveStrategies || [],
+    //         isLoadingGetUpdateSpeedGoal: isLoading,
+    //         isErrorGetUpdateSpeedGoal: isError,
+    //     }),
+    // });
     // console.log(activeAndDraftStrategies)
 
     const {
@@ -53,7 +55,7 @@ function Objective(props) {
         isErrorGetSpeedGoalId,
         isFetchingGetSpeedGoalId,
     } = useGetSpeedGoalIdQuery(
-        { userId, strategId: selectedStrategyId },
+        {strategyId: selectedStrategyId },
         {
             selectFromResult: ({ data, isLoading, isError, isFetching }) => ({
                 currentSpeedGoal: data?.currentSpeedGoal || {},
@@ -66,7 +68,17 @@ function Objective(props) {
         }
     );
 
-    console.log(isArchive)
+    console.log(currentSpeedGoal)
+
+    const {
+        activeAndDraftStrategies = [],
+        archiveStrategies = [],
+    } = useGetStrategyQuery({ organizationId: localStorage.getItem('selectedOrganizationId') }, {
+        selectFromResult: ({ data }) => ({
+            activeAndDraftStrategies: data?.activeAndDraftStrategies || [],
+            archiveStrategies: data?.archiveStrategies || [],
+        })
+    })
 
     const [
         updateSpeedGoal,
@@ -165,13 +177,10 @@ function Objective(props) {
     const saveUpdateSpeedGoal = async () => {
         if (selectedStrategyId.length > 0) {
             await updateSpeedGoal({
-                userId,
-                objectiveId: currentSpeedGoal.id,
-                _id: userId,
+                _id: currentSpeedGoal.id,
                 situation: htmlSituation.length > 0 ? htmlSituation : undefined,
                 content: htmlContent.length > 0 ? htmlContent : undefined,
                 rootCause: htmlRootCause.length > 0 ? htmlRootCause : undefined,
-                strategyId: selectedStrategyId,
             })
                 .unwrap()
                 .then(() => {
@@ -318,7 +327,6 @@ function Objective(props) {
                 <div className={classes.inputRow1}>
                     <div className={classes.first}>
                         <select name={'strategy'} onChange={(e) => setselectedStrategyId(e.target.value)}>
-                            {/* <option value={''}>-</option> */}
                             {activeAndDraftStrategies?.map((item, index) => (
                                 <>
                                     <option key={index} value={item?.id} style={{ color: item?.state === 'Активный' ? '#005475' : 'none' }}>Стратегия №{item?.strategyNumber}</option>
@@ -344,7 +352,7 @@ function Objective(props) {
 
 
                 <div className={classes.body}>
-                    {isErrorGetUpdateSpeedGoal && (
+                    {/* {isErrorGetUpdateSpeedGoal && (
                         <>
                             <HandlerQeury Error={isErrorGetUpdateSpeedGoal}></HandlerQeury>
                         </>
@@ -354,7 +362,7 @@ function Objective(props) {
                         <>
                             <HandlerQeury Loading={isLoadingGetUpdateSpeedGoal}></HandlerQeury>
                         </>
-                    )}
+                    )} */}
 
                     {isErrorGetSpeedGoalId ? (
                         <HandlerQeury Error={isErrorGetSpeedGoalId} />
@@ -582,9 +590,9 @@ function Objective(props) {
                 <div className={classes.inputColumn}>
                     <div className={classes.inputRow2}>
                         <button
-                            disabled={isArchive}
+                            // disabled={isArchive}
                             onClick={() => saveUpdateSpeedGoal()}
-                            style={{'backgroundColor' : 'grey'}}
+                            style={{ 'backgroundColor': 'grey' }}
                         >
                             Сохранить
                         </button>

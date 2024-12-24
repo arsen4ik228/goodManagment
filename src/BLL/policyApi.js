@@ -1,17 +1,20 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import {baseUrl} from "./constans";
+import { prepareHeaders } from "./Function/prepareHeaders.js"
+
 
 export const policyApi = createApi({
   reducerPath: "policy",
   tagTypes: ["Policy"],
-  baseQuery: fetchBaseQuery({ baseUrl}),
+  baseQuery: fetchBaseQuery({ baseUrl, prepareHeaders}),
   endpoints: (build) => ({
     getPolicies: build.query({
-      query: (userId = "") => ({
-        url: `${userId}/policies`,
+      query: ({organizationId}) => ({
+        url: `policies/${organizationId}`,
       }),
 
       transformResponse: (response) => {
+        console.log('getPolicies    ', response)
         const directivesDB = response.directives;
         const instructionsDB = response.instructions
 
@@ -55,8 +58,8 @@ export const policyApi = createApi({
     }),
 
     postPolicies: build.mutation({
-      query: ({ userId, ...body }) => ({
-        url: `${userId}/policies/new`,
+      query: ({ ...body }) => ({
+        url: `policies/new`,
         method: "POST",
         body,
       }), 
@@ -66,24 +69,15 @@ export const policyApi = createApi({
       invalidatesTags: [{ type: "Policy", id: "LIST" }],
     }),
 
-    getPoliciesNew: build.query({
-      query: (userId = "") => ({
-        url: `${userId}/policies/new`,
-      }),
-      transformResponse: (response) => ({
-        organizations: response.organizations || [],
-      }),
-    }),
 
     getPoliciesId: build.query({
-      query: ({ userId, policyId }) => ({
-        url: `${userId}/policies/${policyId}`,
+      query: ({policyId}) => ({
+        url: `policies/${policyId}/policy`,
       }),
       transformResponse: (response) => {
-        console.log(response); // Отладка ответа
+        console.log('getPoliciesId   ',response); // Отладка ответа
         return {
-          currentPolicy: response.currentPolicy || {},
-          organizations: response.organizations || [],
+          currentPolicy: response || {},
         };
       },
       // Добавляем теги для этой query
@@ -92,8 +86,8 @@ export const policyApi = createApi({
     }),
 
     updatePolicies: build.mutation({
-      query: ({ userId, policyId, ...body }) => ({
-        url: `${userId}/policies/${policyId}/update`,
+      query: (body) => ({
+        url: `policies/${body._id}/update`,
         method: "PATCH",
         body,
       }),

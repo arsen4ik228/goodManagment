@@ -23,7 +23,7 @@ export default function AttachStatistics() {
         isErrorGetPostId,
         isFetchingGetPostId,
     } = useGetPostIdQuery(
-        { userId, postId },
+        {postId},
         {
             selectFromResult: ({ data, isLoading, isError, isFetching, }) => ({
 

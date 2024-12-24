@@ -1,17 +1,19 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import {baseUrl} from "./constans";
+import { prepareHeaders } from "./Function/prepareHeaders.js"
 
 export const policyDirectoriesApi = createApi({
   reducerPath: "policyDirectories",
   tagTypes: ["PolicyDirectories"],
-  baseQuery: fetchBaseQuery({ baseUrl}),
+  baseQuery: fetchBaseQuery({ baseUrl,prepareHeaders}),
   endpoints: (build) => ({
     getPolicyDirectories: build.query({
-      query: (userId = "") => ({
-        url: `${userId}/policyDirectory`,
+      query: ({organizationId}) => ({
+        url: `policyDirectory/${organizationId}`,
       }),
 
       transformResponse: (response) => {
+        console.log('getPolicyDirectories     ', response)
         if (Array.isArray(response) && response.length > 0) {
           const Data = response.map(item => ({
             id: item.id,
@@ -29,8 +31,8 @@ export const policyDirectoriesApi = createApi({
     }),
 
     postPolicyDirectories: build.mutation({
-      query: ({ userId = "", ...body }) => ({
-        url: `${userId}/policyDirectory/new`,
+      query: ({...body }) => ({
+        url: `policyDirectory/new`,
         method: "POST",
         body,
       }),
@@ -39,10 +41,11 @@ export const policyDirectoriesApi = createApi({
     }),
 
     getPolicyDirectoriesId: build.query({
-      query: ({ userId, policyDirectoryId }) => ({
-        url: `${userId}/PolicyDirectory/${policyDirectoryId}`,
+      query: ({ organizationId, policyDirectoryId }) => ({
+        url: `policyDirectory/${organizationId}/${policyDirectoryId}/policyDirectory`,
       }),
       transformResponse: (response) => {
+        console.log('getPolicyDirectoriesId     ',response)
           const Data = {
             id: response?.policyDirectory?.id,
             directoryName: response?.policyDirectory?.directoryName,
@@ -64,8 +67,8 @@ export const policyDirectoriesApi = createApi({
     }),
 
     updatePolicyDirectories: build.mutation({
-      query: ({userId, policyDirectoryId , ...body}) => ({
-        url: `${userId}/policyDirectory/${policyDirectoryId}/update`,
+      query: ({policyDirectoryId , ...body}) => ({
+        url: `policyDirectory/${policyDirectoryId}/update`,
         method: "PATCH",
         body,
       }),
@@ -73,8 +76,8 @@ export const policyDirectoriesApi = createApi({
     }), 
 
     deletePolicyDirectories: build.mutation({
-      query: ({userId, policyDirectoryId}) => ({
-        url: `${userId}/policyDirectory/${policyDirectoryId}/remove`,
+      query: ({policyDirectoryId}) => ({
+        url: `policyDirectory/${policyDirectoryId}/remove`,
         method: "DELETE",
       }),
       invalidatesTags: [{ type: "policyDirectories", id: "LIST"  }],

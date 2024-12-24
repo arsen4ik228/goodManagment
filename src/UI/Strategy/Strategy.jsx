@@ -18,13 +18,12 @@ import Header from "../Custom/Header/Header";
 import HandlerMutation from "../Custom/HandlerMutation";
 import { useSelector } from "react-redux";
 import ModalWindow from '../Custom/ConfirmStrategyToComplited/ModalWindow';
+import { keys } from 'draft-js/lib/DefaultDraftBlockRenderMap';
 
 const Strategy = () => {
 
     const { userId, strategyId } = useParams()
-    useEffect(() => {
-        setSelectedStrategy(strategyId)
-    }, [strategyId])
+
     const navigate = useNavigate()
     const [inputValue, setInputValue] = useState('');
     const [valueDate, setValueDate] = useState('');
@@ -47,48 +46,14 @@ const Strategy = () => {
         (state) => state.strateg.selectedStrategyId
     );
 
-    const [selectedOrg, setSelectedOrg] = useState('')
-    const [selectedStrategy, setSelectedStrategy] = useState('')
-
-    const {
-        organizations = [],
-        isLoadingNewStrategy,
-        isErrorNewStrategy,
-    } = useGetStrategyNewQuery(userId, {
-        selectFromResult: ({ data, isLoading, isError }) => ({
-            organizations: data, // Если нет данных или organizations, вернем пустой массив
-            isLoadingNewPolicies: isLoading,
-            isErrorNewPolicies: isError,
-        }),
-    });
-
-    const {
-        allStrategies = [],
-        isLoadingStrateg,
-        isErrorStrateg,
-    } = useGetStrategyQuery(
-        { userId, organizationId: selectedOrg },
-        {
-            selectFromResult: ({ data, isLoading, isError }) => ({
-                allStrategies: data?.activeAndDraftStrategies || [],
-                isLoadingStrateg: isLoading,
-                isErrorStrateg: isError,
-            }),
-            skip: !selectedOrg,
-        }
-    );
-
     const {
         currentStrategy = [],
         // organizations = [],
-    } = useGetStrategyIdQuery(
-        { userId, strategyId: strategyId },
+    } = useGetStrategyIdQuery({strategyId: strategyId},
         {
             selectFromResult: ({ data, isLoading, isError, isFetching }) => ({
                 currentStrategy: data?.currentStrategy || [],
-                organizations: data?.organizations || [],
             }),
-            skip: !strategyId,
         }
     );
 
@@ -105,11 +70,6 @@ const Strategy = () => {
 
 
     useEffect(() => {
-        setSelectedId(selectedStrategy)
-    }, [selectedStrategy])
-
-
-    useEffect(() => {
             const rawContent = draftToHtml(
             convertToRaw(editorState.getCurrentContent())
         );
@@ -117,12 +77,7 @@ const Strategy = () => {
     }, [editorState]);
 
     useEffect(() => {
-        setSelectedOrg(currentStrategy?.organization?.id)
-    }, [currentStrategy])
-
-    console.log(selectedOrg)
-    useEffect(() => {
-        if (currentStrategy.content) {
+        if (currentStrategy.content && Object.keys(currentStrategy).length>0) {
             const { contentBlocks, entityMap } = convertFromHTML(
                 currentStrategy.content
             );
@@ -135,24 +90,12 @@ const Strategy = () => {
         }
     }, [currentStrategy.content]);
 
-    useEffect(() => {
-        setExtractedOrganizations(currentStrategy.strategyToOrganizations?.map(item => item.organization))
-    }, [currentStrategy.strategyToOrganizations]);
 
     useEffect(() => {
-        setStrategyToOrganizations(extractedOrganizations?.map(item => item.id));
         setIsState(currentStrategy.state);
         setValueDate(currentStrategy.dataActive)
-    }, [currentStrategy.state, currentStrategy.dataActive, extractedOrganizations]);
+    }, [currentStrategy.state, currentStrategy.dataActive]);
 
-    useEffect(() => {
-        if (selectedOrg !== "") {
-            const activeStrateg = allStrategies?.find(
-                (item) => item.state === "Активный"
-            );
-            setActiveStrategDB(activeStrateg?.id);
-        }
-    }, [selectedOrg]);
 
     console.log(activeStrategDB)
 
@@ -160,9 +103,6 @@ const Strategy = () => {
         console.log(strategyId, currentStrategy.state)
         if (currentStrategy.state)
             await updateStrategy({
-                // userId,
-                strategyId: strategyId,
-                userId: userId,
                 _id: strategyId,
                 state: currentStrategy.state !== isState ? isState : undefined,
                 content: htmlContent,
@@ -196,8 +136,6 @@ const Strategy = () => {
 
     const btnYes = async () => {
         await updateStrategy({
-            userId,
-            strategyId: activeStrategDB,
             _id: activeStrategDB,
             state: "Завершено",
         })
@@ -221,8 +159,6 @@ const Strategy = () => {
         }
         if (Data.content) {
             await updateStrategy({
-                userId,
-                strategyId: strategyId,
                 _id: strategyId,
                 ...Data,
             })
