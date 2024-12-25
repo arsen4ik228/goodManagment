@@ -75,8 +75,8 @@ export const statisticsApi = createApi({
     }),
 
     updateStatistics: build.mutation({
-      query: ({ userId, statisticId, ...body }) => ({
-        url: `${userId}/statistics/${statisticId}/update`,
+      query: (body) => ({
+        url: `statistics/${body._id}/update`,
         method: "PATCH",
         body,
       }),

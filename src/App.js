@@ -59,12 +59,12 @@ function App() {
 
                             <Route path="Objective" element={<Objective />} />
 
-                            <Route path=":userId/Projects" element={<MainProject />} />
-                            <Route path=":userId/Projects/:projectId" element={<Projects />} />
-                            <Route path=":userId/Projects/Target" element={<Target />} />
-                            <Route path=":userId/Projects/new" element={<NewProject />} />
-                            <Route path=":userId/Projects/program/:programId" element={<Programs />} />
-                            <Route path=":userId/Projects/archive/:projectId" element={<ProjectArchive />} />
+                            <Route path="Projects" element={<MainProject />} />
+                            <Route path="Projects/:projectId" element={<Projects />} />
+                            <Route path="Projects/Target" element={<Target />} />
+                            <Route path="Projects/new" element={<NewProject />} />
+                            <Route path="Projects/program/:programId" element={<Programs />} />
+                            <Route path="Projects/archive/:projectId" element={<ProjectArchive />} />
 
                             <Route path="Statistics" element={<MainStatistics />} />
                             <Route path="Statistics/:statisticId" element={<Statistics />} />

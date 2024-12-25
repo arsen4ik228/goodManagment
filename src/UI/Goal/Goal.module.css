@@ -1,141 +1,74 @@
-/*Обнуление*/
-*{padding: 0;margin: 0;border: 0;}
-*,*:before,*:after{-moz-box-sizing: border-box;-webkit-box-sizing: border-box;box-sizing: border-box;}
-:focus,:active{outline: none;}
-a:focus,a:active{outline: none;}
-nav,footer,header,aside{display: block;}
-html,body{height:100%;width:100%;font-size:100%;line-height:1;font-size:16px;-ms-text-size-adjust:100%;-moz-text-size-adjust:100%;-webkit-text-size-adjust:100%;}
-input,button,textarea{font-family:inherit;}
-input::-ms-clear{display: none;}
-button{cursor: pointer;}
-button::-moz-focus-inner{padding:0;border:0;}
-a,a:visited{text-decoration: none;}
-a:hover{text-decoration: none;}
-ul li{list-style: none;}
-img{vertical-align: top;}
-h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
-/*--------------------*/
 
-.wrapper{
+.wrapper {
+
+    position: fixed;
+
+    height: 100vh;
+    width: 100vw;
+
     display: flex;
     flex-direction: column;
-    height: 100vh;
+
     font-family: "'Montserrat', sans-serif'";
-}
-
-
-
-.inputRow1{
-    display: flex;
-    margin-top: 57px;
-    justify-content: space-between;
-    align-items: center;
-    height: 50px;
-    padding: 0 1rem;
-
-
-    div{
-        display: flex;
-        flex: 1 0 auto;
-        align-items: center;
-    }
-
-    input{
-        padding: 0 1em;
-        height: 1.5rem;
-        width: 12rem;
-        font-size: 16px;
-        text-transform: uppercase;
-        border-bottom: 1px solid #005475;
-    }
-    @media screen and (max-width: 375px) {
-        input {
-            width: 7rem;
-        }
-    }
-    @media screen and (max-width: 440px) {
-        input {
-            width: 10rem;
-        }
-    }
-
-    img{
-        display: inline-block;
-        border-bottom: #005475 1px solid;
-        height: 1.5rem;
-
-    }
 
 }
-.first{
-    justify-content: center;
-    padding: 0 1em;
 
-    select{
-        text-transform: uppercase;
-        justify-content: center;
-        text-align: center;
-        display: flex;
-        font-family: "'Montserrat', sans-serif";
-        font-size: 16px;
-        height: 1.5rem;
-        border-bottom: #005475 1px solid;
-    }
-}
 
-.second{
-    justify-content: center;
+.body {
 
-    select{
-        display: flex;
-        font-family: "'Montserrat', sans-serif";
-        font-size: 16px;
-        height: 1.5rem;
-        border-bottom: #005475 1px solid;
-        justify-content: center;
-        text-align: center;
-        font-style: italic;
-    }
-}
-
-.body{
-    margin-top: 52px;
-    flex: 1 1 auto;
-    max-height: calc(100vh - 117px);
     overflow: auto;
+
+    flex: 1 1 auto;
+
     padding: 10px 0;
+
     background-color: #F0F0F0;
 }
 
-.editorContainer {
-    /* margin-top: 20px; */
-    position: relative; /* Это позволит дочернему элементу быть позиционированным относительно этого контейнера */
+
+.textareaContainer {
+
+    position: relative;
+
+    height: 45vh;
+
     margin-bottom: 20px;
 }
 
+
 .deleteIcon {
-    position: absolute; /* Позиционируем элемент абсолютно */
-    top: -17px; /* Расстояние от верхней части контейнера */
+    position: absolute;
+    top: -17px;
     right: 0px;
-    cursor: pointer; /* Изменяем курсор при наведении на иконку */
+}
+
+.dragIcon{
+    position: absolute;
+    top: -11px;
+    left: 13px;
 }
 
 .add {
+
     height: 50px;
     width: 250px;
-    background-color: #ffff;
-    border-radius: 10px;
+
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    padding: 1%;
     column-gap: 5%;
-    box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.25);
-    align-self: flex-start;
-    cursor: pointer;
-    transition: all 0.5s ease;
+
+    padding: 1%;
     margin: 1px auto 20px auto;
+
+    background-color: #ffff;
+    border-radius: 10px;
+    box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.25);
+
+    align-self: flex-start;
+    transition: all 0.5s ease;
+
 }
 
 
@@ -145,6 +78,7 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
     color: #3A3A3A;
     font-weight: 400;
 }
+
 .add div {
     color: #3A3A3A;
     font-size: 14px;
@@ -154,99 +88,43 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 
 .add svg {
     transition: fill 0.3s ease;
-    /* Добавляем анимацию для цвета SVG */
 }
 
 
-@media(hover:hover){
-    
+@media(hover:hover) {
+
     .add:hover {
         background-color: #B4B4B4;
         color: #FFFF;
     }
+
     .add:hover span {
         font-size: 14px;
         font-family: 'Montserrat';
         font-weight: 400;
         color: #FFFF;
     }
+
     .add:hover svg path {
         fill: #FFFFFF;
     }
 }
 
-@media(hover:none)
-{
-    add:active{
+@media(hover:none) {
+    add:active {
         background-color: #B4B4B4;
-    color: #FFFF;
+        color: #FFFF;
     }
+
     .add:active span {
         font-size: 14px;
         font-family: 'Montserrat';
         font-weight: 400;
         color: #FFFF;
     }
+
     .add:active svg path {
         fill: #FFFFFF;
         /* Меняем цвет SVG при наведении */
     }
 }
-
-.pinOrg{
-    position: absolute;
-    display: flex;
-    top:15%;
-    width:100%;
-    justify-content: center;
-    font-size: 1.4rem;
-}
-
-.inputContainer{
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: white;
-    border-top: #005475 solid 3px;
-}
-.inputColumn{
-    display: flex;
-    flex-direction: column;
-    /*border: black solid 1px;*/
-
-}
-
-.inputRow2{
-    display: flex;
-    padding: 15px;
-    width: 100%;
-    align-items: center;
-    justify-content: center;
-
-
-    /*button{*/
-    /*    display: flex;*/
-    /*}*/
-
-    img{
-        display: inline-block;
-        width: 30px;
-        height: 30px;
-        box-shadow: 0 0 3px black;
-        border-radius: 10px;
-
-    }
-
-    button{
-        height: 2rem;
-        width: 10rem;
-        background: #005475;
-        color: white;
-        font-size: 16px;
-        border: #005475 1px solid;
-        border-radius: 5px;
-
-    }
-}
-

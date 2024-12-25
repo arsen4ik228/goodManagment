@@ -27,7 +27,7 @@ export default function MainProject() {
 
   const {
     organizations = []
-  } = useGetOrganizationsQuery(userId, {
+  } = useGetOrganizationsQuery(undefined, {
     selectFromResult: ({ data }) => ({
       organizations: data?.transformOrganizations,
     }),
@@ -40,7 +40,7 @@ export default function MainProject() {
     archivesPrograms = [],
     projectsWithProgram = [],
     archivesProjectsWithProgram = [],
-  } = useGetProjectQuery({ userId, organizationId }, {
+  } = useGetProjectQuery(undefined, {
     selectFromResult: ({ data }) => ({
       projects: data?.projects || [],
       archivesProjects: data?.archivesProjects || [],

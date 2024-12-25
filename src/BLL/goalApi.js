@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import {baseUrl} from "./constans";
+import {baseUrl, selectedOrganizationId} from "./constans";
 import {prepareHeaders} from "./Function/prepareHeaders.js"
 
 
@@ -11,7 +11,7 @@ export const goalApi = createApi({
 
     getGoal: build.query({
       query: () => ({
-        url: `goals/${localStorage.getItem('selectedOrganizationId')}`,
+        url: `goals/${selectedOrganizationId}`,
       }),
       transformResponse: (response) => {
         console.log(response); // Отладка ответа
@@ -26,7 +26,10 @@ export const goalApi = createApi({
       query: ({...body }) => ({
         url: `goals/new`,
         method: "POST",
-        body,
+        body: {
+          ...body,
+          organizationId: selectedOrganizationId
+        },
       }),
       invalidatesTags: [{ type: "Goal", id: "LIST" }],
     }),

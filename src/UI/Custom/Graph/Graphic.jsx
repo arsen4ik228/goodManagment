@@ -102,6 +102,7 @@ const Graphic = ({ data, name, setName, typeGraphic, type }) => {
       )
       .range([margin.left, width - margin.right])
       .padding(0);
+      
 
     // Если type === "Обратная", то ось Y будет инвертирована, а верхний предел будет больше
     const y = type === "Обратная"
@@ -176,6 +177,7 @@ const Graphic = ({ data, name, setName, typeGraphic, type }) => {
 
     svg
       .append("g")
+      .attr("class", "x-axis")
       .attr("transform", `translate(0,${height - margin.bottom})`)
       .call(xAxis)
       .selectAll("text")

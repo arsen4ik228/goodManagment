@@ -128,16 +128,6 @@ export default function Statistics() {
         },
     ] = useUpdateStatisticsMutation();
 
-    const [
-        updateOrganization,
-        {
-            isLoading: isLoadingUpdateOrganizationMutation,
-            isSuccess: isSuccessUpdateOrganizationMutation,
-            isError: isErrorUpdateOrganizationMutation,
-            error: ErrorOrganization,
-        },
-    ] = useUpdateOrganizationsMutation();
-
     const {
         organizations = [],
         isLoadingOrganizations,
@@ -800,8 +790,6 @@ export default function Statistics() {
         console.log(Data);
         if (Object.keys(Data).length > 0) {
             await updateStatistics({
-                userId,
-                statisticId,
                 _id: statisticId,
                 ...Data,
             })
@@ -1549,45 +1537,6 @@ export default function Statistics() {
         }
     };
 
-    const btnYes = async () => {
-        try {
-            await saveUpdateOrganization(); // Сначала выполняем обновление организации
-
-            // Добавляем задержку в 1 секунду
-            await new Promise((resolve) => setTimeout(resolve, 1500));
-
-            await saveUpdateStatistics(); // Затем обновляем статистику через секунду
-        } catch (error) {
-            console.error('Ошибка при выполнении операций:', error);
-        }
-    };
-
-    const btnNo = () => {
-        saveUpdateStatistics();
-        setReportDay(reportDayComes);
-    };
-
-    const saveUpdateOrganization = async () => {
-        await updateOrganization({
-            userId,
-            organizationId,
-            _id: organizationId,
-            reportDay: reportDay,
-        })
-            .unwrap()
-            .then(() => {
-                setOpenModalReportDay(false);
-
-                setManualSuccessResetOrganization(false);
-                setManualErrorResetOrganization(false);
-            })
-            .catch((error) => {
-                setManualErrorResetOrganization(false);
-                setManualSuccessResetOrganization(false);
-                console.error('Ошибка:', JSON.stringify(error, null, 2)); // выводим детализированную ошибку
-            });
-    };
-    console.log()
     return (
         <div className={classes.wrapper}>
             <div className={classes.header}>

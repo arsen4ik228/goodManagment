@@ -2,18 +2,15 @@ import React from 'react';
 import classes from "./Header.module.css";
 import backRow from "../icon/icon _ back.svg";
 import add from "../icon/icon _ add _ blue.svg";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-function Header({title,create}) {
+function Header({ title, create }) {
 
     const navigate = useNavigate();
 
     const addNew = () => {
         navigate('new')
     }
-    // const goBack = () => {
-    //     navigate(-1)
-    // }
 
     return (
         <>
@@ -23,7 +20,7 @@ function Header({title,create}) {
                     <div className={classes.whiteLine}>
                         <div className={classes.headElem}>
                             <div className={classes.icon}>
-                                <img src={backRow} alt="icon" onClick={()=>navigate(-1)}/>
+                                <img src={backRow} alt="icon" onClick={() => navigate(-1)} />
                             </div>
                             <div className={classes.txt}>
                                 <div className={classes.headText}>Личный помощник</div>
@@ -33,7 +30,7 @@ function Header({title,create}) {
                         </div>
 
                         <div className={classes.menu}>
-                            {create && <img src={add} alt="add" onClick={() => addNew()}/> }
+                            {create && <img src={add} alt="add" onClick={() => addNew()} />}
                         </div>
                     </div>
                 </div>

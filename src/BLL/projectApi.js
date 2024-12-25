@@ -1,18 +1,20 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { baseUrl } from "./constans";
-import { filter } from "draft-js/lib/DefaultDraftBlockRenderMap";
+import { prepareHeaders } from "./Function/prepareHeaders.js"
+import { selectedOrganizationId } from "./constans";
+
 
 export const projectApi = createApi({
   reducerPath: "projectApi",
   tagTypes: ["Project", "Project1"],
-  baseQuery: fetchBaseQuery({ baseUrl: baseUrl }),
+  baseQuery: fetchBaseQuery({ baseUrl, prepareHeaders }),
   endpoints: (build) => ({
     getProject: build.query({
-      query: ({ userId, organizationId }) => ({
-        url: `${userId}/projects/${organizationId}/projects`,
+      query: () => ({
+        url: `projects/${selectedOrganizationId}/projects`,
       }),
       transformResponse: (response) => {
-        console.log(response); // Отладка ответа
+        console.log('getProject    ',response); // Отладка ответа
         return {
           projects: response?.filter(item => {
             if (item.type !== 'Проект' || item.programId !== null) return false;
