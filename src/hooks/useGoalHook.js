@@ -18,7 +18,7 @@ export const useGoalHook = () => {
 
     const [updateGoal, { isLoading: isLoadingUpdateGoalMutation, isSuccess: isSuccessUpdateGoalMutation, isError: isErrorUpdateGoalMutation, error: ErrorUpdateGoalMutation }] = useUpdateGoalMutation();
 
-    const [postGoal, { isLoading: isLoadingPostPoliciesMutation, isSuccess: isSuccessPostPoliciesMutation, isError: isErrorPostPoliciesMutation }] = usePostGoalMutation();
+    const [postGoal, { isLoading: isLoadingPostPoliciesMutation, isSuccess: isSuccessPostPoliciesMutation, isError: isErrorPostPoliciesMutation, error: ErrorPostPoliciesMutation }] = usePostGoalMutation();
 
 
     return {
@@ -37,7 +37,7 @@ export const useGoalHook = () => {
         isLoadingPostPoliciesMutation,
         isSuccessPostPoliciesMutation,
         isErrorPostPoliciesMutation,
-
+        ErrorPostPoliciesMutation
 
     }
 }

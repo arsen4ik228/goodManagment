@@ -9,46 +9,6 @@ export const speedGoalApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl,prepareHeaders }),
   endpoints: (build) => ({
 
-    getSpeedGoals: build.query({
-      query: (userId = "") => ({
-        url: `${userId}/objectives`,
-      }),
-      transformResponse: (response) => {
-        const sortedStrategies = response
-          ?.flatMap(objective => objective.strategy)
-          .sort((a, b) => {
-            const stateA = a.state || '';
-            const stateB = b.state || '';
-            
-            if (stateA === 'Черновик' && stateB !== 'Черновик') return -1;
-            if (stateB === 'Черновик' && stateA !== 'Черновик') return 1;
-
-            if (stateA === 'Активный' && stateB !== 'Активный') return -1;
-            if (stateB === 'Активный' && stateA !== 'Активный') return 1;
-
-            return 0;
-          });
-
-        const activeAndDraftStrategies = sortedStrategies.filter(strategy =>
-          strategy.state === 'Активный' || strategy.state === 'Черновик'
-        );
-
-        const otherStrategies = sortedStrategies.filter(strategy =>
-          strategy.state !== 'Активный' && strategy.state !== 'Черновик'
-        );
-
-        return {
-          activeAndDraftStrategies: activeAndDraftStrategies,
-          archiveStrategies: otherStrategies,
-        };
-      },
-
-
-      providesTags: (result, error, userId) =>
-        result ? [{ type: "SpeedGoal", id: userId }] : [],
-    }),
-
-
     getSpeedGoalId: build.query({
       query: ({strategyId}) => ({
         url: `objectives/${strategyId}/objective`,
@@ -83,5 +43,4 @@ export const speedGoalApi = createApi({
 export const {
   useGetSpeedGoalIdQuery,
   useUpdateSpeedGoalMutation,
-  useGetSpeedGoalsQuery
 } = speedGoalApi;

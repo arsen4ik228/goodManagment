@@ -34,6 +34,7 @@ function NewGoal(props) {
         isLoadingPostPoliciesMutation,
         isSuccessPostPoliciesMutation,
         isErrorPostPoliciesMutation,
+        ErrorPostPoliciesMutation
 
     } = useGoalHook()
 
@@ -236,6 +237,21 @@ function NewGoal(props) {
                 textSuccess={"Цель обновлена"}
                 textError={
                     ErrorUpdateGoalMutation?.data?.errors?.[0]?.errors?.[0]
+                        ? ErrorUpdateGoalMutation.data.errors[0].errors[0]
+                        : ErrorUpdateGoalMutation?.data?.message
+                }
+            >
+            </HandlerMutation>
+
+            <HandlerMutation
+                Loading={isLoadingPostPoliciesMutation}
+                Error={isErrorPostPoliciesMutation && !manualErrorReset} // Учитываем ручной сброс
+                Success={
+                    isSuccessPostPoliciesMutation && !manualSuccessReset
+                } // Учитываем ручной сброс
+                textSuccess={"Цель обновлена"}
+                textError={
+                    ErrorPostPoliciesMutation?.data?.errors?.[0]?.errors?.[0]
                         ? ErrorUpdateGoalMutation.data.errors[0].errors[0]
                         : ErrorUpdateGoalMutation?.data?.message
                 }

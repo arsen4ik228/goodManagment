@@ -1,4 +1,4 @@
-// config.js или constants.js
+//constants.js
 export const baseUrl = "http://localhost:5002/";
 // export const baseUrl = "https://24academy.ru/gm/";
 

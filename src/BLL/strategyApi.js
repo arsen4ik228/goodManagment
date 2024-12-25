@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { baseUrl } from "./constans";
 import { prepareHeaders } from "./Function/prepareHeaders.js"
-
+import {selectedOrganizationId} from '../BLL/constans.js'
 
 export const strategyApi = createApi({
     reducerPath: "strategy",
@@ -9,8 +9,8 @@ export const strategyApi = createApi({
     baseQuery: fetchBaseQuery({ baseUrl, prepareHeaders }),
     endpoints: (build) => ({
         getStrategy: build.query({
-            query: ({ organizationId }) => ({
-                url: `strategies/${organizationId}`,
+            query: () => ({
+                url: `strategies/${selectedOrganizationId}`,
             }),
             transformResponse: (response) => {
                 console.log('getstrategy:    ', response)

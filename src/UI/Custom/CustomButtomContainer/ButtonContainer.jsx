@@ -2,17 +2,22 @@ import React from "react";
 import classes from './ButtomContainer.module.css'
 
 
-export const ButtonContainer = ({children, clickFunction}) => {
+export const ButtonContainer = ({ children, clickFunction, disabled }) => {
 
+    const buttonStyle = disabled 
+    ? { backgroundColor: "#00000040", }
+    : {};
 
-    return(
+    return (
         <>
             <div className={classes.wrapper}>
                 <div className={classes.buttonContainer}>
                     <button
-                    onClick={() => clickFunction()}
+                        disabled={disabled}
+                        onClick={() => clickFunction()}
+                        style={buttonStyle}
                     >
-                    {children}
+                        {children}
                     </button>
                 </div>
             </div>

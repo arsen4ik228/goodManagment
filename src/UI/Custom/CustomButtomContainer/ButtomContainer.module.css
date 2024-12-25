@@ -25,7 +25,6 @@
 
 
         background: #005475;
-        border: #005475 1px solid;
         border-radius: 5px;
 
 
@@ -33,4 +32,5 @@
         font-size: 16px;
         text-transform: uppercase;
     }
+
 }
