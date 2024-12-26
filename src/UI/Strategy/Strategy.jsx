@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import classes from './Strategy.module.css';
-import { useGetStrategyIdQuery, useUpdateStrategyMutation, } from "../../BLL/strategyApi";
 import { useParams } from "react-router-dom";
 import Header from "../Custom/Header/Header";
 import HandlerMutation from "../Custom/HandlerMutation";

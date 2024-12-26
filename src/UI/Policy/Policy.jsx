@@ -1,97 +1,49 @@
 import React, { useEffect, useState } from 'react';
-import MyEditor from "../Custom/Editor/MyEditor";
-import backRow from './icon/icon _ back.svg'
-import menu from './icon/icon _ menu.svg'
 import classes from './Policy.module.css';
-import search from './icon/icon _ search.svg'
-import searchBlack from './icon/icon _ black_search.svg'
-import add from './icon/icon _ add2-b.svg'
-import share from './icon/icon _ share.svg'
-import { EditorState, convertFromHTML, ContentState } from "draft-js";
-import draftToHtml from "draftjs-to-html"; // Импортируем конвертер
-import { convertToRaw } from "draft-js";
-import {
-    useGetPoliciesQuery,
-    useGetPoliciesIdQuery,
-    useUpdatePoliciesMutation,
-} from "../../BLL/policyApi";
-import SearchModal from "../Custom/SearchModal/SearchModal";
-// import draftToHtml from "draftjs-to-html";
-import draftjs from 'draft-js';
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import Header from "../Custom/Header/Header";
-import CustomSelect from "../Custom/CustomSelect/CustomSelect";
 import HandlerMutation from "../Custom/HandlerMutation";
-import PolicySearchModal from "./PolicySearchModal/PolicySearchModule"
 import AlertUpdateData from '../Custom/AlertUpdateData/AlertUpdateData';
 import Mdxeditor from '../Custom/MDXEditor/Mdxeditor';
+import { notEmpty } from '../../BLL/constans';
+import { usePolicyHook } from '../../hooks/usePolicyHook';
+import HandlerQeury from '../Custom/HandlerQeury';
+import { ButtonContainer } from '../Custom/CustomButtomContainer/ButtonContainer';
 
 
 const Policy = () => {
 
     const { userId, policyId } = useParams()
-    const navigate = useNavigate()
     const [editorState, setEditorState] = useState('');
     const [valueType, setValueType] = useState('')
     const [policyState, setPolicyState] = useState('')
-    const [isModalOpen, setModalOpen] = useState(false);
     const [inputValue, setInputValue] = useState('');
-    const [htmlContent, setHtmlContent] = useState();
-    const [policyToOrganizations, setPolicyToOrganizations] = useState();
-    const [extractedOrganizations, setExtractedOrganizations] = useState([]);
-    const [ModalOrgOpen, setModalOrgOpen] = useState(false);
     const [openAlertModal, setOpenAlertModal] = useState(false)
     const [disabled, setDisabled] = useState(false)
 
-
     const {
-        currentPolicy = {},
+        currentPolicy,
         isLoadingGetPoliciesId,
-        isFetchingGetPoliciesId,
         isErrorGetPoliciesId,
-    } = useGetPoliciesIdQuery(
-        { policyId },
-        {
-            selectFromResult: ({ data, isLoading, isError, isFetching }) => ({
-                currentPolicy: data?.currentPolicy || {},
-                isLoadingGetPoliciesId: isLoading,
-                isErrorGetPoliciesId: isError,
-                isFetchingGetPoliciesId: isFetching,
-            }),
-        }
-    );
-    const [
+
+
         updatePolicy,
-        {
-            isLoading: isLoadingUpdatePoliciesMutation,
-            isSuccess: isSuccessUpdatePoliciesMutation,
-            isError: isErrorUpdatePoliciesMutation,
-            error: ErrorUpdatePoliciesMutation,
-        },
-    ] = useUpdatePoliciesMutation();
+        isLoadingUpdatePoliciesMutation,
+        isSuccessUpdatePoliciesMutation,
+        isErrorUpdatePoliciesMutation,
+        ErrorUpdatePoliciesMutation,
+    } = usePolicyHook(policyId)
+
 
     useEffect(() => {
+        if (!notEmpty(currentPolicy)) return
         setInputValue(currentPolicy.policyName === 'Политика' ? `Политика №${currentPolicy.policyNumber}` : currentPolicy.policyName);
         currentPolicy.type === 'Инструкция' ? setValueType('Инструкция') : setValueType('Директива');
         setPolicyState(currentPolicy.state)
         if (currentPolicy.state === 'Отменён') setDisabled(true)
-    }, [policyId, currentPolicy.policyName, currentPolicy.type, currentPolicy.state])
+    }, [policyId, currentPolicy])
 
 
-    // useEffect(() => {//Editor content
-    //     if (currentPolicy.content) {
-    //         const { contentBlocks, entityMap } = convertFromHTML(
-    //             currentPolicy.content
-    //         );
-    //         const contentState = ContentState.createFromBlockArray(
-    //             contentBlocks,
-    //             entityMap
-    //         );
-    //         const oldEditorState = EditorState.createWithContent(contentState);
-    //         setEditorState(oldEditorState);
-    //     }
-    // }, [currentPolicy.content]);
-    
     const saveUpdatePolicy = async () => {
         const Data = {}
         if (inputValue !== currentPolicy.policyName) Data.policyName = inputValue
@@ -99,7 +51,7 @@ const Policy = () => {
         if (valueType !== currentPolicy.type) Data.type = valueType
         if (editorState !== currentPolicy.content) Data.content = editorState
         console.log(Data)
-        if (Object.keys(Data).length > 0) {
+        if (notEmpty(Data)) {
             await updatePolicy({
                 _id: policyId,
                 ...Data,
@@ -115,11 +67,6 @@ const Policy = () => {
         }
     };
 
-    const openOrgModal = () => {
-        setModalOrgOpen(true)
-    }
-    console.log(editorState)
-
     return (
         <>
             <div className={classes.wrapper}>
@@ -133,7 +80,7 @@ const Policy = () => {
                     <div className={classes.first}>
                         <input value={inputValue} disabled={disabled} type={'text'} onChange={(e) => setInputValue(e.target.value)} />
                     </div>
-                    
+
                     <div className={classes.second}>
                         <select value={valueType} disabled={disabled} onChange={(e) => setValueType(e.target.value)}>
                             {/*<option value={''}></option>*/}
@@ -150,35 +97,39 @@ const Policy = () => {
                 </div>
 
                 <div className={classes.body}>
-                    {Object.keys(currentPolicy).length>0 && (
+                    {Object.keys(currentPolicy).length > 0 && (
                         <>
-                        {/* <MyEditor
+                            {/* <MyEditor
                             editorState={editorState}
                             setEditorState={disabled ? '' : setEditorState}
                             policyContent={true}
                         /> */}
-                        <Mdxeditor
-                            key={currentPolicy?.id}
-                            editorState={currentPolicy?.content}
-                            setEditorState={setEditorState}
-                            userId={userId}
-                            isArchive={disabled}
-                        >
-                        </Mdxeditor>
-                    </>
-                )}
+                            <Mdxeditor
+                                key={currentPolicy?.id}
+                                editorState={currentPolicy?.content}
+                                setEditorState={setEditorState}
+                                userId={userId}
+                                isArchive={disabled}
+                            >
+                            </Mdxeditor>
+                        </>
+                    )}
                 </div>
 
                 {!disabled && (
-                    <footer className={classes.inputContainer}>
-                        <div className={classes.inputRow2}>
-                            <div>
-                                <button onClick={() => saveUpdatePolicy()}> Сохранить</button>
-                            </div>
-                        </div>
-                    </footer>
+                    <ButtonContainer
+                        clickFunction={saveUpdatePolicy}
+                    >
+                        сохранить
+                    </ButtonContainer>
                 )}
             </div>
+
+            <HandlerQeury
+                Loading={isLoadingGetPoliciesId}
+                Error={isErrorGetPoliciesId}
+            />
+
             <HandlerMutation
                 Loading={isLoadingUpdatePoliciesMutation}
                 Error={isErrorUpdatePoliciesMutation}

@@ -6,7 +6,6 @@ import Main from './UI/Main/Main.jsx'
 import Chat from './UI/Chat/Chat.jsx'
 import MainPolicy from './UI/Policy/MainPolicy.jsx'
 import Policy from './UI/Policy/Policy.jsx'
-import NewPolicy from "./UI/Policy/NewPolicy";
 import CreatePolicyDirectory from './UI/Policy/PolicyDirectory/CreatePolicyDirectory.jsx';
 import EditPolicyDirectories from './UI/Policy/PolicyDirectory/EditPolicyDirectory.jsx';
 import MainPost from './UI/Posts/MainPost.jsx'
@@ -26,6 +25,7 @@ import ProjectArchive from './UI/Projects/Archive/ProjectArchive.jsx';
 import MainStatistics from './UI/Statistics/MainStatistics.jsx';
 import Statistics from './UI/Statistics/Statistics.jsx';
 import NewStatistic from './UI/Statistics/NewStatistic.jsx';
+import Header from './UI/Custom/Header/Header.jsx';
 
 function App() {
     return (
@@ -36,14 +36,13 @@ function App() {
                 <Route path="/*"
                     element={
                         <Routes>
-
+                            <Route path='test' element={<Header></Header>}></Route>
                             <Route path="Main" element={<Main />} />
 
                             <Route path="Chat" element={<Chat />} />
 
                             <Route path="Policy" element={<MainPolicy />} />
                             <Route path="Policy/:policyId" element={<Policy />} />
-                            <Route path="Policy/new" element={<NewPolicy />} />
                             <Route path="Policy/CreateDirectory" element={<CreatePolicyDirectory />} />
                             <Route path="Policy/EditDirectory/:policyDirectoryId" element={<EditPolicyDirectories />} />
 

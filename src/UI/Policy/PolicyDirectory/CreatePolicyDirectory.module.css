@@ -50,8 +50,8 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 
 .body{
     flex: 1 1 auto;
-    /* max-height: calc(100vh - 173px); */
-    margin-top: 60px;
+    max-height: calc(100vh - 114px);
+    /* margin-top: 60px; */
     overflow: hidden;
     /* border: 1px solid red; */
 }

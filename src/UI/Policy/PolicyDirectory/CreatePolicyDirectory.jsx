@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useMemo } from 'react'
 import Header from '../../Custom/Header/Header'
 import classes from "./CreatePolicyDirectory.module.css"
-import { useNavigate, useParams } from 'react-router-dom'
-import { useGetPolicyDirectoriesQuery, usePostPolicyDirectoriesMutation } from '../../../BLL/policyDirectoriesApi'
-import { useGetPoliciesQuery } from '../../../BLL/policyApi'
+import { useNavigate } from 'react-router-dom'
 import HandlerMutation from '../../Custom/HandlerMutation'
-import SetPolicyDirectoryName from '../../Custom/SetPolicyDirectoyName/SetPolicyDirectoryName'
+import { usePoliceDirectoriesHook } from '../../../hooks/usePolicyDirectoriesHook'
+import HandlerQeury from '../../Custom/HandlerQeury'
+import { ButtonContainer } from '../../Custom/CustomButtomContainer/ButtonContainer'
+import { usePolicyHook } from '../../../hooks/usePolicyHook'
 
 export default function CreatePolicyDirectory() {
 
@@ -15,31 +16,24 @@ export default function CreatePolicyDirectory() {
     const [directoryName, setDirectoryName] = useState('')
     const [searchTerm, setSearchTerm] = useState('');
 
+
     const {
-        activeDirectives = [],
-        activeInstructions = [],
+        activeDirectives,
+        activeInstructions,
         isLoadingGetPolicies,
         isErrorGetPolicies,
-        isFetchingGetPolicies
-    } = useGetPoliciesQuery({organizationId: localStorage.getItem('selectedOrganizationId')}, {
-        selectFromResult: ({ data, isLoading, isError, isFetching }) => ({
-            activeDirectives: data?.activeDirectives || [],
-            activeInstructions: data?.activeInstructions || [],
-            isLoadingGetPolicies: isLoading,
-            isErrorGetPolicies: isError,
-            isFetchingGetPolicies: isFetching,
-        }),
-    });
-    
-    const [
+    } = usePolicyHook()
+
+    const {
+
         postDirectory,
-        {
-            isLoading: isLoadingUpdatePoliciesMutation,
-            isSuccess: isSuccessUpdatePoliciesMutation,
-            isError: isErrorUpdatePoliciesMutation,
-            error: ErrorUpdatePoliciesMutation,
-        },
-    ] = usePostPolicyDirectoriesMutation();
+        isLoadingUpdatePoliciesMutation,
+        isSuccessUpdatePoliciesMutation,
+        isErrorUpdatePoliciesMutation,
+        ErrorUpdatePoliciesMutation,
+
+    } = usePoliceDirectoriesHook()
+
 
     const handleSelectItem = (id) => {
         setSelectedId(prevSelectedId =>
@@ -48,7 +42,7 @@ export default function CreatePolicyDirectory() {
                 : [...prevSelectedId, id]
         )
     };
-    
+
 
     const filteredItems = useMemo(() => {
         const filterActiveDirectives = activeDirectives.filter(item =>
@@ -80,8 +74,6 @@ export default function CreatePolicyDirectory() {
                 console.error("Ошибка:", JSON.stringify(error, null, 2)); // выводим детализированную ошибку
             });
     };
-
-    console.log(selectedId)
 
     return (
         <>
@@ -155,25 +147,6 @@ export default function CreatePolicyDirectory() {
                                 </div>
 
                                 <>
-                                    {/* <div className={classes.selectType}>
-                                            <div
-                                                className={classes.imageContainer}
-                                                onClick={() => switchDisplayType('left', 'instruction')}
-                                            >
-                                                <img src={leftArrow} alt="leftarrow" />
-                                            </div>
-                                            <span
-                                            >
-                                                {displayInstruction.type}
-                                            </span>
-                                            <div
-                                                className={classes.imageContainer}
-                                                style={{ justifyContent: 'flex-end' }}
-                                                onClick={() => switchDisplayType('right', 'instruction')}
-                                            >
-                                                <img src={rightArrow} alt="rightarrow" />
-                                            </div>
-                                        </div> */}
                                     <ul className={classes.selectList}>
                                         {!filteredItems.activeInstructions.length > 0 && (
                                             <li
@@ -196,24 +169,22 @@ export default function CreatePolicyDirectory() {
                                         ))}
                                     </ul>
                                 </>
-
-
-
-
-
                             </div>
                         </div>
                     </>
                 </div>
 
-                <footer className={classes.inputContainer}>
-                    <div className={classes.inputColumn}>
-                        <div className={classes.inputRow2}>
-                            <button onClick={() => savePolicyDirectory()}>СОЗДАТЬ</button>
-                        </div>
-                    </div>
-                </footer>
+                <ButtonContainer
+                    clickFunction={savePolicyDirectory}
+                >
+                    создать
+                </ButtonContainer>
             </div>
+
+            <HandlerQeury
+                Loading={isLoadingGetPolicies}
+                Error={isErrorGetPolicies}
+            />
 
             <HandlerMutation
                 Loading={isLoadingUpdatePoliciesMutation}

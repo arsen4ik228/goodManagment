@@ -2,11 +2,9 @@ import React, { useEffect, useState, useMemo } from 'react'
 import Header from '../../Custom/Header/Header'
 import classes from "./EditPolicyDirectory.module.css"
 import { useNavigate, useParams } from 'react-router-dom'
-import { useDeletePolicyDirectoriesMutation, usePostPolicyDirectoryMutation, useUpdatePolicyDirectoriesMutation, useGetPolicyDirectoriesIdQuery } from '../../../BLL/policyDirectoriesApi'
-import { useGetPoliciesQuery } from '../../../BLL/policyApi'
-import iconDelete from '../../Custom/icon/icon _ delete _ red.svg'
 import HandlerMutation from '../../Custom/HandlerMutation'
-import SetPolicyDirectoryName from '../../Custom/SetPolicyDirectoyName/SetPolicyDirectoryName'
+import { usePoliceDirectoriesHook } from '../../../hooks/usePolicyDirectoriesHook'
+import HandlerQeury from '../../Custom/HandlerQeury'
 
 export default function EditPolicyDirectories() {
 
@@ -16,47 +14,29 @@ export default function EditPolicyDirectories() {
     const [directoryName, setDirectoryName] = useState('')
     const [searchTerm, setSearchTerm] = useState('');
 
-
     const {
-        activeDirectives = [],
-        activeInstructions = [],
-        policyDirectory = {},
-        data = [],
+        activeDirectives,
+        activeInstructions,
+        policyDirectory,
         isLoadingGetPolicyDirectories,
         isErrorGetPolicyDirectories,
-        isFetchingGetPolicyDirectories,
-    } = useGetPolicyDirectoriesIdQuery({ organizationId: localStorage.getItem('selectedOrganizationId'), policyDirectoryId }, {
-        selectFromResult: ({ data, isLoading, isError, isFetching }) => ({
-            activeDirectives: data?.activeDirectives || [],
-            activeInstructions: data?.activeInstructions || [],
-            policyDirectory: data?.policyDirectory || [],
-            data: data?.data || [],
-            isLoadingGetPolicyDirectories: isLoading,
-            isErrorGetPolicyDirectories: isError,
-            isFetchingGetPolicyDirectories: isFetching,
-        }),
-    });
-    console.warn(activeDirectives, policyDirectory)
 
-    const [
-        updatePolicyDirectories,
-        {
-            isLoading: isLoadingUpdatePolicyDirectoriesMutation,
-            isSuccess: isSuccessUpdatePolicyDirectoriesMutation,
-            isError: isErrorUpdatePolicyDirectoriesMutation,
-            error: ErrorUpdateDirectories,
-        },
-    ] = useUpdatePolicyDirectoriesMutation();
 
-    const [
         deletePolicyDirectories,
-        {
-            isLoading: isLoadingDeletePolicyDirectoriesMutation,
-            isSuccess: isSuccessDeletePolicyDirectoriesMutation,
-            isError: isErrorDeletePolicyDirectoriesMutation,
-            error: ErrorDeleteDirectories,
-        },
-    ] = useDeletePolicyDirectoriesMutation();
+        isLoadingDeletePolicyDirectoriesMutation,
+        isSuccessDeletePolicyDirectoriesMutation,
+        isErrorDeletePolicyDirectoriesMutation,
+        ErrorDeleteDirectories,
+
+
+        updatePolicyDirectories,
+        isLoadingUpdatePolicyDirectoriesMutation,
+        isSuccessUpdatePolicyDirectoriesMutation,
+        isErrorUpdatePolicyDirectoriesMutation,
+        ErrorUpdateDirectories,
+    } = usePoliceDirectoriesHook(policyDirectoryId)
+
+
 
     useEffect(() => {
         if (Object.keys(policyDirectory).length > 0) {
@@ -178,10 +158,10 @@ export default function EditPolicyDirectories() {
                                                 <span>
                                                     {item?.policyName}
                                                 </span>
-                                                <input 
-                                                readOnly
-                                                checked={selectedId.includes(item?.id)} 
-                                                type="checkbox" />
+                                                <input
+                                                    readOnly
+                                                    checked={selectedId.includes(item?.id)}
+                                                    type="checkbox" />
                                             </li>
                                         ))}
                                     </ul>
@@ -234,9 +214,9 @@ export default function EditPolicyDirectories() {
                                                 <span>
                                                     {item?.policyName}
                                                 </span>
-                                                <input 
-                                                readOnly
-                                                checked={selectedId.includes(item?.id)} type="checkbox" />
+                                                <input
+                                                    readOnly
+                                                    checked={selectedId.includes(item?.id)} type="checkbox" />
                                             </li>
                                         ))}
                                     </ul>
@@ -258,6 +238,10 @@ export default function EditPolicyDirectories() {
                 </footer>
             </div>
 
+            <HandlerQeury
+                Loading={isLoadingGetPolicyDirectories}
+                Error={isErrorGetPolicyDirectories}
+            />
 
             <HandlerMutation
                 Loading={isLoadingDeletePolicyDirectoriesMutation}

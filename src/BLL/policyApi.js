@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import {baseUrl} from "./constans";
 import { prepareHeaders } from "./Function/prepareHeaders.js"
-
+import {selectedOrganizationId} from './constans.js'
 
 export const policyApi = createApi({
   reducerPath: "policy",
@@ -9,8 +9,8 @@ export const policyApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl, prepareHeaders}),
   endpoints: (build) => ({
     getPolicies: build.query({
-      query: ({organizationId}) => ({
-        url: `policies/${organizationId}`,
+      query: () => ({
+        url: `policies/${selectedOrganizationId}`,
       }),
 
       transformResponse: (response) => {
@@ -61,7 +61,11 @@ export const policyApi = createApi({
       query: ({ ...body }) => ({
         url: `policies/new`,
         method: "POST",
-        body,
+        body: {
+          policyName: 'Политика',
+          content: ' ',
+          organizationId: selectedOrganizationId,
+        },
       }), 
       transformResponse: (response) => ({
         id: response.id

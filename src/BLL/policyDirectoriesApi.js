@@ -1,15 +1,15 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import {baseUrl} from "./constans";
 import { prepareHeaders } from "./Function/prepareHeaders.js"
-
+import { selectedOrganizationId } from "./constans";
 export const policyDirectoriesApi = createApi({
   reducerPath: "policyDirectories",
   tagTypes: ["PolicyDirectories"],
   baseQuery: fetchBaseQuery({ baseUrl,prepareHeaders}),
   endpoints: (build) => ({
     getPolicyDirectories: build.query({
-      query: ({organizationId}) => ({
-        url: `policyDirectory/${organizationId}`,
+      query: () => ({
+        url: `policyDirectory/${selectedOrganizationId}`,
       }),
 
       transformResponse: (response) => {

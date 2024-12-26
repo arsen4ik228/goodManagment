@@ -1,61 +1,50 @@
-import React, { useEffect, useState } from 'react';
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import backRow from '../Custom/icon/icon _ back.svg'
+import React, { useState } from 'react';
 import iconAdd from '../Custom/icon/icon _ add _ blue.svg'
-import menu from '../Custom/icon/icon _ menu.svg'
 import edit from '../Custom/icon/icon _ edit _ grey.svg'
 import classes from './MainPolicy.module.css'
-import searchBlack from '../Custom/icon/icon _ black_search.svg'
 import add from '../Custom/icon/icon _ add _ 005476.svg'
-import stats from '../Custom/icon/_icon _ stats.svg'
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Header from "../Custom/Header/Header";
-import { useGetPoliciesQuery, usePostPoliciesMutation } from '../../BLL/policyApi';
-import { useGetPolicyDirectoriesQuery } from '../../BLL/policyDirectoriesApi';
-import { useGetOrganizationsQuery } from '../../BLL/organizationsApi';
 import sublist from '../Custom/icon/icon _ sublist.svg'
 import leftArrow from '../Custom/icon/icon _ leftarrow.svg'
 import rightArrow from '../Custom/icon/icon _ rightarrow.svg'
-import CustomSelect from '../Custom/CustomSelect/CustomSelect';
+import HandlerQeury from '../Custom/HandlerQeury';
+import HandlerMutation from '../Custom/HandlerMutation';
+import { usePolicyHook } from '../../hooks/usePolicyHook';
+import { usePoliceDirectoriesHook } from '../../hooks/usePolicyDirectoriesHook';
 
 
 
 const MainPolicy = () => {
 
-    const { userId } = useParams()
     const navigate = useNavigate()
     const [openDirectories, setOpenDirectories] = useState()
     const [openInstruction, setOpenInstruction] = useState(false)
     const [openDirectives, setOpenDirectives] = useState(true)
     const [typeDisplayDirectives, setTypeDisplayDirectives] = useState(1)
     const [typeDisplayInstruction, setTypeDisplayInstruction] = useState(1)
-    const [newPolicyDraftId, setNewPolicyDraftId] = useState(null)
-    const [openModal, setOpenModal] = useState(false)
-    const [selectedOrganization, setSelectedOrganization] = useState([])
+
+    const [manualSuccessReset, setManualSuccessReset] = useState(false)
+    const [manualErrorReset, setManualErrorReset] = useState(false)
 
     const {
-        activeDirectives = [],
-        draftDirectives = [],
-        archiveDirectives = [],
-        activeInstructions = [],
-        draftInstructions = [],
-        archiveInstructions = [],
+        activeDirectives,
+        draftDirectives,
+        archiveDirectives,
+        activeInstructions,
+        draftInstructions ,
+        archiveInstructions,
         isLoadingGetPolicies,
         isErrorGetPolicies,
-        isFetchingGetPolicies
-    } = useGetPoliciesQuery({organizationId: localStorage.getItem('selectedOrganizationId')}, {
-        selectFromResult: ({ data, isLoading, isError, isFetching }) => ({
-            activeDirectives: data?.activeDirectives || [],
-            draftDirectives: data?.draftDirectives || [],
-            archiveDirectives: data?.archiveDirectives || [],
-            activeInstructions: data?.activeInstructions || [],
-            draftInstructions: data?.draftInstructions || [],
-            archiveInstructions: data?.archiveInstructions || [],
-            isLoadingGetPolicies: isLoading,
-            isErrorGetPolicies: isError,
-            isFetchingGetPolicies: isFetching,
-        }),
-    });
+
+
+        postPolicy,
+        isLoadingPostPoliciesMutation,
+        isSuccessPostPoliciesMutation,
+        isErrorPostPoliciesMutation,
+        ErrorPostPoliciesMutation,
+    } = usePolicyHook()
+ 
 
     const TYPE_DISPLAY = {
         0: { type: 'Отменён', arrayDirectives: archiveDirectives, arrayInstruction: archiveInstructions },
@@ -65,44 +54,28 @@ const MainPolicy = () => {
     const displayDirectives = TYPE_DISPLAY[typeDisplayDirectives]
     const displayInstruction = TYPE_DISPLAY[typeDisplayInstruction]
 
-    const {
-        policyDirectories = [],
-        isLoadingNewSpeedGoal,
-        isErrorNewSpeedGoal,
-    } = useGetPolicyDirectoriesQuery({organizationId: localStorage.getItem('selectedOrganizationId')}, {
-        selectFromResult: ({ data, isLoading, isError }) => ({
-            policyDirectories: data || [],
-            isLoadingNewSpeedGoal: isLoading,
-            isErrorNewSpeedGoal: isError,
-        }),
-    });
 
-    const [
-        postPolicy,
-        {
-            isLoading: isLoadingPostPoliciesMutation,
-            isSuccess: isSuccessPostPoliciesMutation,
-            isError: isErrorPostPoliciesMutation,
-            error: ErrorPostPoliciesMutation,
-        },
-    ] = usePostPoliciesMutation();
+    const {
+        policyDirectories,
+        isLoadingPolicyDirectories,
+        isErrorPolicyDirectories,
+    } = usePoliceDirectoriesHook()
+
 
     const savePolicy = async () => {
-        await postPolicy({
-            policyName: 'Политика',
-            content: ' ',
-            organizationId: localStorage.getItem('selectedOrganizationId'),
-        })
+        await postPolicy()
             .unwrap()
             .then((result) => {
-                setNewPolicyDraftId(result?.id)
+                navigate(result?.id)
+                setManualSuccessReset(false);
+                setManualErrorReset(false);
             })
             .catch((error) => {
                 console.error("Ошибка:", JSON.stringify(error, null, 2)); // выводим детализированную ошибку
             });
     };
 
-    
+
     const switchDisplayType = (direction, type) => {
         const directionValue = direction === 'right' ? 1 : -1
         if (type === 'directives') {
@@ -118,20 +91,15 @@ const MainPolicy = () => {
             });
         }
     }
-    
-    useEffect(() => {
-        if (newPolicyDraftId !== null) {
-            navigate(newPolicyDraftId)
-        }
-    }, [newPolicyDraftId])
+
     return (
         <>
             <div className={classes.wrapper}>
                 <>
                     <Header create={false} title={'Политики'}></Header>
-                    <div className={classes.iconAdd}>
+                    {/* <div className={classes.iconAdd}>
                         <img src={iconAdd} alt="" onClick={() => savePolicy()} />
-                    </div>
+                    </div> */}
                 </>
 
                 <div className={classes.body}>
@@ -297,16 +265,28 @@ const MainPolicy = () => {
                     </>
                 </div>
             </div>
-            {/* {openModal &&
 
-                <CustomSelect
-                    organizations={organizations}
-                    isToOrganizations={selectedOrganization}
-                    setToOrganizations={setSelectedOrganization}
-                    setModalOpen={setOpenModal}
-                    requestFunc={savePolicy}
-                ></CustomSelect>
-            } */}
+            <HandlerQeury
+                Loading={isLoadingGetPolicies}
+                Error={isErrorGetPolicies}
+            />
+
+            <HandlerQeury
+                Loading={isLoadingPolicyDirectories}
+                Error={isErrorPolicyDirectories}
+            />
+
+            <HandlerMutation
+                Loading={isLoadingPostPoliciesMutation}
+                Success={isSuccessPostPoliciesMutation && !manualSuccessReset}
+                textSuccess={'Политика успешно создана'}
+                Error={isErrorPostPoliciesMutation && !manualErrorReset}
+                textError={
+                    ErrorPostPoliciesMutation?.data?.errors?.[0]?.errors?.[0]
+                        ? ErrorPostPoliciesMutation.data.errors[0].errors[0]
+                        : ErrorPostPoliciesMutation?.data?.message
+                }
+            />
         </>
     );
 };
