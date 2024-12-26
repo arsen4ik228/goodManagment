@@ -1,25 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import backRow from './icon/icon _ back.svg'
-import menu from './icon/icon _ menu.svg'
+
 import classes from './Posts.module.css';
-import searchBlack from './icon/icon _ black_search.svg'
-import add from './icon/icon _ add2-b.svg'
-import sublist from '../Custom/icon/icon _ sublist.svg'
-import share from './icon/icon _ share.svg'
+
 import stats from './icon/_icon _ stats.svg'
 import attachpolicy from './icon/icon _ attach policy.svg'
 import {
     useGetPostIdQuery,
-    useGetPostsQuery,
     useUpdatePostsMutation,
 } from "../../BLL/postApi";
 import { useNavigate, useParams } from "react-router-dom";
 import HandlerMutation from "../Custom/HandlerMutation";
 import HandlerQeury from "../Custom/HandlerQeury.jsx";
-import Header from "../Custom/Header/Header";
+import Header from "../Custom/CustomHeader/Header";
 import AttachPolicy from '../Custom/AttachPolicy/AttachPolicy.jsx';
-import AttachStatistics from './AttachStatistics/AttachStatistics.jsx';
+import { ButtonContainer } from '../Custom/CustomButtomContainer/ButtonContainer.jsx';
+import { notEmpty } from '../../BLL/constans.js';
 
 
 const Posts = () => {
@@ -79,7 +74,7 @@ const Posts = () => {
     console.log(currentPost, workers, organizations, posts, parentPost, statisticsIncludedPost, policiesActive)
 
     useEffect(() => {
-        if (currentPost && Object.keys(currentPost).length > 0) {
+        if (currentPost && notEmpty(currentPost)) {
             setPostName(currentPost?.postName);
             setDivisionName(currentPost?.divisionName);
             setWorker(currentPost?.user?.id);
@@ -96,7 +91,7 @@ const Posts = () => {
     }, [policy]);
 
     useEffect(() => {
-        if (parentPost && Object.keys(parentPost).length > 0) {
+        if (parentPost && notEmpty(parentPost)) {
             setParentDivisionName(parentPost?.divisionName)
         }
     }, [parentPost])
@@ -193,41 +188,10 @@ const Posts = () => {
             <div className={classes.wrapper}>
 
                 <>
-                    <Header title={'Редактировать Пост'} create={false}></Header>
+                    <Header title={'Редактировать Пост'}>Личный помощщник</Header>
                 </>
 
                 <div className={classes.body}>
-                    {/* <div className={classes.bodyContainer} style={{ "borderBottom": "1px solid grey" }}>
-                        <div className={classes.name}>
-                            Пост
-                        </div>
-                        <div className={classes.selectSection}>
-                            <select
-                                className={classes.select}
-                                value={selectedPostId || ""}
-                                onChange={(e) => {
-                                    setSelectedPostId(e.target.value);
-                                }}
-                            >
-                                <option value="" disabled>
-                                    Выберите пост
-                                </option>
-                                {data?.map((item) => {
-                                    return <option key={item.id} value={item.id}>{item.postName}</option>;
-                                })}
-                            </select>
-                        </div>
-                    </div> */}
-
-                    {/* <div className={classes.burger} onClick={() => setOpenList(!openList)}>
-                        <div className={classes.textBurger}></div>
-                        {!openList && (<div className={classes.textBurger}> Развернуть</div>)}
-                        <div className={classes.imgBurger}>
-                            <img src={sublist} alt="icon" style={{transform: openList ? 'none' : 'rotate(90deg)'}}/>
-                        </div>
-                    </div> */}
-
-
 
                     <>
                         <div className={classes.bodyContainer}>
@@ -240,22 +204,6 @@ const Posts = () => {
                                 }}
                             />
                         </div>
-                        {/* <div className={classes.bodyContainer}>
-                            <div className={classes.name}>
-                                Название поста <span style={{ color: "red" }}>*</span>
-                            </div>
-                            <div className={classes.selectSection}>
-                                <input
-                                    type="text"
-                                    value={postNameChanges ? postName : (postName || currentPost.postName)}
-                                    onChange={(e) => {
-                                        setPostName(e.target.value);
-                                        setPostNameChanges(true);
-                                    }}
-                                />
-                            </div>
-                        </div> */}
-
                         <div className={classes.bodyContainer}>
                             <div className={classes.name}>
                                 Подразделение
@@ -420,7 +368,7 @@ const Posts = () => {
                                                                         {statisticsIncludedPost?.length > 1 ?
                                                                             (
                                                                                 <span>
-                                                                                   {' '} и ещё ({statisticsIncludedPost?.length-1})
+                                                                                    {' '} и ещё ({statisticsIncludedPost?.length - 1})
                                                                                 </span>
                                                                             ) : (
                                                                                 <></>
@@ -457,13 +405,11 @@ const Posts = () => {
 
                 </div>
 
-                <footer className={classes.inputContainer}>
-                    <div className={classes.inputRow2}>
-                        <div>
-                            <button onClick={() => saveUpdatePost()}> Сохранить</button>
-                        </div>
-                    </div>
-                </footer>
+                <ButtonContainer
+                    clickFunction={saveUpdatePost}
+                >Сохранить
+
+                </ButtonContainer>
             </div>
 
             {modalPolicyOpen &&

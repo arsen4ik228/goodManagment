@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import classes from './Policy.module.css';
 import { useParams } from "react-router-dom";
-import Header from "../Custom/Header/Header";
+import Header from "../Custom/CustomHeader/Header";
 import HandlerMutation from "../Custom/HandlerMutation";
 import AlertUpdateData from '../Custom/AlertUpdateData/AlertUpdateData';
 import Mdxeditor from '../Custom/MDXEditor/Mdxeditor';
@@ -72,7 +72,7 @@ const Policy = () => {
             <div className={classes.wrapper}>
 
                 <>
-                    <Header create={false} title={'Политики'}></Header>
+                    <Header title={'Политики'}>Личный помощник</Header>
                 </>
 
                 <div className={classes.inputRow1}>

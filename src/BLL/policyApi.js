@@ -58,7 +58,7 @@ export const policyApi = createApi({
     }),
 
     postPolicies: build.mutation({
-      query: ({ ...body }) => ({
+      query: () => ({
         url: `policies/new`,
         method: "POST",
         body: {
@@ -115,7 +115,6 @@ export const policyApi = createApi({
 export const {
   useGetPoliciesQuery,
   usePostPoliciesMutation,
-  useGetPoliciesNewQuery,
   useGetPoliciesIdQuery,
   useUpdatePoliciesMutation,
   usePostImageMutation,

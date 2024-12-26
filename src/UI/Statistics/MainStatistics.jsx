@@ -1,28 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import backRow from '../Custom/icon/icon _ back.svg'
-import menu from '../Custom/icon/icon _ menu.svg'
 import classes from './MainStatistics.module.css'
-import searchBlack from '../Custom/icon/icon _ black_search.svg'
-import add from '../Custom/icon/icon _ add2-b.svg'
-import share from '../Custom/icon/icon _ share.svg'
-import stats from '../Custom/icon/_icon _ stats.svg'
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useGetOrganizationsQuery } from '../../BLL/organizationsApi';
 import { useGetStatisticsQuery } from '../../BLL/statisticsApi';
-import search from "../Custom/icon/icon _ search.svg";
-import SearchModal from "../Custom/SearchModal/SearchModal";
-import MyEditor from "../Custom/Editor/MyEditor";
-import { EditorState, convertFromHTML, ContentState } from "draft-js";
-import draftToHtml from "draftjs-to-html"; // Импортируем конвертер
-import { convertToRaw } from "draft-js";
-import Header from "../Custom/Header/Header";
-import CustomSelect from "../Custom/CustomSelect/CustomSelect";
-import HandlerMutation from "../Custom/HandlerMutation";
-import { useSelector } from "react-redux";
-import ModalWindow from '../Custom/ConfirmStrategyToComplited/ModalWindow';
-import addIcon from '../Custom/icon/icon _ add _ blue.svg'
-import AlertDraftIsExists from '../Custom/AlertDraftIsExists/AlertDraftIsExists';
+import Header from "../Custom/CustomHeader/Header";
 import ModalChangeReportDay from './ModalChangeReportDay/ModalChangeReportday';
 import { selectedOrganizationId } from '../../BLL/constans';
 
@@ -75,7 +56,7 @@ const MainStatistics = () => {
         <>
             <div className={classes.wrapper}>
                 <>
-                    <Header create={true} title={'Статистики'}></Header>
+                    <Header title={'Статистики'} onRightIcon={true}>Личный Помощник</Header>
                 </>
 
                 <div className={classes.body}>

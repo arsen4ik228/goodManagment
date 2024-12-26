@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import classes from "./Goal.module.css"
-import Header from "../Custom/Header/Header";
+import Header from "../Custom/CustomHeader/Header";
 import deleteImage from "../Custom/icon/delete.svg"
 import HandlerQeury from "../Custom/HandlerQeury";
 import HandlerMutation from "../Custom/HandlerMutation";
@@ -129,7 +129,7 @@ function NewGoal(props) {
         <>
             <div className={classes.wrapper}>
                 <>
-                    <Header title={'Цели'} create={false}></Header>
+                    <Header title={'Цели'}>Личный помощник</Header>
                 </>
 
                 <div className={classes.body}>

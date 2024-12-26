@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 // import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import classes from './MainStartegy.module.css'
 import { useNavigate } from "react-router-dom";
-import Header from "../Custom/Header/Header";
+import Header from "../Custom/CustomHeader/Header";
 import addIcon from '../Custom/icon/icon _ add _ blue.svg'
 import AlertDraftIsExists from '../Custom/AlertDraftIsExists/AlertDraftIsExists';
 import { useStartegyHook } from '../../hooks/useStrategyHook';
@@ -59,7 +59,7 @@ const MainStrategy = () => {
         <>
             <div className={classes.wrapper}>
                 <>
-                    <Header create={false} title={'Стратегии'}></Header>
+                    <Header title={'Стратегии'}>Личный помощник</Header>
                 </>
 
                 <div className={classes.body}>

@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import iconAdd from '../Custom/icon/icon _ add _ blue.svg'
 import edit from '../Custom/icon/icon _ edit _ grey.svg'
 import classes from './MainPolicy.module.css'
 import add from '../Custom/icon/icon _ add _ 005476.svg'
 import { useNavigate } from "react-router-dom";
-import Header from "../Custom/Header/Header";
+import Header from "../Custom/CustomHeader/Header";
 import sublist from '../Custom/icon/icon _ sublist.svg'
 import leftArrow from '../Custom/icon/icon _ leftarrow.svg'
 import rightArrow from '../Custom/icon/icon _ rightarrow.svg'
@@ -43,6 +42,7 @@ const MainPolicy = () => {
         isSuccessPostPoliciesMutation,
         isErrorPostPoliciesMutation,
         ErrorPostPoliciesMutation,
+
     } = usePolicyHook()
  
 
@@ -96,7 +96,7 @@ const MainPolicy = () => {
         <>
             <div className={classes.wrapper}>
                 <>
-                    <Header create={false} title={'Политики'}></Header>
+                    <Header title={'Политики'} onRightIcon={true} rightIconClick={savePolicy}> Личный Помощник</Header>
                     {/* <div className={classes.iconAdd}>
                         <img src={iconAdd} alt="" onClick={() => savePolicy()} />
                     </div> */}

@@ -43,7 +43,7 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 .body{
     flex: 1 1 auto;
     /* max-height: calc(100vh - 173px); */
-    margin-top: 60px;
+    margin-top: 5px;
     overflow: hidden;
     /* border: 1px solid red; */
 }
@@ -87,7 +87,6 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
     justify-content: flex-start;
     align-items: flex-start;
     font-size: 1.3em;
-    padding: 10px 0;
     list-style-type: circle;
     color: #000000E0;
 
@@ -149,7 +148,7 @@ h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight: inherit;}
 }
 
 .right{
-    height: 98%;
+    height: 99%;
     width: 55vw;
     overflow: auto;
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Header from "../Custom/Header/Header";
+import Header from "../Custom/CustomHeader/Header";
 import classes from "./Objective.module.css";
 import HandlerQeury from "../Custom/HandlerQeury";
 import HandlerMutation from "../Custom/HandlerMutation";
@@ -94,7 +94,7 @@ function Objective(props) {
     useEffect(() => {
         setIsArchive(archiveStrategies.some(item => item.id === selectedStrategyId))
     }, [selectedStrategyId])
-    console.log(isArchive)
+
     useEffect(() => {
 
         if (!Object.keys(currentSpeedGoal).length > 0) return
@@ -119,7 +119,7 @@ function Objective(props) {
         <>
             <div className={classes.wrapper}>
                 <>
-                    <Header create={false} title={'Краткосрочная цель'} />
+                    <Header title={'Краткосрочная цель'}>Личный Помощник</Header>
                 </>
 
                 <div className={classes.inputRow1}>

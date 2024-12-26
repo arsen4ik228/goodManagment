@@ -1,12 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import classes from './AttachStatistics.module.css'
-import Header from '../../Custom/Header/Header'
+import Header from '../../Custom/CustomHeader/Header'
 import addIcon from '../../Custom/icon/icon _ add _ blue.svg'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useGetStatisticsQuery } from '../../../BLL/statisticsApi'
 import { useGetPostIdQuery, useUpdateStatisticsToPostIdMutation } from '../../../BLL/postApi'
 import { compareArraysWithObjects } from '../../../BLL/constans'
 import ConfirmModal from './confrimModal/ConfirmModal'
+import { ButtonContainer } from '../../Custom/CustomButtomContainer/ButtonContainer'
 
 export default function AttachStatistics() {
 
@@ -23,7 +24,7 @@ export default function AttachStatistics() {
         isErrorGetPostId,
         isFetchingGetPostId,
     } = useGetPostIdQuery(
-        {postId},
+        { postId },
         {
             selectFromResult: ({ data, isLoading, isError, isFetching, }) => ({
 
@@ -96,7 +97,7 @@ export default function AttachStatistics() {
     )
 
     const createNewStatistic = () => {
-        navigate(`/${userId}/Statistics/new/${postId}`)
+        navigate(`/Statistics/new/${postId}`)
     }
 
     const openConfirmModal = () => {
@@ -111,13 +112,10 @@ export default function AttachStatistics() {
         <div className={classes.wrapper}>
 
             <>
-                <Header create={false} title={'Прикрепить статистику'}></Header>
+                <Header title={'Прикрепить статистику'}>Личный помощник</Header>
             </>
             <div className={classes.body}>
                 <>
-                    {/* <div className={classes.first}>
-                        <input type={'text'} value={directoryName} onChange={(e) => setDirectoryName(e.target.value)} />
-                    </div> */}
                     <div className={classes.element_srch}>
                         <input
                             type="text"
@@ -166,13 +164,12 @@ export default function AttachStatistics() {
                     </div>
                 </>
             </div>
-            <footer className={classes.inputContainer}>
-                <div className={classes.inputRow2}>
-                    <div>
-                        <button onClick={() => openConfirmModal()}> Сохранить</button>
-                    </div>
-                </div>
-            </footer>
+
+            <ButtonContainer
+                clickFunction={openConfirmModal}
+            >
+                Сохранить
+            </ButtonContainer>
 
             {openConfirmAttachStatistics && (
                 <ConfirmModal

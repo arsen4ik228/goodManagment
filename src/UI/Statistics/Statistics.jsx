@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import classes from './Statistics.module.css'
-import Header from '../Custom/Header/Header'
+import Header from '../Custom/CustomHeader/Header'
 import icon from '../Custom/icon/icon _ downarrow _ 005475.svg'
 import { getDateFormatSatatistic, selectedOrganizationId, } from '../../BLL/constans'
 import { useParams } from 'react-router-dom'
-import { useGetStatisticsIdQuery, useGetStatisticsNewQuery, useUpdateStatisticsMutation } from '../../BLL/statisticsApi'
-import { useGetOrganizationsQuery, useUpdateOrganizationsMutation } from '../../BLL/organizationsApi'
+import { useGetStatisticsIdQuery, useUpdateStatisticsMutation } from '../../BLL/statisticsApi'
+import { useGetOrganizationsQuery,  } from '../../BLL/organizationsApi'
 import saveIcon from '../Custom/icon/icon _ save.svg'
 import Graphic from '../Custom/Graph/Graphic'
 import HandlerMutation from '../Custom/HandlerMutation'
@@ -43,7 +43,6 @@ export default function Statistics() {
     const [count, setCount] = useState(0);
 
     const [organizationId, setOrganizationId] = useState('');
-    const [statisticsToOrganization, setStatisticsToOrganization] = useState([]);
     const [reportDay, setReportDay] = useState('');
     const [reportDayComes, setReportDayComes] = useState('');
     const [postsToOrganization, setPostsToOrganization] = useState([]);
@@ -62,28 +61,6 @@ export default function Statistics() {
         useState(true);
     const [manualErrorResetOrganization, setManualErrorResetOrganization] =
         useState(true);
-
-    // const createdStatiscticId = useSelector(
-    //   (state) => state.statistic.statisticCreatedId
-    // );
-
-    // const {
-    //   statistics = [],
-    //   isLoadingStatistic,
-    //   isFetchingStatistic,
-    //   isErrorStatistic,
-    //   refetch,
-    // } = useGetStatisticsQuery(
-    //   { userId, statisticData: true },
-    //   {
-    //     selectFromResult: ({ data, isLoading, isError, isFetching }) => ({
-    //       statistics: data || [],
-    //       isLoadingStatistic: isLoading,
-    //       isFetchingStatistic: isFetching,
-    //       isErrorStatistic: isError,
-    //     }),
-    //   }
-    // );
 
 
     const {
@@ -163,50 +140,7 @@ export default function Statistics() {
             }
         }
     }, [currentStatistic, posts, organizations])
-
-    //Для открытия созданной статистики
-    // useEffect(() => {
-    //   const obj = statistics.find((item) => item.id === createdStatiscticId);
-    //   if (obj) {
-    //     setOrganizationId(obj?.post?.organization?.id);
-    //     setStatisticId(createdStatiscticId);
-    //   }
-    // }, [isLoadingStatistic]);
-
-    // useEffect(() => {
-    //   if (statistics.length > 0) {
-    //     const array = statistics.filter(
-    //       (item) => item?.post?.organization?.id === organizationId
-    //     );
-    // if(organizationId) {
-    //     const report = organizations.filter(
-    //         (item) => item?.id === organizationId
-    //     );
-
-    //     const arrayPosts = posts.filter(
-    //         (item) => item?.organization?.id === organizationId
-    //     );
-    //     setDisabledReportDayAndSelectStatistics(false);
-    //     setPostsToOrganization(arrayPosts);
-    // setStatisticsToOrganization(array);
-
-    // if (!createdStatiscticId) {
-    //   setStatisticId('');
-    // }
-    //     console.log(arrayPosts)
-    //     setReportDay(report[0]?.reportDay);
-    //     setReportDayComes(report[0]?.reportDay);
-    // }
-    //}
-    // }, [organizationId]);
-
-    // useEffect(() => {
-    //     if (organizations.length > 0) {
-    //         const report = organizations.filter((item) => item?.id === organizationId);
-    //         setReportDay(report[0]?.reportDay);
-    //         setReportDayComes(report[0]?.reportDay);
-    //     }
-    // }, [isLoadingOrganizations, isFetchingOrganizations]);
+  
 
     // Все для начальной страницы
     useEffect(() => {
@@ -1539,12 +1473,9 @@ export default function Statistics() {
 
     return (
         <div className={classes.wrapper}>
-            <div className={classes.header}>
-                <Header create={false} title={'редактировать Статистику'}></Header>
-                <div className={classes.saveIcon}>
-                    <img src={saveIcon} alt='' onClick={() => save()} />
-                </div>
-            </div>
+            <>
+                <Header title={'редактировать Статистику'} onRightIcon={true} rightIcon={saveIcon} rightIconClick={save}>Личный Помощник</Header>
+            </>
             {!openMenu && (
                 <div className={classes.body}>
                     <>
@@ -1594,6 +1525,7 @@ export default function Statistics() {
                             </select>
                             <img
                                 src={icon}
+                                alt='icon'
                                 style={{ transform: 'rotate(-90deg)' }}
                                 onClick={handleArrowRightClick}
                             />

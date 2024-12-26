@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import classes from './Strategy.module.css';
 import { useParams } from "react-router-dom";
-import Header from "../Custom/Header/Header";
+import Header from "../Custom/CustomHeader/Header";
 import HandlerMutation from "../Custom/HandlerMutation";
 import ModalWindow from '../Custom/ConfirmStrategyToComplited/ModalWindow';
 import CustomtextArea from '../Custom/CustomTextarea/CustomtextArea'
@@ -106,7 +105,7 @@ const Strategy = () => {
         <>
             <div className={classes.wrapper}>
                 <>
-                    <Header create={false} title={'Редактировать стратегию'}></Header>
+                    <Header title={'Редактировать стратегию'}>Личный Помощник</Header>
                 </>
 
                 <div className={classes.inputRow1}>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useMemo } from 'react'
-import Header from '../../Custom/Header/Header'
+import Header from '../../Custom/CustomHeader/Header'
 import classes from "./CreatePolicyDirectory.module.css"
 import { useNavigate } from 'react-router-dom'
 import HandlerMutation from '../../Custom/HandlerMutation'
@@ -79,7 +79,7 @@ export default function CreatePolicyDirectory() {
         <>
             <div className={classes.wrapper}>
                 <>
-                    <Header create={false} title={' Новая подборка политик'}></Header>
+                    <Header title={'Новая подборка политик'}>Личный помощник</Header>
                 </>
 
                 <div className={classes.body}>

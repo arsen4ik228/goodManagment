@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react'
-import Header from '../../Custom/Header/Header'
+import Header from '../../Custom/CustomHeader/Header'
 import classes from "./EditPolicyDirectory.module.css"
 import { useNavigate, useParams } from 'react-router-dom'
 import HandlerMutation from '../../Custom/HandlerMutation'
@@ -109,7 +109,7 @@ export default function EditPolicyDirectories() {
         <>
             <div className={classes.wrapper}>
                 <>
-                    <Header create={false} title={' Новая подборка политик'}></Header>
+                    <Header title={'Редактировать подборку политик'}>Личный помощник</Header>
                 </>
 
                 <div className={classes.body}>

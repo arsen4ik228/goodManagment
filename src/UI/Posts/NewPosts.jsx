@@ -1,33 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import backRow from './icon/icon _ back.svg'
-import menu from './icon/icon _ menu.svg'
 import classes from './NewPosts.module.css';
 import attachpolicy from './icon/icon _ attach policy.svg'
-import searchBlack from './icon/icon _ black_search.svg'
-import add from './icon/icon _ add2-b.svg'
-import sublist from '../Custom/icon/icon _ sublist.svg'
-import share from './icon/icon _ share.svg'
-import policy from './icon/icon _ attach policy.svg'
-import stats from './icon/_icon _ stats.svg'
+
 import {
     useGetPostNewQuery,
     usePostPostsMutation
 } from "../../BLL/postApi";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import HandlerMutation from "../Custom/HandlerMutation";
 import HandlerQeury from "../Custom/HandlerQeury.jsx";
-import Header from "../Custom/Header/Header";
+import Header from "../Custom/CustomHeader/Header";
 import blackStatistic from "../Custom/icon/blackStatistic.svg";
 import AttachPolicy from '../Custom/AttachPolicy/AttachPolicy.jsx';
 import AlertSavePost from '../Custom/AlertSavePost/AlertSavePost.jsx';
 import { selectedOrganizationId } from '../../BLL/constans.js';
+import { ButtonContainer } from '../Custom/CustomButtomContainer/ButtonContainer.jsx';
 
 
 const Posts = () => {
 
     const navigate = useNavigate()
-    const { userId } = useParams()
 
     const [postName, setPostName] = useState()
     const [divisionName, setDivisionName] = useState('')
@@ -150,7 +142,7 @@ const Posts = () => {
             <div className={classes.wrapper}>
 
                 <>
-                    <Header title={'Создание нового поста'} create={false}></Header>
+                    <Header title={'Создание нового поста'}>Личный помощник</Header>
                 </>
 
                 <div className={classes.body}>
@@ -339,13 +331,11 @@ const Posts = () => {
 
                 </div>
 
-                <footer className={classes.inputContainer}>
-                    <div className={classes.inputRow2}>
-                        <div>
-                            <button onClick={() => savePosts()}> СОХРАНИТЬ</button>
-                        </div>
-                    </div>
-                </footer>
+                <ButtonContainer
+                    clickFunction={savePosts}
+                >
+                    СОХРАНИТЬ
+                </ButtonContainer>
             </div>
             {modalPolicyOpen &&
                 <AttachPolicy

@@ -9,10 +9,7 @@
 
 .body {
     flex: 1 1 auto;
-    /* max-height: calc(100vh - 173px); */
-    margin-top: 60px;
-    /* overflow: hidden; */
-    /* border: 1px solid red; */
+
 }
 
 .bodyContainer {
@@ -39,21 +36,16 @@
 .selectList {
     overflow-y: auto;
     font-size: 1.3em;
-    /* height: 100%; */
-    /* padding-bottom: 10px; */
+
     width: 100%;
 
     li {
-        /* border: #005475 1px solid; */
         display: flex;
         /* width: 60vw; */
         padding: 0.5rem 0;
         justify-content: space-between;
         align-items: center;
 
-        div {
-            /* padding-left: 5px; */
-        }
 
         >input {
             height: 1.2em;
