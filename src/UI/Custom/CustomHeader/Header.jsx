@@ -13,6 +13,14 @@ function Header({
     offLeftIcon,
     leftIcon,
     leftIconClick,
+
+    onRightIcon,
+    rightIcon,
+    rightIconClick,
+
+    onRight2Icon,
+    right2Icon,
+    right2IconClick
 }) {
 
     const navigate = useNavigate();
@@ -24,29 +32,36 @@ function Header({
         }
         : {}
 
+
     const iconClick = (section) => {
-        switch (section) {
-            case 'left': {
-                if (!leftIconClick)
-                    navigate(-1)
-                else if (typeof leftIconClick === 'function')
-                    leftIconClick()
-                else
-                    navigate(leftIconClick)
-                break
+        const actions = {
+            left: {
+                func: () => navigate(-1),
+                alt: leftIconClick
+            },
+            right: {
+                func: () => navigate('new'),
+                alt: rightIconClick
+            },
+            right2: {
+                func: () => { },
+                alt: right2IconClick
             }
-            case 'right': {
-                
-                break
-            }
-            default: break
-        }
+        };
 
-    }
+        const { func, alt } = actions[section] || {};
 
-    const addNew = () => {
-        navigate('new')
-    }
+        if (!alt)
+            func()
+        else if (typeof alt === 'function')
+            alt()
+        else
+            navigate(alt);
+
+    };
+
+
+
     return (
         <>
             <div className={classes.headContainer}>
@@ -83,18 +98,24 @@ function Header({
                                 )}
                             </div>
                         </div>
-                        <div className={classes.iconContainer}>
-                            <img
-                                src={add}
-                                alt="add"
-                            />
-                        </div>
-                        <div className={classes.iconContainer}>
-                            <img
-                                src={add}
-                                alt="add"
-                            />
-                        </div>
+                        {onRight2Icon && (
+                            <div className={classes.iconContainer}>
+                                <img
+                                    src={right2Icon}
+                                    alt="right2Icon"
+                                    onClick={() => iconClick('right2')}
+                                />
+                            </div>
+                        )}
+                        {onRightIcon && (
+                            <div className={classes.iconContainer}>
+                                <img
+                                    src={rightIcon || add}
+                                    alt="add"
+                                    onClick={() => iconClick('right')}
+                                />
+                            </div>
+                        )}
 
                     </div>
                 </div>

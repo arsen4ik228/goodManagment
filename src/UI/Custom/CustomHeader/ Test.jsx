@@ -13,9 +13,11 @@ export default function Test() {
         <div>
             <Header
                 title={'политики'}
-                avatar={icon}
 
-                leftIconClick={click}
+                offLeftIcon={true}
+
+                onRightIcon={true}
+                rightIcon={icon}
             >
                 Чаты
             </Header>
