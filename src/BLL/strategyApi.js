@@ -36,9 +36,12 @@ export const strategyApi = createApi({
                     strategy.state !== 'Активный' && strategy.state !== 'Черновик'
                 );
 
+                const activeStrategyId = activeAndDraftStrategies.find(item => item.state === 'Активный')?.id
+
                 return {
                     activeAndDraftStrategies: activeAndDraftStrategies,
                     archiveStrategies: otherStrategies,
+                    activeStrategyId: activeStrategyId,
                 };
             },
 
@@ -69,11 +72,15 @@ export const strategyApi = createApi({
             // Обновляем теги, чтобы перезагрузить getStrategiesId
             invalidatesTags: (result, error, { strategyId }) => result ? [{ type: "Strateg1", id: strategyId }, { type: "Strateg", id: "LIST" }] : []
         }),
+
         postStrategy: build.mutation({
             query: (body) => ({
                 url: `strategies/new`,
                 method: "POST",
-                body,
+                body: {
+                    content: ' ',
+                    organizationId: selectedOrganizationId,
+                },
             }),
             transformResponse: (response) => ({
                 id: response.id

@@ -1,22 +1,25 @@
-import { useGetStrategyQuery, usePostStrategyMutation } from "../BLL/strategyApi";
+import { skip } from "draft-js/lib/DefaultDraftBlockRenderMap";
+import { useGetStrategyIdQuery, useGetStrategyQuery, usePostStrategyMutation, useUpdateStrategyMutation } from "../BLL/strategyApi";
 
 
-export const useStartegyHook = () => {
+export const useStartegyHook = (strategyId) => {
 
 
     const {
         activeAndDraftStrategies = [],
         archiveStrategies = [],
-        isLoadingStrateg,
-        isErrorStrateg,
+        activeStrategyId,
+        isLoadingStrategy,
+        isErrorStrategy,
     } = useGetStrategyQuery(
         undefined,
         {
             selectFromResult: ({ data, isLoading, isError }) => ({
                 archiveStrategies: data?.archiveStrategies || [],
                 activeAndDraftStrategies: data?.activeAndDraftStrategies || [],
-                isLoadingStrateg: isLoading,
-                isErrorStrateg: isError,
+                activeStrategyId: data?.activeStrategyId,
+                isLoadingStrategy: isLoading,
+                isErrorStrategy: isError,
             }),
         }
     );
@@ -31,17 +34,53 @@ export const useStartegyHook = () => {
         },
     ] = usePostStrategyMutation();
 
+        const {
+            currentStrategy = {},
+            isLoadingStrategyId,
+            isErrorStrategyId
+        } = useGetStrategyIdQuery({ strategyId },
+            {
+                selectFromResult: ({ data, isLoading, isError, isFetching }) => ({
+                    currentStrategy: data?.currentStrategy || [],
+                    isLoadingStrategyId: isLoading,
+                    isErrorStrategyId: isError,
+                }),
+                skip: !strategyId, 
+            }
+        );
+    
+        const [
+            updateStrategy,
+            {
+                isLoading: isLoadingUpdateStrategyMutation,
+                isSuccess: isSuccessUpdateStrategyMutation,
+                isError: isErrorUpdateStrategyMutation,
+                error: ErrorStrategyMutation,
+            },
+        ] = useUpdateStrategyMutation();
+
 
     return {
         activeAndDraftStrategies,
         archiveStrategies,
-        isLoadingStrateg,
-        isErrorStrateg,
+        activeStrategyId,
+        isLoadingStrategy,
+        isErrorStrategy,
 
         postStrategy,
         isLoadingPostStrategyMutation,
         isSuccessPostStrategyMutation,
         isErrorPostStrategyMutation,
         errorPostStrategyMutation,
+
+        currentStrategy,
+        isLoadingStrategyId,
+        isErrorStrategyId,
+
+        updateStrategy,
+        isLoadingUpdateStrategyMutation,
+        isSuccessUpdateStrategyMutation,
+        isErrorUpdateStrategyMutation,
+        ErrorStrategyMutation,
     }
 }

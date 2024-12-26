@@ -1,148 +1,87 @@
 import React, { useEffect, useState } from 'react';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import backRow from '../Custom/icon/icon _ back.svg'
-import menu from '../Custom/icon/icon _ menu.svg'
 import classes from './Strategy.module.css';
-import searchBlack from '../Custom/icon/icon _ black_search.svg'
-import add from '../Custom/icon/icon _ add2-b.svg'
-import share from '../Custom/icon/icon _ share.svg'
-import stats from '../Custom/icon/_icon _ stats.svg'
-import { useGetStrategyQuery, useGetStrategyIdQuery, useUpdateStrategyMutation, useGetStrategyNewQuery } from "../../BLL/strategyApi";
-import { useNavigate, useParams } from "react-router-dom";
-import search from "../Custom/icon/icon _ search.svg";
-import MyEditor from "../Custom/Editor/MyEditor";
-import { EditorState, convertFromHTML, ContentState } from "draft-js";
-import draftToHtml from "draftjs-to-html"; // Импортируем конвертер
-import { convertToRaw } from "draft-js";
+import { useGetStrategyIdQuery, useUpdateStrategyMutation, } from "../../BLL/strategyApi";
+import { useParams } from "react-router-dom";
 import Header from "../Custom/Header/Header";
 import HandlerMutation from "../Custom/HandlerMutation";
-import { useSelector } from "react-redux";
 import ModalWindow from '../Custom/ConfirmStrategyToComplited/ModalWindow';
-import { keys } from 'draft-js/lib/DefaultDraftBlockRenderMap';
+import CustomtextArea from '../Custom/CustomTextarea/CustomtextArea'
+import { ButtonContainer } from '../Custom/CustomButtomContainer/ButtonContainer'
+import { useStartegyHook } from '../../hooks/useStrategyHook';
+import HandlerQeury from '../Custom/HandlerQeury';
+import { notEmpty } from '../../BLL/constans';
 
 const Strategy = () => {
 
-    const { userId, strategyId } = useParams()
+    const { strategyId } = useParams()
 
-    const navigate = useNavigate()
-    const [inputValue, setInputValue] = useState('');
     const [valueDate, setValueDate] = useState('');
-    const [isModalSearchOpen, setModalSearchOpen] = useState(false);
-    const [selectedId, setSelectedId] = useState('');
-    const [editorState, setEditorState] = useState(EditorState.createEmpty());
-    const [htmlContent, setHtmlContent] = useState();
-    const [isState, setIsState] = useState('');
-    const [strategyToOrganizations, setStrategyToOrganizations] = useState([]);
-    const [extractedOrganizations, setExtractedOrganizations] = useState([]);
+    const [editorState, setEditorState] = useState();
+    const [state, setState] = useState('');
 
     const [openModal, setOpenModal] = useState(false)
-    const [activeStrategDB, setActiveStrategDB] = useState();
-
-    // Доступ к локальному Redux стейту
-    const selectedOrganizationId = useSelector(
-        (state) => state.strateg.selectedOrganizationId
-    );
-    const selectedStrategyId = useSelector(
-        (state) => state.strateg.selectedStrategyId
-    );
 
     const {
-        currentStrategy = [],
-        // organizations = [],
-    } = useGetStrategyIdQuery({strategyId: strategyId},
-        {
-            selectFromResult: ({ data, isLoading, isError, isFetching }) => ({
-                currentStrategy: data?.currentStrategy || [],
-            }),
-        }
-    );
+        currentStrategy,
+        isLoadingStrategyId,
+        isErrorStrategyId,
 
-    const [
+        activeStrategyId,
+
         updateStrategy,
-        {
-            isLoading: isLoadingUpdateStrategyMutation,
-            isSuccess: isSuccessUpdateStrategyMutation,
-            isError: isErrorUpdateStrategyMutation,
-            error: ErrorStrategyMutation,
-        },
-    ] = useUpdateStrategyMutation();
+        isLoadingUpdateStrategyMutation,
+        isSuccessUpdateStrategyMutation,
+        isErrorUpdateStrategyMutation,
+        ErrorStrategyMutation,
 
+    } = useStartegyHook(strategyId)
 
-
-    useEffect(() => {
-            const rawContent = draftToHtml(
-            convertToRaw(editorState.getCurrentContent())
-        );
-        setHtmlContent(rawContent);
-    }, [editorState]);
-
-    useEffect(() => {
-        if (currentStrategy.content && Object.keys(currentStrategy).length>0) {
-            const { contentBlocks, entityMap } = convertFromHTML(
-                currentStrategy.content
-            );
-            const contentState = ContentState.createFromBlockArray(
-                contentBlocks,
-                entityMap
-            );
-            const oldEditorState = EditorState.createWithContent(contentState);
-            setEditorState(oldEditorState);
-        }
-    }, [currentStrategy.content]);
-
-
-    useEffect(() => {
-        setIsState(currentStrategy.state);
-        setValueDate(currentStrategy.dataActive)
-    }, [currentStrategy.state, currentStrategy.dataActive]);
-
-
-    console.log(activeStrategDB)
 
     const saveUpdateStrategy = async () => {
-        console.log(strategyId, currentStrategy.state)
-        if (currentStrategy.state)
+
+        const Data = {}
+
+        if (currentStrategy.state !== state)
+            Data.state = state
+        if (currentStrategy.content !== editorState)
+            Data.content = editorState
+        if (notEmpty(Data)) {
             await updateStrategy({
                 _id: strategyId,
-                state: currentStrategy.state !== isState ? isState : undefined,
-                content: htmlContent,
+                ...Data,
             })
                 .unwrap()
                 .then(() => {
                     // setTimeout(() => navigate(-1), 800);
+                    setOpenModal(false)
                 })
                 .catch((error) => {
                     console.error("Ошибка:", JSON.stringify(error, null, 2)); // выводим детализированную ошибку
                 });
-    };
+        };
+    }
 
 
     const save = () => {
-        console.log("save");
-        // console.log(state);
-        console.log(currentStrategy.state);
-        console.log(activeStrategDB);
-        console.log(isState)
         if (
-            isState === "Активный" &&
-            currentStrategy.state === "Черновик" &&
-            activeStrategDB
-        ) {
-            setOpenModal(true);
-        } else {
-            saveUpdateStrategy();
-        }
+            state === "Активный"
+            && currentStrategy.state === "Черновик"
+            && activeStrategyId
+        )
+            setOpenModal(true)
+        else
+            saveUpdateStrategy()
     };
 
     const btnYes = async () => {
         await updateStrategy({
-            _id: activeStrategDB,
+            _id: activeStrategyId,
             state: "Завершено",
         })
             .unwrap()
             .then(() => {
                 saveUpdateStrategy();
-                setOpenModal(false)
             })
             .catch((error) => {
                 // При ошибке также сбрасываем флаги
@@ -152,33 +91,16 @@ const Strategy = () => {
     };
 
     const btnNo = async () => {
-        console.log('оооо')
-        const Data = [];
-        if (htmlContent !== currentStrategy.content) {
-            Data.content = htmlContent;
-        }
-        if (Data.content) {
-            await updateStrategy({
-                _id: strategyId,
-                ...Data,
-            })
-                .unwrap()
-                .then(() => {
-                    // saveUpdateStrategy();
-                    setOpenModal(false)
-                    // setTimeout(() => navigate(-1), 800);
-                })
-                .catch((error) => {
-                    // При ошибке также сбрасываем флаги
-                    //   setManualErrorReset(false);
-                    console.error("Ошибка:", JSON.stringify(error, null, 2));
-                });
-        }
-        else {
-            setOpenModal(false)
-        }
+        saveUpdateStrategy()
     };
 
+    useEffect(() => {
+        if (notEmpty(currentStrategy)) {
+            setEditorState(currentStrategy.content);
+            setState(currentStrategy.state !== state ? currentStrategy.state : state)
+            setValueDate(currentStrategy.dataActive !== valueDate ? currentStrategy.dataActive : valueDate)
+        }
+    }, [currentStrategy]);
 
 
     return (
@@ -196,9 +118,9 @@ const Strategy = () => {
                         <select
                             name={'mySelect'}
                             disabled={currentStrategy.state === 'Завершено'}
-                            value={isState} onChange={(e) => setIsState(e.target.value)}
+                            value={state} onChange={(e) => setState(e.target.value)}
                         >
-                            {currentStrategy.state == 'Черновик' && (
+                            {currentStrategy.state === 'Черновик' && (
                                 <option value={'Черновик'}>Черновик</option>
                             )}
                             {currentStrategy.state !== 'Завершено' && (
@@ -215,24 +137,27 @@ const Strategy = () => {
                 </div>
 
                 <div className={classes.body}>
-                    <div className={classes.editorContainer}>
-                        <MyEditor
+                    <div className={classes.textareaContainer}>
+                        <CustomtextArea
+                            content={editorState}
+                            setContent={setEditorState}
+                            disabled={currentStrategy.state === 'Завершено'}
+                        ></CustomtextArea>
+                        {/* <MyEditor
                             editorState={editorState}
-                            setEditorState={currentStrategy.state == 'Завершено' ? '' : setEditorState}
-                        />
+                            setEditorState={currentStrategy.state === 'Завершено' ? '' : setEditorState}
+                        /> */}
                     </div>
                 </div>
 
 
                 {currentStrategy.state !== 'Завершено' && (
-                    <footer className={classes.inputContainer}>
-                    <div className={classes.inputRow2}>
-                        <div>
-                            <button onClick={() => save()}> CОХРАНИТЬ</button>
-                        </div>
-                    </div>
-                </footer>
-            )}
+                    <ButtonContainer
+                        clickFunction={save}
+                    >
+                        сохранить
+                    </ButtonContainer>
+                )}
             </div>
 
             {openModal && (
@@ -246,12 +171,21 @@ const Strategy = () => {
                 ></ModalWindow>
             )}
 
+            <HandlerQeury
+                Loading={isLoadingStrategyId}
+                Error={isErrorStrategyId}
+            />
+
             <HandlerMutation
                 Loading={isLoadingUpdateStrategyMutation}
                 Error={isErrorUpdateStrategyMutation}
                 Success={isSuccessUpdateStrategyMutation}
                 textSuccess={"Cтратегия успешно обновлена."}
-            // textError={ErrorStrategyMutation?.data?.errors[0]?.errors}
+                textError={
+                    ErrorStrategyMutation?.data?.errors?.[0]?.errors?.[0]
+                        ? ErrorStrategyMutation.data.errors[0].errors[0]
+                        : ErrorStrategyMutation?.data?.message
+                }
             ></HandlerMutation>
 
         </>

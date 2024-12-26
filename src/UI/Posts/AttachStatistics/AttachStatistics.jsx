@@ -5,7 +5,7 @@ import addIcon from '../../Custom/icon/icon _ add _ blue.svg'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useGetStatisticsQuery } from '../../../BLL/statisticsApi'
 import { useGetPostIdQuery, useUpdateStatisticsToPostIdMutation } from '../../../BLL/postApi'
-import { arraysEqualWithObjects } from '../../../BLL/constans'
+import { compareArraysWithObjects } from '../../../BLL/constans'
 import ConfirmModal from './confrimModal/ConfirmModal'
 
 export default function AttachStatistics() {
@@ -100,7 +100,7 @@ export default function AttachStatistics() {
     }
 
     const openConfirmModal = () => {
-        if (arraysEqualWithObjects(statisticsIncludedPost, selectedStatistics)) return
+        if (compareArraysWithObjects(statisticsIncludedPost, selectedStatistics)) return
         setOpenConfirmAttachStatistics(true)
     }
 

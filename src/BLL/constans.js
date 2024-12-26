@@ -16,6 +16,15 @@ export const resizeTextarea = (id) => {
   }
 };
 
+export const notEmpty = (object) => {
+  if (Array.isArray(object))
+    return object.length > 0
+  else if (typeof object === 'object' && object !== null)
+    return Object.keys(object).length > 0
+
+  return false
+}
+
 
 export const transformArraiesForRequset = (array) => {
   const updatedArray = array.map((item, index) => {
@@ -72,7 +81,7 @@ export const getDateFormatSatatistic = (date, typeGraphic) => {
   });
 };
 
-export function arraysEqualWithObjects(arr1, arr2) {
+export function compareArraysWithObjects(arr1, arr2) {
   if (arr1.length !== arr2.length) {
     return false;
   }

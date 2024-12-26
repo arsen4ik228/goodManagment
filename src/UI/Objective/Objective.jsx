@@ -92,9 +92,9 @@ function Objective(props) {
     console.warn(activeAndDraftStrategies[0])
 
     useEffect(() => {
-        setIsArchive(archiveStrategies.find(item => item.id === selectedStrategyId))
+        setIsArchive(archiveStrategies.some(item => item.id === selectedStrategyId))
     }, [selectedStrategyId])
-
+    console.log(isArchive)
     useEffect(() => {
 
         if (!Object.keys(currentSpeedGoal).length > 0) return
