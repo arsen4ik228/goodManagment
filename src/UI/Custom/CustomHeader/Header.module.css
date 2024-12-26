@@ -4,7 +4,7 @@
     z-index: 1000;
 }
 
-.headRow{
+.headRow {
     display: flex;
     align-items: flex-start;
     height: 50px;
@@ -15,54 +15,101 @@
     /*    margin-right: 15px;*/
     /*}*/
 }
-.blueLine{
+
+.blueLine {
     height: 10px;
     width: 100%;
     background-color: #005475;
 }
-.whiteLine{
+
+.whiteLine {
 
     width: 100%;
+    height: 40px;
 
     display: flex;
+    justify-content: space-between;
+
+
+    img {
+        width: 24px;
+        height: 24px;
+    }
+}
+
+.iconContainer {
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 5px;
+
 }
 
 
-.headElem{
+.headElem {
+
+    width: 55%;
+    flex: 1 1 auto;
+
     display: flex;
-    flex: 0 1 auto;
-    padding: 0 0 0 1px;
     align-items: center;
     justify-content: flex-start;
+
+    border: 1px solid green;
+    padding: 0;
+
 }
-.menu{
+
+.userAvatar {}
+
+
+.txt {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+
+
+    white-space: nowrap;
+
+}
+
+.headText {
+    width: 100%;
+    overflow: hidden;
+
+
+    font-size: 20px;
+    font-weight: 600;
+    color: #005475;
+    text-overflow: ellipsis;
+
+}
+
+.bottomText {
+    width: 100%;
+    overflow: hidden;
+
+
+    font-size: 14px;
+    font-weight: 400;
+    text-transform: uppercase;
+    color:    #005475;
+    text-overflow: ellipsis;
+
+}
+
+.menu {
     display: flex;
     padding: 0 10px 0 0;
     align-items: center;
 }
-.icon{
+
+.icon {
     margin: 0 15px;
-}
-
-.txt{
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    align-items: flex-start;
-    background: url("../icon/messendger _ avatar.svg") 0 40% no-repeat;
-    padding: 0 0 0 30px;
-}
-
-.headText{
-    color: #005475;
-    font-size: 20px;
-    font-weight: 600;
-
-}
-
-.sectionName{
-    color: #005475;
-    font-size: 14px;
-    font-weight: 600;
-    text-transform: uppercase;
 }

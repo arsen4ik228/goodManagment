@@ -25,7 +25,8 @@ import ProjectArchive from './UI/Projects/Archive/ProjectArchive.jsx';
 import MainStatistics from './UI/Statistics/MainStatistics.jsx';
 import Statistics from './UI/Statistics/Statistics.jsx';
 import NewStatistic from './UI/Statistics/NewStatistic.jsx';
-import Header from './UI/Custom/Header/Header.jsx';
+import Test from './UI/Custom/CustomHeader/ Test.jsx';
+
 
 function App() {
     return (
@@ -36,7 +37,7 @@ function App() {
                 <Route path="/*"
                     element={
                         <Routes>
-                            <Route path='test' element={<Header></Header>}></Route>
+                            <Route path='test' element={<Test/>}></Route>
                             <Route path="Main" element={<Main />} />
 
                             <Route path="Chat" element={<Chat />} />
