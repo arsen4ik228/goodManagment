@@ -5,13 +5,12 @@ import { useGetOrganizationsQuery } from '../../BLL/organizationsApi';
 import { useGetStatisticsQuery } from '../../BLL/statisticsApi';
 import Header from "../Custom/CustomHeader/Header";
 import ModalChangeReportDay from './ModalChangeReportDay/ModalChangeReportday';
-import { selectedOrganizationId } from '../../BLL/constans';
+import { notEmpty, selectedOrganizationId } from '../../BLL/constans';
 
 const MainStatistics = () => {
 
     const navigate = useNavigate()
 
-    const [selectedOrg, setSelectedOrg] = useState()
     const [modalOpen, setModalOpen] = useState(false)
     const [reportDay, setReportDay] = useState()
 
@@ -48,7 +47,7 @@ const MainStatistics = () => {
     }
 
     useEffect(() => {
-        if (!Object.keys(organizations).length > 0) return 
+        if (!notEmpty(organizations)) return 
         setReportDay(organizations?.find(item => item.id === selectedOrganizationId).reportDay)
     }, [organizations])
 
@@ -108,7 +107,6 @@ const MainStatistics = () => {
             {modalOpen && (
                 <ModalChangeReportDay
                     setModalOpen={setModalOpen}
-                    organizationId={selectedOrg}
                     parenReportDay={reportDay}
                 >
                 </ModalChangeReportDay>

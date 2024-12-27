@@ -189,7 +189,7 @@
         width: 50%;
         text-align: center;
         height: 100%;
-        font-size: 1.5rem;
+        font-size: 1.3rem;
         background-color: #f0f8ff;
     }
 }
@@ -209,6 +209,7 @@
     color: #005475;
     width: 120px;
     text-align: center;
+    font-size: 1.2rem;
 
 }
 
@@ -220,6 +221,8 @@
     color: red;
     width: 100px;
     text-align: center;
+    font-size: 1.2rem;
+
 
 }
 

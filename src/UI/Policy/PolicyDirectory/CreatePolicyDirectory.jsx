@@ -127,9 +127,9 @@ export default function CreatePolicyDirectory() {
                                                 style={{ color: item?.state === 'Активный' ? 'black' : 'grey' }}
                                                 onClick={() => handleSelectItem(item?.id)}
                                             >
-                                                <span>
+                                                <div>
                                                     {item?.policyName}
-                                                </span>
+                                                </div>
                                                 <input checked={selectedId.includes(item?.id)} type="checkbox" />
                                             </li>
                                         ))}
@@ -161,9 +161,9 @@ export default function CreatePolicyDirectory() {
                                                 style={{ color: item?.state === 'Активный' ? 'black' : 'grey' }}
                                                 onClick={() => handleSelectItem(item?.id)}
                                             >
-                                                <span>
+                                                <div>
                                                     {item?.policyName}
-                                                </span>
+                                                </div>
                                                 <input checked={selectedId.includes(item?.id)} type="checkbox" />
                                             </li>
                                         ))}

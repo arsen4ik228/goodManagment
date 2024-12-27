@@ -30,7 +30,7 @@
     justify-content: center;
     display: flex;
     color: #005475;
-    padding-left: 0.5em;
+    padding: 0 10px;
     border-right: 1px solid #005475;
     height: 98%;
 }
@@ -39,7 +39,7 @@
     padding: 5px;
     padding-top: 12px;
     color: #005475;
-    font-size: 1.6rem;
+    font-size: 1.4rem;
     /* border: 1px solid red; */
 
     >div{
@@ -109,7 +109,9 @@
 .right{
     height: 98%;
     width: 55vw;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0 1%;
 }
 
 

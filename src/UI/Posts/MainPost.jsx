@@ -2,7 +2,8 @@ import React from 'react';
 import classes from './MainPost.module.css'
 import { useNavigate } from "react-router-dom";
 import Header from "../Custom/CustomHeader/Header";
-import { useGetPostsQuery } from '../../BLL/postApi';
+import { usePostsHook } from '../../hooks/usePostsHook';
+import HandlerQeury from '../Custom/HandlerQeury';
 
 
 const MainPost = () => {
@@ -10,17 +11,10 @@ const MainPost = () => {
     const navigate = useNavigate()
 
     const {
-        data = [],
+        allPosts,
         isLoadingGetPosts,
         isErrorGetPosts,
-    } = useGetPostsQuery(undefined, {
-        selectFromResult: ({ data, isLoading, isError }) => ({
-            data: data || [],
-            isLoadingGetPosts: isLoading,
-            isErrorGetPosts: isError,
-        }),
-    });
-    console.log(data)
+    } = usePostsHook()
 
     return (
         <>
@@ -37,7 +31,7 @@ const MainPost = () => {
                             <div className={classes.right}>
                                 <>
                                     <ul className={classes.selectList}>
-                                        {data?.map((item, index) => (
+                                        {allPosts?.map((item, index) => (
                                             <li
                                                 key={index}
                                                 onClick={() => navigate(item.id)}
@@ -52,6 +46,11 @@ const MainPost = () => {
                     </>
                 </div>
             </div>
+
+            <HandlerQeury
+                Loading={isLoadingGetPosts}
+                Error={isErrorGetPosts}
+            />
         </>
     );
 };

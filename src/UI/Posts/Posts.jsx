@@ -1,13 +1,7 @@
 import React, { useState, useEffect } from 'react';
-
 import classes from './Posts.module.css';
-
 import stats from './icon/_icon _ stats.svg'
 import attachpolicy from './icon/icon _ attach policy.svg'
-import {
-    useGetPostIdQuery,
-    useUpdatePostsMutation,
-} from "../../BLL/postApi";
 import { useNavigate, useParams } from "react-router-dom";
 import HandlerMutation from "../Custom/HandlerMutation";
 import HandlerQeury from "../Custom/HandlerQeury.jsx";
@@ -15,6 +9,7 @@ import Header from "../Custom/CustomHeader/Header";
 import AttachPolicy from '../Custom/AttachPolicy/AttachPolicy.jsx';
 import { ButtonContainer } from '../Custom/CustomButtomContainer/ButtonContainer.jsx';
 import { notEmpty } from '../../BLL/constans.js';
+import { usePostsHook } from '../../hooks/usePostsHook.js';
 
 
 const Posts = () => {
@@ -27,13 +22,11 @@ const Posts = () => {
     const [divisionName, setDivisionName] = useState(null);
     const [parentDivisionName, setParentDivisionName] = useState(null)
     const [parentId, setParentId] = useState(null)
-    const [displayOrganizationName, setDisplayOrganizationName] = useState('')
     const [product, setProduct] = useState(null);
     const [isProductChanges, setIsProductChanges] = useState(false);
     const [purpose, setPurpose] = useState(null);
     const [isPurposeChanges, setIsPurposeChanges] = useState(false);
     const [worker, setWorker] = useState(null);
-    const [organization, setOrganization] = useState(null);
     const [policy, setPolicy] = useState(null)
 
     const [currentPolicyName, setCurrentPolicyName] = useState(null)
@@ -44,41 +37,29 @@ const Posts = () => {
     const [manualErrorReset, setManualErrorReset] = useState(false);
 
     const {
-        currentPost = {},
-        workers = [],
-        organizations = [],
-        posts = [],
-        parentPost = {},
-        policiesActive = [],
-        statisticsIncludedPost = [],
+        currentPost,
+        workers,
+        posts,
+        parentPost,
+        policiesActive,
+        statisticsIncludedPost,
         isLoadingGetPostId,
         isErrorGetPostId,
         isFetchingGetPostId,
-    } = useGetPostIdQuery(
-        { postId },
-        {
-            selectFromResult: ({ data, isLoading, isError, isFetching }) => ({
-                currentPost: data?.currentPost || {},
-                workers: data?.workers || [],
-                organizations: data?.organizations || [],
-                parentPost: data?.parentPost || {},
-                posts: data?.posts || [],
-                policiesActive: data?.policiesActive || [],
-                statisticsIncludedPost: data?.statisticsIncludedPost || [],
-                isLoadingGetPostId: isLoading,
-                isErrorGetPostId: isError,
-                isFetchingGetPostId: isFetching,
-            }),
-        }
-    );
-    console.log(currentPost, workers, organizations, posts, parentPost, statisticsIncludedPost, policiesActive)
+
+        updatePost,
+        isLoadingUpdatePostMutation,
+        isSuccessUpdatePostMutation,
+        isErrorUpdatePostMutation,
+        ErrorUpdatePostMutation
+    } = usePostsHook(postId)
+
 
     useEffect(() => {
         if (currentPost && notEmpty(currentPost)) {
             setPostName(currentPost?.postName);
             setDivisionName(currentPost?.divisionName);
             setWorker(currentPost?.user?.id);
-            setOrganization(currentPost?.organization?.id);
             setParentId(currentPost?.parentId);
             setPolicy(currentPost?.policy?.id);
         }
@@ -96,16 +77,6 @@ const Posts = () => {
         }
     }, [parentPost])
 
-    const [
-        updatePost,
-        {
-            isLoading: isLoadingUpdatePostMutation,
-            isSuccess: isSuccessUpdatePostMutation,
-            isError: isErrorUpdatePostMutation,
-            error: ErrorUpdatePostMutation
-        },
-    ] = useUpdatePostsMutation();
-
     const reset = () => {
         setPostName(null);
         setDivisionName(null);
@@ -114,11 +85,9 @@ const Posts = () => {
         setWorker(null);
         setParentId(null)
         setPolicy(null)
-        setOrganization(null);
         setIsProductChanges(false);
         setIsPurposeChanges(false);
         setPostNameChanges(false);
-        setDisplayOrganizationName('')
     }
 
     const selectedParentPost = (id) => {
@@ -127,11 +96,8 @@ const Posts = () => {
             const obj = posts.find(
                 (item) => item.id === id
             );
-            setOrganization(obj?.organization?.id)
             setParentDivisionName(obj?.divisionName)
-            setDisplayOrganizationName(obj?.organization?.organizationName)
         }
-        else setOrganization('')
     }
 
     const saveUpdatePost = async () => {
