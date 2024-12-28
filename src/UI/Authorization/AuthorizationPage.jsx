@@ -8,7 +8,7 @@ import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { baseUrl } from "../../BLL/constans";
 
 //5000
-const socket = io(`http://localhost:5002/auth`, {
+const socket = io(`http://localhost:5000/auth`, {
   cors: {
     credentials: true
   },transports : ['websocket']
@@ -62,7 +62,7 @@ export default function AuthorizationPage() {
         const serverData = await response.json();
 
         if (serverData.isLogged) {
-          window.location.href = `#/`;
+          window.location.href = `#/Main`;
         }
         console.log("Ответ от /:", serverData);
         setTokenForTG(serverData.tokenForTG);
@@ -139,7 +139,7 @@ export default function AuthorizationPage() {
         .then((response) => {
           if (response.ok) {
             console.log("Куки установлены");
-            window.location.href = `#/`;
+            window.location.href = `#/Main`;
           } else {
             console.error("Ошибка установки куки");
             alert("Не удалось выполнить аутентификацию. Попробуйте снова.");
