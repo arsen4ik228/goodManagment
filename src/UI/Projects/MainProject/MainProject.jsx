@@ -5,18 +5,14 @@ import sublist from "../../Custom/icon/icon _ sublist.svg";
 import { useGetProjectQuery } from "../../../BLL/projectApi";
 import { useGetOrganizationsQuery } from "../../../BLL/organizationsApi";
 import { useNavigate, useParams } from "react-router-dom";
+import { useProjectsHook } from "../../../hooks/useProjectsHook";
 
 export default function MainProject() {
-  const { userId } = useParams();
   const navigate = useNavigate();
 
   const [openProjects, setOpenProjects] = useState(false);
   const [openPrograms, setOpenPrograms] = useState(true);
   const [openArchive, setOpenArchive] = useState(false)
-  const [programsList, setProgramsList] = useState([]);
-  const [projectsList, setProjectsList] = useState([]);
-  const [projectsOfProgramsList, setProjectsOfProgramsList] = useState([])
-  const [organizationId, setOrganizationId] = useState()
   const [open, setOpen] = useState()
 
   const activeProgramStyles = {
@@ -25,56 +21,15 @@ export default function MainProject() {
     fontWeight: '600'
   }
 
+
   const {
-    organizations = []
-  } = useGetOrganizationsQuery(undefined, {
-    selectFromResult: ({ data }) => ({
-      organizations: data?.transformOrganizations,
-    }),
-  })
-  console.log(organizations)
-  const {
-    projects = [],
-    archivesProjects = [],
-    programs = [],
-    archivesPrograms = [],
-    projectsWithProgram = [],
-    archivesProjectsWithProgram = [],
-  } = useGetProjectQuery(undefined, {
-    selectFromResult: ({ data }) => ({
-      projects: data?.projects || [],
-      archivesProjects: data?.archivesProjects || [],
-      programs: data?.programs || [],
-      archivesPrograms: data?.archivesPrograms || [],
-      projectsWithProgram: data?.projectsWithProgram || [],
-      archivesProjectsWithProgram: data?.archivesProjectsWithProgram || [],
-    }),
-  });
-  console.log(projects, archivesProjects, projectsWithProgram, archivesProjectsWithProgram, programs, archivesPrograms)
-
-  useEffect(() => {
-    if (organizations.length > 0 && !organizationId)
-      setOrganizationId(organizations[0].id)
-  }, [organizations])
-  // useEffect(() => {
-  //   const firstArray = data.filter(item => {
-  //     if (item.type !== "Проект") return false;
-
-  //     if (item.target && Array.isArray(item.target)) {
-  //       const hasProductType = item.target.some(targetItem => targetItem.type === "Продукт");
-  //       return !hasProductType || item.targetState === 'Активная';
-  //     }
-
-  //     return item.programId == null;
-  //   });
-
-  //   const secondArray = data.filter((item) => item.type === "Программа");
-  //   const thirdArray = data.filter(item => item.type === 'Проект' && item.programId !== null)
-
-  //   setProjectsList(firstArray);
-  //   setProgramsList(secondArray);
-  //   setProjectsOfProgramsList(thirdArray)
-  // }, [data]);
+    projects,
+    archivesProjects,
+    programs,
+    archivesPrograms,
+    projectsWithProgram,
+    archivesProjectsWithProgram,
+  } = useProjectsHook({IsTypeProgram: false})
 
   const openProjectsOfProgram = (index) => {
     if (open === index) {
@@ -83,30 +38,14 @@ export default function MainProject() {
       setOpen(index)
     }
   }
-  // console.log(projectsList, programsList)
+
   return (
     <>
       <div className={classes.wrapper}>
         <>
           <Header title={"Программы и Проекты"} create={true} ></Header>
         </>
-        {/* <div className={classes.heading}>
-
-                </div> */}
         <div className={classes.body}>
-          <div
-            className={classes.bodyContainer}
-            style={{ borderBottom: "1px solid grey" }}
-          >
-            <div className={classes.name}>Организация</div>
-            <div className={classes.selectSection}>
-              <select name="selectProgram" onChange={(e) => setOrganizationId(e.target.value)}>
-                {organizations.map((item, index) => (
-                  <option key={index} value={item.id}>{item.organizationName}</option>
-                ))}
-              </select>
-            </div>
-          </div>
 
           <div className={classes.ColumnContainer}>
             <div

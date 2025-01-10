@@ -4,7 +4,6 @@ import Header from '../Custom/CustomHeader/Header'
 import icon from '../Custom/icon/icon _ downarrow _ 005475.svg'
 import { getDateFormatSatatistic, selectedOrganizationId, } from '../../BLL/constans'
 import { useParams } from 'react-router-dom'
-import { useGetStatisticsIdQuery, useUpdateStatisticsMutation } from '../../BLL/statisticsApi'
 import { useGetOrganizationsQuery,  } from '../../BLL/organizationsApi'
 import saveIcon from '../Custom/icon/icon _ save.svg'
 import Graphic from '../Custom/Graph/Graphic'
@@ -12,10 +11,11 @@ import HandlerMutation from '../Custom/HandlerMutation'
 import iconExit from '../Custom/SearchModal/icon/icon _ add.svg'
 import arrowInCircle from '../Custom/icon/arrow in circle.svg'
 import { useGetPostsQuery } from '../../BLL/postApi'
+import { useStatisticsHook } from '../../hooks/useStatisticsHook'
 
 export default function Statistics() {
 
-    const { userId, statisticId } = useParams()
+    const {statisticId} = useParams()
 
     const [openMenu, setOpenMenu] = useState(false)
 
@@ -75,42 +75,27 @@ export default function Statistics() {
         }),
     });
     console.log(posts)
+
     const {
-        currentStatistic = {},
-        statisticDatas = [],
+        currentStatistic,
+        statisticDatas,
         isLoadingGetStatisticId,
         isErrorGetStatisticId,
         isFetchingGetStatisticId,
-    } = useGetStatisticsIdQuery(
-        { statisticId },
-        {
-            selectFromResult: ({ data, isLoading, isError, isFetching }) => ({
-                currentStatistic: data?.currentStatistic || {},
-                statisticDatas: data?.statisticDatas || [],
-                isLoadingGetStatisticId: isLoading,
-                isErrorGetStatisticId: isError,
-                isFetchingGetStatisticId: isFetching,
-            }),
-            // skip: !statisticId,
-        }
-    );
-    console.log(currentStatistic, statisticDatas)
-    const [
+
         updateStatistics,
-        {
-            isLoading: isLoadingUpdateStatisticMutation,
-            isSuccess: isSuccessUpdateStatisticMutation,
-            isError: isErrorUpdateStatisticMutation,
-            error: Error,
-        },
-    ] = useUpdateStatisticsMutation();
+        isLoadingUpdateStatisticMutation,
+        isSuccessUpdateStatisticMutation,
+        isErrorUpdateStatisticMutation,
+        ErrorUpdateStatisticMutation,
+
+
+    } = useStatisticsHook({statisticId: statisticId})
+
 
     const {
         organizations = [],
-        isLoadingOrganizations,
-        isFetchingOrganizations,
-        isErrorOrganizations,
-    } = useGetOrganizationsQuery(userId, {
+    } = useGetOrganizationsQuery(undefined, {
         selectFromResult: ({ data, isLoading, isError, isFetching }) => ({
             organizations: data?.organizations || [],
             isLoadingOrganizations: isLoading,
@@ -936,7 +921,6 @@ export default function Statistics() {
             }
         }
         await updateStatistics({
-            userId,
             statisticId,
             _id: statisticId,
             ...Data,
@@ -1832,9 +1816,9 @@ export default function Statistics() {
                 } // Учитываем ручной сброс
                 textSuccess={"Статистика обновлена"}
                 textError={
-                    Error?.data?.errors?.[0]?.errors?.[0]
-                        ? Error.data.errors[0].errors[0]
-                        : Error?.data?.message
+                    ErrorUpdateStatisticMutation?.data?.errors?.[0]?.errors?.[0]
+                        ? ErrorUpdateStatisticMutation.data.errors[0].errors[0]
+                        : ErrorUpdateStatisticMutation?.data?.message
                 }
             ></HandlerMutation>
             {openModal && (

@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import classes from './MainStatistics.module.css'
 import { useNavigate } from "react-router-dom";
 import { useGetOrganizationsQuery } from '../../BLL/organizationsApi';
-import { useGetStatisticsQuery } from '../../BLL/statisticsApi';
 import Header from "../Custom/CustomHeader/Header";
 import ModalChangeReportDay from './ModalChangeReportDay/ModalChangeReportday';
 import { notEmpty, selectedOrganizationId } from '../../BLL/constans';
+import { useStatisticsHook } from '../../hooks/useStatisticsHook';
 
 const MainStatistics = () => {
 
@@ -14,19 +14,13 @@ const MainStatistics = () => {
     const [modalOpen, setModalOpen] = useState(false)
     const [reportDay, setReportDay] = useState()
 
+
     const {
-        statistics = [],
+        statistics,
         isLoadingGetStatistics,
         isFetchingGetStatistics,
         isErrorGetStatistics,
-    } = useGetStatisticsQuery({ statisticData: false }, {
-        selectFromResult: ({ data, isError, isFetching, isLoading }) => ({
-            statistics: data || [],
-            isLoadingGetStatistics: isLoading,
-            isFetchingGetStatistics: isFetching,
-            isErrorGetStatistics: isError
-        })
-    })
+    } = useStatisticsHook({statisticData: false})
 
     const {
         organizations = []

@@ -6,20 +6,32 @@ import { useNavigate } from "react-router-dom";
 import defaultAvatar from '../icon/messendger _ avatar.svg'
 
 function Header({
+    // Dialod name
     children,
+    // Chapter name
     title,
+    // default: default Avatar icon
     avatar,
 
+    // default: false
     offLeftIcon,
+    // dafault: back row icon
     leftIcon,
+    // default: navigate(-1)
     leftIconClick,
 
+    //default: false
     onRightIcon,
+    // default: add icon
     rightIcon,
+    // default: navigate('/new')
     rightIconClick,
 
+    //default: false
     onRight2Icon,
+    // default: none
     right2Icon,
+    // default: none
     right2IconClick
 }) {
 

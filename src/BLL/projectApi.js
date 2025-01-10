@@ -83,15 +83,14 @@ export const projectApi = createApi({
     }),
 
     getProgramNew: build.query({
-      query: (userId = "") => ({
-        url: `${userId}/projects/program/new`,
+      query: () => ({
+        url: `/projects/${selectedOrganizationId}/program/new`,
       }),
       transformResponse: (response) => {
         console.log(response); // Отладка ответа
         return {
-          workers: response?.workers || [],
+          posts: response?.posts || [],
           strategies: response?.strategies || [],
-          organizations: response?.organizations || [],
           projects: response?.projects || [],
         };
       },
@@ -111,15 +110,14 @@ export const projectApi = createApi({
 
 
     getProjectNew: build.query({
-      query: (userId = "") => ({
-        url: `${userId}/projects/new`,
+      query: () => ({
+        url: `/projects/${selectedOrganizationId}/new`,
       }),
       transformResponse: (response) => {
         console.log(response); // Отладка ответа
         return {
-          workers: response?.workers || [],
+          posts: response?.posts || [],
           strategies: response?.strategies || [],
-          organizations: response?.organizations || [],
           programs: response?.programs || [],
         };
       },

@@ -1,18 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
 import classes from "./NewProject.module.css";
 import Target from "../Targets/Target";
-import { useGetProjectNewQuery, usePostProjectMutation, useGetProgramNewQuery } from "../../../BLL/projectApi";
+import { usePostProjectMutation } from "../../../BLL/projectApi";
 import { useNavigate, useParams } from "react-router-dom";
 import CustomSelectModal from "../CustomSelectModal/CustomSelectModal";
 import deleteIcon from '../../Custom//icon/icon _ delete.svg'
-import Header from "../../Custom/Header/Header";
+import Header from "../../Custom/CustomHeader/Header";
 import HandlerMutation from "../../Custom/HandlerMutation";
-import { formattedDate } from "../../../BLL/constans"
+import { formattedDate, notEmpty } from "../../../BLL/constans"
 import { resizeTextarea } from "../../../BLL/constans";
 import listSetting from '../../Custom/icon/icon _ list setting.svg'
 import AlertOnlyOneProductTarget from "../../Custom/AlertOnlyOneProductTarget/AlertOnlyOneProductTarget";
 import CustomSelectSettingModal from "../CustomSelectSettingModal/CustomSelectSettingModal";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import { useProjectsHook } from "../../../hooks/useProjectsHook";
+import { Button } from "@mdxeditor/editor";
+import { ButtonContainer } from "../../Custom/CustomButtomContainer/ButtonContainer";
 
 export default function NewProject() {
   const { userId } = useParams();
@@ -22,37 +25,30 @@ export default function NewProject() {
   const [selectedSections, setSelectedSections] = useState([])
 
   const {
-    projectData = [],
-  } = useGetProjectNewQuery(userId, {
-    selectFromResult: ({ data }) => ({
-      projectData: data
-    }),
-    skip: IsTypeProgram
-  });
+    programData,
+    projectData,
 
-  const {
-    programData = [],
-  } = useGetProgramNewQuery(userId, {
-    selectFromResult: ({ data }) => ({
-      programData: data
-    }),
-    skip: !IsTypeProgram
-  });
+    postProject,
+    isLoadingProjectMutation,
+    isSuccessProjectMutation,
+    isErrorProjectMutation,
+    ErrorProjectMutation,
+
+
+  } = useProjectsHook({ IsTypeProgram })
+
+  console.log(projectData, programData)
 
   const [openDescription, setOpenDescription] = useState(true)
   const [projectDescription, setProjectDescription] = useState('')
   const [projectName, setProjectName] = useState('')
-  const [isToOrganization, setIsToOrganization] = useState('')
   const [selectedStrategy, setSelectedStrategy] = useState('')
   const [selectedProgram, setSelectedProgram] = useState('')
-  const [sortPrograms, setSortPrograms] = useState([])
   const [selectedWorker, setSelectedWorker] = useState('')
   const [deadlineDate, setDeadlineDate] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
   const [openModalAlertOnlyOneProductTarget, setOpenModalAlertOnlyOneProductTarget] = useState(false)
   const [openSelectSettingModal, setOpenSelectSettingModal] = useState(false)
-
-  const [sortStrategy, setSortStrategy] = useState([])
 
   const [targetIndex, setTargetIndex] = useState()
   const [targetContent, setTargetContent] = useState('')
@@ -65,11 +61,11 @@ export default function NewProject() {
 
   const [workers, setWorkers] = useState([])
   const [programs, setPrograms] = useState([])
-  const [organizations, setOrganizations] = useState([])
   const [projects, setProjects] = useState([])
   const [strategies, setStrategies] = useState([])
 
   const [dummyKey, setDummyKey] = useState(0)
+  
   const [rulesArray, setRulesArray] = useState([
     // {
     //   type: 'Правила',
@@ -132,28 +128,19 @@ export default function NewProject() {
     event: { array: eventArray, setFunction: setEventArray },
   };
 
-  const [
-    postProject,
-    {
-      isLoading: isLoadingProjectMutation,
-      isSuccess: isSuccessProjectMutation,
-      isError: isErrorProjectMutation,
-      error: Error,
-    },
-  ] = usePostProjectMutation();
 
   useEffect(() => {
-    if (IsTypeProgram) {
-      setWorkers(programData?.workers)
-      setOrganizations(programData?.organizations)
-      setStrategies(programData?.strategies)
-      setProjects(programData?.projects)
-    }
-    else {
-      setWorkers(projectData.workers)
-      setOrganizations(projectData.organizations)
-      setStrategies(projectData.strategies)
-      setPrograms(projectData.programs)
+    if (notEmpty(projectData) || notEmpty(programData)) {
+      if (IsTypeProgram) {
+        setWorkers(programData?.posts)
+        setStrategies(programData?.strategies)
+        setProjects(programData?.projects)
+      }
+      else {
+        setWorkers(programData?.posts)
+        setStrategies(projectData.strategies)
+        setPrograms(projectData.programs)
+      }
     }
   }, [IsTypeProgram, programData, projectData])
 
@@ -167,44 +154,6 @@ export default function NewProject() {
     setCurrentProjects(currentProjects);
   }, [filtredProjects, selectedProject]);
 
-
-  useEffect(() => {
-    if (isToOrganization) {
-      const filteredStrategies = strategies?.filter(
-        (strategy) => strategy?.organization?.id === isToOrganization
-      );
-      setSortStrategy(filteredStrategies);
-    }
-  }, [strategies, isToOrganization]);
-
-  useEffect(() => {
-    if (isToOrganization) {
-      const filteredProjects = projects?.filter(
-        (project) =>
-          project?.organization?.id === isToOrganization &&
-          project?.targets.some(target =>
-            target.targetState === "Активная" &&
-            target.isExpired === false &&
-            target.type === 'Продукт'
-          )
-      );
-      setProjectsForModal(filteredProjects);
-    }
-  }, [projects, isToOrganization]);
-
-
-  useEffect(() => {
-    if (isToOrganization) {
-      const filteredPrograms = programs?.filter((program) => program?.organization?.id === isToOrganization);
-      setSortPrograms(filteredPrograms);
-    }
-  }, [programs, isToOrganization]);
-
-  useEffect(() => {
-    if (organizations?.length > 0 && !isToOrganization) {
-      setIsToOrganization(organizations[0]?.id)
-    }
-  }, [organizations])
 
   useEffect(() => {
     if (targetType) {
@@ -318,9 +267,6 @@ export default function NewProject() {
     const Data = {}
 
     IsTypeProgram ? Data.type = 'Программа' : Data.type = 'Проект'
-    if (isToOrganization) {
-      Data.organizationId = isToOrganization
-    }
     if (selectedProgram && !IsTypeProgram) {
       Data.programId = selectedProgram
     }
@@ -357,11 +303,11 @@ export default function NewProject() {
     )
     ) {
       Data.targetCreateDtos = [
-        ...rulesArray.map((item, index) => ({ ...item, orderNumber: index + 1})),
-        ...productsArray.map((item, index) => ({ ...item, orderNumber: index + 1})),
-        ...statisticsArray.map((item, index) => ({ ...item, orderNumber: index + 1})),
-        ...simpleArray.map((item, index) => ({ ...item, orderNumber: index + 1})),
-        ...eventArray.map((item, index) => ({ ...item, orderNumber: index + 1})),
+        ...rulesArray.map((item, index) => ({ ...item, orderNumber: index + 1 })),
+        ...productsArray.map((item, index) => ({ ...item, orderNumber: index + 1 })),
+        ...statisticsArray.map((item, index) => ({ ...item, orderNumber: index + 1 })),
+        ...simpleArray.map((item, index) => ({ ...item, orderNumber: index + 1 })),
+        ...eventArray.map((item, index) => ({ ...item, orderNumber: index + 1 })),
       ];
     }
     if (IsTypeProgram) {
@@ -383,20 +329,25 @@ export default function NewProject() {
       });
 
   }
-  // console.log(productsArray, eventArray, rulesArray, simpleArray, statisticsArray)
+
+  const openSettingModal = () => {
+    setOpenSelectSettingModal(true)
+  }
+
   return (
     <>
       <div className={classes.wrapper}>
         <>
+
           <div className={classes.header}>
-            <Header create={false} title={IsTypeProgram ? 'Создание новой программы' : 'Создание нового проекта'}></Header>
-            <div className={classes.saveIcon}>
-              <img
-                src={listSetting}
-                alt="listSetting"
-                onClick={() => setOpenSelectSettingModal(true)}
-              />
-            </div>
+            <Header
+              title={IsTypeProgram ? 'Создание новой программы' : 'Создание нового проекта'}
+              onRightIcon={true}
+              rightIcon={listSetting}
+              rightIconClick={openSettingModal}
+            >
+              Личный помощник
+            </Header>
           </div>
         </>
 
@@ -428,18 +379,6 @@ export default function NewProject() {
                 <input type="text" onChange={(e) => setProjectName(e.target.value)} />
               </div>
             </div>
-            <div
-              className={classes.bodyContainer}
-            >
-              <div className={classes.name}>Организация</div>
-              <div className={classes.selectSection}>
-                <select name="selectOrg" value={isToOrganization} onChange={(e) => setIsToOrganization(e.target.value)}>
-                  {organizations?.map((item, index) => (
-                    <option key={index} value={item.id}>{item.organizationName}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
             {!IsTypeProgram &&
               (
                 <div
@@ -447,9 +386,9 @@ export default function NewProject() {
                 >
                   <div className={classes.name}>Программа</div>
                   <div className={classes.selectSection}>
-                    <select name="selectProgram" disabled={!isToOrganization} onChange={(e) => setSelectedProgram(e.target.value)}>
+                    <select name="selectProgram" onChange={(e) => setSelectedProgram(e.target.value)}>
                       <option value="">-</option>
-                      {sortPrograms?.map((item, index) => (
+                      {programs?.map((item, index) => (
                         <option key={index} value={item.id} >Программма №{item.projectNumber}</option>
                       ))}
                     </select>
@@ -466,7 +405,7 @@ export default function NewProject() {
                   disabled={selectedProgram}
                   onChange={(e) => setSelectedStrategy(e.target.value)}>
                   <option value="">-</option>
-                  {sortStrategy?.map((item, index) => (
+                  {strategies?.map((item, index) => (
                     <option key={index} value={item.id}>Стратегия №{item.strategyNumber}</option>
                   ))}
                 </select>
@@ -798,25 +737,12 @@ export default function NewProject() {
         </div>
 
         <>
-          <footer className={classes.inputContainer}>
-            <div className={classes.inputRow2}>
-              <div></div>
-              <div>
-                <button
-                  onClick={saveProject}
-                  disabled={!projectsForModal?.length > 0 && IsTypeProgram}
-                  style={{ backgroundColor: (!projectsForModal?.length > 0 && IsTypeProgram) ? 'grey' : '#005475' }}
-                >
-                  СОХРАНИТЬ
-                </button>
-              </div>
-              <div>
-                {/* <img src={searchBlack} /> */}
-                {/*<img src={policy} className={classes.image}/>*/}
-                {/*<img src={stats}/>*/}
-              </div>
-            </div>
-          </footer>
+          <ButtonContainer
+            clickFunction={saveProject}
+            disabled={!projectsForModal?.length > 0 && IsTypeProgram}
+          >
+            Сохранить
+          </ButtonContainer>
         </>
       </div>
 
@@ -851,9 +777,9 @@ export default function NewProject() {
         Success={isSuccessProjectMutation}
         textSuccess={IsTypeProgram ? "Программа успешно создана." : "Проект успешно создан"}
         textError={
-          Error?.data?.errors?.[0]?.errors?.[0]
-            ? Error.data.errors[0].errors[0]
-            : Error?.data?.message
+          ErrorProjectMutation?.data?.errors?.[0]?.errors?.[0]
+            ? ErrorProjectMutation.data.errors[0].errors[0]
+            : ErrorProjectMutation?.data?.message
         }
       ></HandlerMutation>
     </>

@@ -8,7 +8,7 @@ import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import { baseUrl } from "../../BLL/constans";
 
 //5000
-const socket = io(`http://localhost:5000/auth`, {
+const socket = io(`${baseUrl}auth`, {
   cors: {
     credentials: true
   },transports : ['websocket']

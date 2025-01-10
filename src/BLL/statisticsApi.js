@@ -5,7 +5,7 @@ import { prepareHeaders } from "./Function/prepareHeaders.js"
 export const statisticsApi = createApi({
   reducerPath: "statisticsApi",
   tagTypes: ["Statistics", "Statistics1"],
-  baseQuery: fetchBaseQuery({ baseUrl, prepareHeaders}),
+  baseQuery: fetchBaseQuery({ baseUrl, prepareHeaders }),
   endpoints: (build) => ({
 
     getStatistics: build.query({
@@ -41,31 +41,31 @@ export const statisticsApi = createApi({
     }),
 
     postStatistics: build.mutation({
-      query: ({ userId = "", ...body }) => ({
-        url: `${userId}/statistics/new`,
+      query: ({ ...body }) => ({
+        url: `/statistics/new`,
         method: "POST",
+        type: "Прямая",
+        name: "Статистика",
+        statisticDataCreateDtos: [
+          {
+            value: 0,
+            valueDate: new Date().toISOString().split('T')[0],
+            isCorrelation: false
+          },
+
+        ],
         body,
       }),
       invalidatesTags: (result) => result ? [{ type: "Statistics", id: "LIST" }] : []
     }),
 
-    getStatisticsNew: build.query({
-      query: (userId = "") => ({
-        url: `${userId}/statistics/new`,
-      }),
-      transformResponse: (response) => {
-        return {
-          posts: response || [],
-        };
-      },
-    }),
 
     getStatisticsId: build.query({
-      query: ({statisticId }) => ({
+      query: ({ statisticId }) => ({
         url: `statistics/${statisticId}/statistic`,
       }),
       transformResponse: (response) => {
-        console.log('getStatisticsId    ', response )
+        console.log('getStatisticsId    ', response)
         return {
           currentStatistic: response || {},
           statisticDatas: response.statisticDatas || [],

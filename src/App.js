@@ -25,6 +25,7 @@ import ProjectArchive from './UI/Projects/Archive/ProjectArchive.jsx';
 import MainStatistics from './UI/Statistics/MainStatistics.jsx';
 import Statistics from './UI/Statistics/Statistics.jsx';
 import NewStatistic from './UI/Statistics/NewStatistic.jsx';
+import MainWorkingPlan from './UI/WorkingPlan/MainWorkingPlan.jsx';
 
 
 function App() {
@@ -68,7 +69,7 @@ function App() {
                             <Route path="Statistics/:statisticId" element={<Statistics />} />
                             <Route path="Statistics/new/:paramPostID?" element={<NewStatistic />} />
 
-
+                            <Route path='WorkingPlan' element={<MainWorkingPlan/>} />
 
                         </Routes>
                     }>
