@@ -11,7 +11,7 @@ export default function CustomtextArea({ content, setContent, disabled }) {
             name="customtextArea"
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            disabled={disabled}s
+            disabled={disabled}
           >
           </textarea>
         </div>

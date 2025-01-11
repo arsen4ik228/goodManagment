@@ -26,6 +26,7 @@ import MainStatistics from './UI/Statistics/MainStatistics.jsx';
 import Statistics from './UI/Statistics/Statistics.jsx';
 import NewStatistic from './UI/Statistics/NewStatistic.jsx';
 import MainWorkingPlan from './UI/WorkingPlan/MainWorkingPlan.jsx';
+import ModalContainer from './UI/Custom/ModalContainer/ModalContainer.jsx';
 
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
                             <Route path="Main" element={<Main />} />
 
                             <Route path="Chat" element={<Chat />} />
+                            <Route path="test" element={<ModalContainer />} />
 
                             <Route path="Policy" element={<MainPolicy />} />
                             <Route path="Policy/:policyId" element={<Policy />} />
