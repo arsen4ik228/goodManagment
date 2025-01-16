@@ -62,7 +62,7 @@
 
         width: 95%;
         min-height: 50px;
-        max-height: 230px;
+        max-height: 280px;
 
         padding: 5px;
         margin: 0 auto;
@@ -72,9 +72,39 @@
     }
 }
 
+.stateContainer{
+    position: relative;
+
+    margin-bottom: 10px;
+
+    >select {
+        display: block;
+
+        width: 95%;
+
+        margin: 0 auto;
+
+        text-align: center;
+
+        border-bottom: #bfbfbf 1px solid;
+    }
+}
+
+.stateContainer::before{
+    content: "Статус";
+    color: rgb(58, 58, 58);
+    position: absolute;
+    top: -6px;
+    left: 8px;
+    pointer-events: none;
+    font-weight: 500;
+    font-size: 12px;
+    font-style: italic;
+    z-index: 1000;
+}
 
 .attachContainer {
-
+    position: relative;
 
     >select {
         display: block;
@@ -97,4 +127,17 @@
         margin: 0 auto;
 
     }
+}
+
+.attachContainer::before{
+    content: "Политика";
+    color: rgb(58, 58, 58);
+    position: absolute;
+    top: -7px;
+    left: 8px;
+    pointer-events: none;
+    font-weight: 500;
+    font-size: 12px;
+    font-style: italic;
+    z-index: 1000;
 }

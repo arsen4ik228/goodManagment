@@ -1,6 +1,7 @@
 .wrapper {
     padding: 10px;
 
+    /* background-color: #fafafa; */
 }
 
 .body {
@@ -20,6 +21,7 @@
         padding-left: 26px;
 
         border-bottom: 1px solid #bfbfbf;
+        /* background-color: #fafafa; */
         
         text-align: center;
 

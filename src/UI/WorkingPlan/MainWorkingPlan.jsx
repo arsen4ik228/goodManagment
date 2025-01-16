@@ -1,10 +1,24 @@
-import React from 'react'
+import React, { useState } from 'react'
 import classes from './MainWorkingPlan.module.css'
 import InputTextContainer from './ContainerForInputText/InputTextContainer'
 import Header from '../Custom/CustomHeader/Header'
 import Task from './TaskContainer/Task'
+import { useTargetsHook } from '../../hooks/useTargetsHook'
 
 export default function MainWorkingPlan() {
+
+    const {
+        currentTargets,
+        otherTargets,
+        personalTargets,
+        ordersTargets,
+        projectTragets,
+        userPosts,
+        isLoadingGetTargets,
+        isErrorGetTargets
+
+    } = useTargetsHook()
+
     return (
         <>
             <div className={classes.wrapper}>
@@ -21,14 +35,33 @@ export default function MainWorkingPlan() {
                         Показать завершенные задачи
                     </div>
                     <div className={classes.tasksContainer}>
-                        <Task></Task>
-                        <Task></Task>
-    
+                        {otherTargets.map((elem) => (
+                            <>
+                                <div className={classes.dayContainer}>
+                                    <span>Начать {elem.date}</span>
+                                </div>
+                                {elem?.items?.map((item, index) => (
+                                    <Task
+                                        key={index}
+                                        taskData={item}
+                                    ></Task>
+                                ))}
+                            </>
+                        ))}
+                        <div className={classes.dayContainer}>
+                            <span>Текущие</span>
+                        </div>
+                        {currentTargets.map((item, index) => (
+                            <Task
+                                key={index}
+                                taskData={item}
+                            ></Task>
+                        ))}
                     </div>
 
                 </div>
                 <InputTextContainer
-
+                    userPosts={userPosts}
                 >
                 </InputTextContainer>
             </div>

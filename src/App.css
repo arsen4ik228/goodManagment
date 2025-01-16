@@ -94,7 +94,7 @@ h6 {
 
 
 ::-webkit-scrollbar {
-    background-color: #FFFFFF;
+    /* background-color: #FFFFFF; */
     width: 5px;
     height: 5px;
 }
