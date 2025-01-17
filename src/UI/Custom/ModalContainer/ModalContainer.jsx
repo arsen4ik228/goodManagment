@@ -4,7 +4,7 @@ import { ButtonContainer } from '../CustomButtomContainer/ButtonContainer'
 import close from "../SearchModal/icon/icon _ add.svg";
 
 
-export default function ModalContainer({ children, buttonText, setOpenModal }) {
+export default function ModalContainer({ children, buttonText, setOpenModal, clickFunction }) {
 
     const closeModal = () => {
         setOpenModal(false)
@@ -21,7 +21,7 @@ export default function ModalContainer({ children, buttonText, setOpenModal }) {
                             {children}
                         </div>
                         <ButtonContainer
-                            clickFunction={closeModal}
+                            clickFunction={clickFunction || closeModal}
                         >
                             {buttonText ? buttonText : 'Сохранить'}
                         </ButtonContainer>

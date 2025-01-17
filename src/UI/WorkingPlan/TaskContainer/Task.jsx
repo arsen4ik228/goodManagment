@@ -3,7 +3,7 @@ import classes from './Task.module.css'
 import DetailsTaskModal from '../Modals/DetailsTaskModal/DetailsTaskModal'
 import { formattedDate } from '../../../BLL/constans'
 
-export default function Task({ taskData }) {
+export default function Task({ taskData, userPosts }) {
 
     const [openDetailsTaskModal, setOpenDetailsTaskModal] = useState(false)
 
@@ -69,6 +69,7 @@ export default function Task({ taskData }) {
                 <DetailsTaskModal
                     setOpenModal={setOpenDetailsTaskModal}
                     taskData={taskData}
+                    userPosts={userPosts}
                 ></DetailsTaskModal>
             )}
 

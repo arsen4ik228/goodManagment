@@ -1,4 +1,4 @@
-import { useGetTargetsQuery, usePostTargetsMutation } from "../BLL/targetsApi"
+import { useDeleteTargetMutation, useGetArchiveTargetsQuery, useGetTargetsQuery, usePostTargetsMutation, useUpdateTargetsMutation } from "../BLL/targetsApi"
 
 export const useTargetsHook = () => {
 
@@ -24,6 +24,22 @@ export const useTargetsHook = () => {
         }),
     })
 
+    const {
+        archivePersonalTargets = [],
+        archiveOrdersTargets = [],
+        archiveProjectTragets = [],
+        isLoadingGetArchiveTargets,
+        isErrorGetArchiveTargets,
+    } = useGetArchiveTargetsQuery(undefined, {
+        selectFromResult: ({ data, isLoading, isError, }) => ({
+            archivePersonalTargets: data?.personalArchiveTargets || [],
+            archiveOrdersTargets: data?.ordersArchiveTargets || [],
+            archiveProjectTragets: data?.projectArchiveTargets || [],
+            isLoadingGetArchiveTargets: isLoading,
+            isErrorGetArchiveTargets: isError,
+        }),
+    })
+
     const [
         postTargets,
         {
@@ -33,6 +49,26 @@ export const useTargetsHook = () => {
             error: ErrorPostTargetsMutation,
         },
     ] = usePostTargetsMutation();
+
+    const [
+        updateTargets,
+        {
+            isLoading: isLoadingUpdateTargetsMutation,
+            isSuccess: isSuccessUpdateTargetsMutation,
+            isError: isErrorUpdateTargetsMutation,
+            error: ErrorUpdateTargetsMutation,
+        }
+    ] = useUpdateTargetsMutation()
+
+    const [
+        deleteTarget,
+        {
+            isLoading: isLoadingDeleteTargetsMutation,
+            isSuccess: isSuccessDeleteTargetsMutation,
+            isError: isErrorDeleteTargetsMutation,
+            error: ErrorDeleteTargetsMutation,
+        }
+    ] = useDeleteTargetMutation()
 
     return {
         // getTargets
@@ -45,11 +81,30 @@ export const useTargetsHook = () => {
         isLoadingGetTargets,
         isErrorGetTargets,
 
+        //getArchiveTargets
+        archivePersonalTargets,
+        archiveOrdersTargets,
+        archiveProjectTragets,
+        isLoadingGetArchiveTargets,
+        isErrorGetArchiveTargets,
+
         //postTargets
         postTargets,
         isLoadingPostTargetsMutation,
         isSuccessPostTargetsMutation,
         isErrorPostTargetsMutation,
         ErrorPostTargetsMutation,
+
+        updateTargets,
+        isLoadingUpdateTargetsMutation,
+        isSuccessUpdateTargetsMutation,
+        isErrorUpdateTargetsMutation,
+        ErrorUpdateTargetsMutation,
+
+        deleteTarget,
+        isLoadingDeleteTargetsMutation,
+        isSuccessDeleteTargetsMutation,
+        isErrorDeleteTargetsMutation,
+        ErrorDeleteTargetsMutation,
     }
 }

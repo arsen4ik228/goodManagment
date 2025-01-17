@@ -7,6 +7,8 @@ import { useTargetsHook } from '../../hooks/useTargetsHook'
 
 export default function MainWorkingPlan() {
 
+    const [isViewArchive, setIsViewArchive] = useState(false)
+
     const {
         currentTargets,
         otherTargets,
@@ -15,9 +17,18 @@ export default function MainWorkingPlan() {
         projectTragets,
         userPosts,
         isLoadingGetTargets,
-        isErrorGetTargets
+        isErrorGetTargets,
+
+
+        archivePersonalTargets,
+        archiveOrdersTargets,
+        archiveProjectTragets,
+        isLoadingGetArchiveTargets,
+        isErrorGetArchiveTargets,
 
     } = useTargetsHook()
+
+    console.log(archivePersonalTargets)
 
     return (
         <>
@@ -31,32 +42,49 @@ export default function MainWorkingPlan() {
                     </Header>
                 </>
                 <div className={classes.body}>
-                    <div className={classes.archiveButton}>
-                        Показать завершенные задачи
+                    <div className={classes.archiveButton} onClick={() => setIsViewArchive(!isViewArchive)}>
+                        {isViewArchive ? 'Скрыть ' : 'Показать'} завершенные задачи
                     </div>
                     <div className={classes.tasksContainer}>
-                        {otherTargets.map((elem) => (
+                        {!isViewArchive ? (
                             <>
+                                {otherTargets.map((elem, elemIndex) => (
+                                    <>
+                                        <div key={elemIndex} className={classes.dayContainer}>
+                                            <span>Начать {elem.date}</span>
+                                        </div>
+                                        {elem?.items?.map((item, index) => (
+                                            <Task
+                                                key={index}
+                                                taskData={item}
+                                                userPosts={userPosts}
+                                            ></Task>
+                                        ))}
+                                    </>
+                                ))}
                                 <div className={classes.dayContainer}>
-                                    <span>Начать {elem.date}</span>
+                                    <span>Текущие</span>
                                 </div>
-                                {elem?.items?.map((item, index) => (
+                                {currentTargets.map((item, index) => (
                                     <Task
                                         key={index}
                                         taskData={item}
+                                        userPosts={userPosts}
+                                    ></Task>
+                                ))}
+
+                            </>
+                        ) : (
+                            <>
+                                {archivePersonalTargets?.map((item, index) => (
+                                    <Task
+                                        key={index}
+                                        taskData={item}
+                                        userPosts={userPosts}
                                     ></Task>
                                 ))}
                             </>
-                        ))}
-                        <div className={classes.dayContainer}>
-                            <span>Текущие</span>
-                        </div>
-                        {currentTargets.map((item, index) => (
-                            <Task
-                                key={index}
-                                taskData={item}
-                            ></Task>
-                        ))}
+                        )}
                     </div>
 
                 </div>

@@ -17,6 +17,37 @@
     }
 }
 
+.postContainer{
+    position: relative;
+
+    margin-bottom: 10px;
+
+    >select {
+        display: block;
+
+        width: 95%;
+
+        margin: 0 auto;
+
+        text-align: center;
+
+        border-bottom: #bfbfbf 1px solid;
+    }
+}
+
+.postContainer::before{
+    content: "Пост";
+    color: rgb(58, 58, 58);
+    position: absolute;
+    top: -6px;
+    left: 8px;
+    pointer-events: none;
+    font-weight: 500;
+    font-size: 12px;
+    font-style: italic;
+    z-index: 1000;
+}
+
 .dateContainer {
 
 
@@ -26,7 +57,7 @@
 
         width: 95%;
 
-        padding: 8px 8px 5px 8px;
+        padding: 7px 0 0 0;
         margin: 3px auto;
 
         border-bottom: 1px solid #bfbfbf;
@@ -102,6 +133,7 @@
     font-style: italic;
     z-index: 1000;
 }
+
 
 .attachContainer {
     position: relative;

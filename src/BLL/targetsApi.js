@@ -62,15 +62,27 @@ export const targetsApi = createApi({
             providesTags: (result) => result ? [{ type: "Targets", id: "LIST" }] : [],
         }),
 
-        // updateStrategy: build.mutation({
-        //     query: (body) => ({
-        //         url: `strategies/${body._id}/update`,
-        //         method: "PATCH",
-        //         body,
-        //     }),
-        //     // Обновляем теги, чтобы перезагрузить getStrategiesId
-        //     invalidatesTags: (result, error, { strategyId }) => result ? [{ type: "Strateg1", id: strategyId }, { type: "Strateg", id: "LIST" }] : []
-        // }),
+        getArchiveTargets: build.query({
+            query: () => ({
+                url: 'targets/archive',
+            }),
+            transformResponse: (response) => {
+                console.log('getArchiveTargets    ', response)
+                return response
+            },
+            providesTags: (result) => result ? [{ type: "Targets", id: "LIST" }] : [],
+
+        }),
+
+        updateTargets: build.mutation({
+            query: (body) => ({
+                url: `targets/${body._id}/update`,
+                method: "PATCH",
+                body,
+            }),
+            // Обновляем теги, чтобы перезагрузить getStrategiesId
+            invalidatesTags: (result) => result ? [{ type: "Targets", id: "LIST" }] : [],
+        }),
 
         postTargets: build.mutation({
             query: (body) => ({
@@ -83,10 +95,25 @@ export const targetsApi = createApi({
             // }),
             providesTags: (result) => result ? [{ type: "Targets", id: "LIST" }] : [],
         }),
+
+        deleteTarget: build.mutation({
+            query: ({targetId}) => ({
+                url: `targets/${targetId}/remove`,
+                method: "DELETE",
+                // body,
+            }),
+            // transformResponse: (response) => ({
+            //     id: response.id
+            // }),
+            invalidatesTags: (result) => result ? [{ type: "Targets", id: "LIST" }] : [],
+        }),        
     })
 })
 
 export const {
     useGetTargetsQuery,
+    useGetArchiveTargetsQuery,
     usePostTargetsMutation,
+    useUpdateTargetsMutation,
+    useDeleteTargetMutation,
 } = targetsApi;
