@@ -1,7 +1,12 @@
+import { useState } from "react";
 import { useGetPoliciesIdQuery, useGetPoliciesQuery, usePostPoliciesMutation, useUpdatePoliciesMutation } from "../BLL/policyApi";
 
 
-export const usePolicyHook = (policyId) => {
+export const usePolicyHook = (props) => {
+
+    const [localPolicyId] = useState(props?.policyId ? props.policyId : false)
+    const [localOrganizationId] = useState(props.organizationId ? props.organizationId : false)
+    console.log('localOrganizationId     ',localOrganizationId, props)
     const {
         activeDirectives = [],
         draftDirectives = [],
@@ -12,7 +17,7 @@ export const usePolicyHook = (policyId) => {
         isLoadingGetPolicies,
         isErrorGetPolicies,
         isFetchingGetPolicies
-    } = useGetPoliciesQuery(undefined, {
+    } = useGetPoliciesQuery({organizationId: localOrganizationId}, {
         selectFromResult: ({ data, isLoading, isError, isFetching }) => ({
             activeDirectives: data?.activeDirectives || [],
             draftDirectives: data?.draftDirectives || [],
@@ -24,6 +29,7 @@ export const usePolicyHook = (policyId) => {
             isErrorGetPolicies: isError,
             isFetchingGetPolicies: isFetching,
         }),
+        skip: localOrganizationId === undefined ? true : false
     });
 
     const {
@@ -32,7 +38,7 @@ export const usePolicyHook = (policyId) => {
         isFetchingGetPoliciesId,
         isErrorGetPoliciesId,
     } = useGetPoliciesIdQuery(
-        { policyId },
+        { policyId: localPolicyId },
         {
             selectFromResult: ({ data, isLoading, isError, isFetching }) => ({
                 currentPolicy: data?.currentPolicy || {},
@@ -40,7 +46,7 @@ export const usePolicyHook = (policyId) => {
                 isErrorGetPoliciesId: isError,
                 isFetchingGetPoliciesId: isFetching,
             }),
-            skip: !policyId
+            skip: !localPolicyId
         }
     );
 

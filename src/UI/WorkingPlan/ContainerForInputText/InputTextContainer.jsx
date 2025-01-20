@@ -4,13 +4,13 @@ import sendIcon from '../../Custom/icon/send.svg'
 import shareIcon from '../../Custom/icon/subbar _ share.svg'
 import calenderIcon from '../../Custom/icon/icon _ calendar.svg'
 import attachIcon from '../../Custom/icon/subbar _ attach.svg'
-import { resizeTextarea } from '../../../BLL/constans'
+import { notEmpty, resizeTextarea } from '../../../BLL/constans'
 import CalendarModal from '../Modals/CalendarModal/CalendarModal'
 import FilesModal from '../Modals/FilesModal/FilesModal'
 import OrderModal from '../Modals/OrderModal/OrderModal'
 import { useTargetsHook } from '../../../hooks/useTargetsHook'
 
-export default function InputTextContainer({ userPosts, }) {
+export default function InputTextContainer({ userPosts }) {
 
     const [openCalendarModal, setOpenCalendarModal] = useState(false)
     const [openFilesModal, setOpenFilesModal] = useState(false)
@@ -20,6 +20,7 @@ export default function InputTextContainer({ userPosts, }) {
     const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0])
     const [deadlineDate, setDeadlineDate] = useState(new Date().toISOString().split('T')[0])
     const [contentInput, setContentInput] = useState()
+    const [selectedPolicy,setSelectedPolicy] = useState()
 
     const [isOrder, setIsOreder] = useState(false)
 
@@ -42,7 +43,7 @@ export default function InputTextContainer({ userPosts, }) {
         Data.type = isOrder ? 'Приказ' : 'Личная'
         Data.orderNumber = 1
         Data.content = contentInput
-        Data.holderPostId = selectedPost ? selectedPost : userPosts[0]?.id
+        Data.holderPostId = selectedPost
         Data.dateStart = startDate
         Data.deadline = deadlineDate
         console.log(Data)
@@ -58,9 +59,17 @@ export default function InputTextContainer({ userPosts, }) {
             });
     }
 
+    const selectedPostOrganizationId = userPosts?.find(item => item.id === selectedPost?.organization)
+
     useEffect(() => {
         setTimeout(resizeTextarea(idTextarea), 0)
     }, [contentInput])
+
+    useEffect(() => {
+        if (!notEmpty(userPosts)) return
+
+        setSelectedPost(userPosts[0].id)
+    }, [userPosts])
 
     return (
         <>
@@ -110,9 +119,12 @@ export default function InputTextContainer({ userPosts, }) {
             {openFilesModal && (
                 <FilesModal
                     setOpenModal={setOpenFilesModal}
+                    policyId={selectedPolicy}
+                    setPolicyId={setSelectedPolicy}
+                    postOrganizationId={userPosts?.find(item => item.id === selectedPost)?.organization}
                 ></FilesModal>
             )}
-
+            
             {openOrderModal && (
                 <OrderModal
                     setModalOpen={setOpenOrderModal}

@@ -9,8 +9,8 @@ export const policyApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl, prepareHeaders}),
   endpoints: (build) => ({
     getPolicies: build.query({
-      query: () => ({
-        url: `policies/${selectedOrganizationId}`,
+      query: ({organizationId}) => ({
+        url: `policies/${organizationId ? organizationId : selectedOrganizationId}`,
       }),
 
       transformResponse: (response) => {

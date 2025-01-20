@@ -17,45 +17,46 @@ export const targetsApi = createApi({
                 const transformTargetsArray = (array) => {
                     const currentDate = new Date().toISOString().split('T')[0];
                     const groupedItems = {};
-                
+
                     array.forEach(item => {
                         const dateStart = item.dateStart;
                         const dateWithoutTime = new Date(dateStart).toISOString().split('T')[0];
                         const isFutureOrPastCurrent = dateWithoutTime > currentDate;
-                
+
                         if (!groupedItems[dateWithoutTime]) {
                             groupedItems[dateWithoutTime] = [];
                         }
-                
+
                         groupedItems[dateWithoutTime].push({
                             ...item,
                             isFutureOrPastCurrent: isFutureOrPastCurrent
                         });
                     });
-                
+
                     const currentTargets = Object.values(groupedItems)
                         .filter(items => !items.some(item => item.isFutureOrPastCurrent))
                         .flat();
-                
+
                     const otherTargets = Object.values(groupedItems)
                         .filter(items => items.some(item => item.isFutureOrPastCurrent))
                         .map(items => ({
-                            date: formattedDate(items[0].dateStart).slice(0,5),
+                            date: formattedDate(items[0].dateStart).slice(0, 5),
                             items: items.filter(item => item.isFutureOrPastCurrent)
                         }));
-                
+
                     return {
                         currentTargets,
                         otherTargets
                     };
                 };
-                
-                
 
                 const newPersonalTargets = transformTargetsArray(response?.personalTargets)
                 console.log(newPersonalTargets)
+
+                const _userPosts = response?.userPosts.map(item => ({ ...item, organization: item.organization.id }))
+
                 return {
-                    userPosts: response?.userPosts,
+                    userPosts: _userPosts,
                     personalTargets: newPersonalTargets,
                 }
             },
@@ -97,7 +98,7 @@ export const targetsApi = createApi({
         }),
 
         deleteTarget: build.mutation({
-            query: ({targetId}) => ({
+            query: ({ targetId }) => ({
                 url: `targets/${targetId}/remove`,
                 method: "DELETE",
                 // body,
@@ -106,7 +107,7 @@ export const targetsApi = createApi({
             //     id: response.id
             // }),
             invalidatesTags: (result) => result ? [{ type: "Targets", id: "LIST" }] : [],
-        }),        
+        }),
     })
 })
 

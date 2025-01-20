@@ -3,6 +3,7 @@ import classes from './DetailsTaskModal.module.css'
 import ModalContainer from '../../../Custom/ModalContainer/ModalContainer'
 import { notEmpty, resizeTextarea } from '../../../../BLL/constans'
 import { useTargetsHook } from '../../../../hooks/useTargetsHook'
+import { usePolicyHook } from '../../../../hooks/usePolicyHook'
 
 export default function DetailsTaskModal({ setOpenModal, taskData, userPosts }) {
 
@@ -11,6 +12,11 @@ export default function DetailsTaskModal({ setOpenModal, taskData, userPosts }) 
     const [contentInput, setContentInput] = useState()
     const [taskStatus, setTaskStatus] = useState()
     const [holderPost, setHolderPost] = useState()
+    const [selectedPolicy, setSelectedPolicy] = useState()
+    const [isArchive, setIsArchive] = useState(false)
+    const [selectedPostOrganizationId, setSelectedPostOrganizationId] = useState()
+
+
 
     const {
         updateTargets,
@@ -22,6 +28,8 @@ export default function DetailsTaskModal({ setOpenModal, taskData, userPosts }) 
         deleteTarget,
 
     } = useTargetsHook()
+
+
 
     const updateTask = async () => {
 
@@ -62,23 +70,39 @@ export default function DetailsTaskModal({ setOpenModal, taskData, userPosts }) 
                 });
         }
     }
+console.log(taskData)
+
+    const setHolderPostId = (value) =>{
+        setHolderPost(value)
+        setSelectedPostOrganizationId(userPosts?.find(item => item.id === value)?.organization)
+    }
 
     useEffect(() => {
 
         if (!notEmpty(taskData)) return
 
+        setIsArchive(taskData?.targetState === 'Завершена' ? true : false)
         setStartDate(taskData?.dateStart.split('T')[0])
         setDeadlineDate(taskData?.deadline.split('T')[0])
         setContentInput(taskData.content)
         setTaskStatus(taskData?.targetState)
         setHolderPost(taskData?.holderPostId)
+        setSelectedPolicy(taskData?.policyId)
+        setSelectedPostOrganizationId(userPosts?.find(item => item.id === taskData.holderPostId)?.organization)
     }, [taskData])
+
+
+    const {
+        activeDirectives,
+        activeInstructions,
+    } = usePolicyHook({organizationId: userPosts?.find(item => item.id === holderPost)?.organization})
 
     useEffect(() => {
         resizeTextarea(taskData?.id)
     }, [contentInput])
+ 
 
-    console.log(userPosts)
+    console.log('selectedPostOrganizationId     ',selectedPostOrganizationId)
     return (
         <ModalContainer
             setOpenModal={setOpenModal}
@@ -93,8 +117,9 @@ export default function DetailsTaskModal({ setOpenModal, taskData, userPosts }) 
                 <div className={classes.postContainer}>
                     <select
                         name="stateSelect"
+                        disabled={isArchive}
                         value={holderPost}
-                        onChange={(e) => setHolderPost(e.target.value)}
+                        onChange={(e) => setHolderPostId(e.target.value)}
                     >
                         {userPosts?.map((item, index) => (
                             <option key={index} value={item.id}>{item.postName}</option>
@@ -103,12 +128,13 @@ export default function DetailsTaskModal({ setOpenModal, taskData, userPosts }) 
                     </select>
                 </div>
                 <div className={classes.dateContainer}>
-                    <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-                    <input type="date" value={deadlineDate} onChange={(e) => setDeadlineDate(e.target.value)} />
+                    <input type="date" disabled={isArchive} value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+                    <input type="date" disabled={isArchive} value={deadlineDate} onChange={(e) => setDeadlineDate(e.target.value)} />
                 </div>
                 <div className={classes.descriptionContainer}>
                     <textarea
                         name="description"
+                        disabled={isArchive}
                         id={taskData.id}
                         value={contentInput}
                         onChange={(e) => setContentInput(e.target.value)}
@@ -117,6 +143,7 @@ export default function DetailsTaskModal({ setOpenModal, taskData, userPosts }) 
                 <div className={classes.stateContainer}>
                     <select
                         name="stateSelect"
+                        disabled={isArchive}
                         value={taskStatus}
                         onChange={(e) => setTaskStatus(e.target.value)}
                     >
@@ -126,8 +153,14 @@ export default function DetailsTaskModal({ setOpenModal, taskData, userPosts }) 
                     </select>
                 </div>
                 <div className={classes.attachContainer}>
-                    <select name="policy">
-                        <option value="">Политика 1</option>
+                    <select name="policy" disabled={isArchive} value={selectedPolicy} onChange={(e) => setSelectedPolicy(e.target.value)}>
+                        <option value="">Выберите политику</option>
+                        {activeDirectives.map((item, index) => (
+                            <option key={index} value={item.id}>{item.policyName}</option>
+                        ))}
+                        {activeInstructions.map((item, index) => (
+                            <option key={index} value={item.id}>{item.policyName}</option>
+                        ))}
                     </select>
                     <input type="file" />
                 </div>

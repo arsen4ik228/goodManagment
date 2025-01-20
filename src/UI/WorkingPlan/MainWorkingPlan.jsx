@@ -42,7 +42,7 @@ export default function MainWorkingPlan() {
                     </Header>
                 </>
                 <div className={classes.body}>
-                    <div className={classes.archiveButton} onClick={() => setIsViewArchive(!isViewArchive)}>
+                    <div key={'un'} className={classes.archiveButton} onClick={() => setIsViewArchive(!isViewArchive)}>
                         {isViewArchive ? 'Скрыть ' : 'Показать'} завершенные задачи
                     </div>
                     <div className={classes.tasksContainer}>

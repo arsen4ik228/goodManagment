@@ -1,15 +1,16 @@
-import React, { useState } from 'react'
+import React, { useEffect,useState } from 'react'
 import classes from './Task.module.css'
 import DetailsTaskModal from '../Modals/DetailsTaskModal/DetailsTaskModal'
-import { formattedDate } from '../../../BLL/constans'
+import { formattedDate, notEmpty } from '../../../BLL/constans'
 
 export default function Task({ taskData, userPosts }) {
 
     const [openDetailsTaskModal, setOpenDetailsTaskModal] = useState(false)
+    const [checkboxStatus, setCheckboxStatus] = useState(false)
 
     const transformDate = (dateString) => {
 
-        const dayWithMounth = formattedDate(dateString).slice(0,5)
+        const dayWithMounth = formattedDate(dateString).slice(0, 5)
         const dayOfWeek = {
             0: 'вс',
             1: 'пн',
@@ -39,24 +40,35 @@ export default function Task({ taskData, userPosts }) {
         }
 
 
-        return dayWithMounth + ' ' +dayOfWeek[dateObj.getDay()];
+        return dayWithMounth + ' ' + dayOfWeek[dateObj.getDay()];
     }
 
+    const completeTask = () => {
 
+    }
 
+    
+
+    useEffect(() => {
+        if (!notEmpty(taskData)) return
+
+        setCheckboxStatus(taskData?.targetState === 'Завершена' ? true : false)
+    }, [taskData])
 
     return (
         <>
             <div className={classes.wrapper}>
 
-                <div className={classes.body} onClick={() => setOpenDetailsTaskModal(true)}>
-                    <div className={classes.checkboxContainer}>
-                        <input type="checkbox" />
+                <div className={classes.body}>
+                    <div className={classes.checkboxContainer} onClick={() => completeTask()}>
+                        <input type="checkbox" checked={checkboxStatus} readOnly />
                     </div>
-                    <div className={classes.titleContainer}>
-                        {taskData.content}
+                    <div className={classes.titleContainer} onClick={() => setOpenDetailsTaskModal(true)}>
+                        <div className={classes.titleText}>
+                            {taskData.content}
+                        </div>
                     </div>
-                    <div className={classes.dateContainer}>
+                    <div className={classes.dateContainer} onClick={() => setOpenDetailsTaskModal(true)}>
                         Завершить:
                         <span>
                             {transformDate(taskData.deadline)}
