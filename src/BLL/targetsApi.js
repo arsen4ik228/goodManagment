@@ -32,17 +32,19 @@ export const targetsApi = createApi({
                             isFutureOrPastCurrent: isFutureOrPastCurrent
                         });
                     });
-
                     const currentTargets = Object.values(groupedItems)
                         .filter(items => !items.some(item => item.isFutureOrPastCurrent))
-                        .flat();
+                        .flat()
+                        .sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
 
                     const otherTargets = Object.values(groupedItems)
                         .filter(items => items.some(item => item.isFutureOrPastCurrent))
                         .map(items => ({
                             date: formattedDate(items[0].dateStart).slice(0, 5),
                             items: items.filter(item => item.isFutureOrPastCurrent)
+                                .sort((a, b) => new Date(a.deadline) - new Date(b.deadline))
                         }));
+
 
                     return {
                         currentTargets,
@@ -94,7 +96,7 @@ export const targetsApi = createApi({
             // transformResponse: (response) => ({
             //     id: response.id
             // }),
-            providesTags: (result) => result ? [{ type: "Targets", id: "LIST" }] : [],
+            invalidatesTags: (result) => result ? [{ type: "Targets", id: "LIST" }] : [],
         }),
 
         deleteTarget: build.mutation({

@@ -1,14 +1,17 @@
-import React, { useEffect,useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import classes from './Task.module.css'
 import DetailsTaskModal from '../Modals/DetailsTaskModal/DetailsTaskModal'
 import { formattedDate, notEmpty } from '../../../BLL/constans'
+import { useTargetsHook } from '../../../hooks/useTargetsHook'
 
-export default function Task({ taskData, userPosts }) {
+export default function Task({ taskData, userPosts, isArchive }) {
 
     const [openDetailsTaskModal, setOpenDetailsTaskModal] = useState(false)
     const [checkboxStatus, setCheckboxStatus] = useState(false)
 
     const transformDate = (dateString) => {
+
+        if (!dateString) return ' ОШИБКА '
 
         const dayWithMounth = formattedDate(dateString).slice(0, 5)
         const dayOfWeek = {
@@ -43,11 +46,37 @@ export default function Task({ taskData, userPosts }) {
         return dayWithMounth + ' ' + dayOfWeek[dateObj.getDay()];
     }
 
-    const completeTask = () => {
+    const {
+        updateTargets,
+        isLoadingUpdateTargetsMutation,
+        isSuccessUpdateTargetsMutation,
+        isErrorUpdateTargetsMutation,
+        ErrorUpdateTargetsMutation,
 
+    } = useTargetsHook()
+
+    const completeTask = () => {
+        if (isArchive) return
+
+        updateTask()
     }
 
-    
+    const updateTask = async () => {
+
+        await updateTargets({
+            _id: taskData.id,
+            type: taskData.type,
+            targetState: taskData.targetState === 'Активная' ? 'Завершена' : 'Активная'
+        })
+            .unwrap()
+            .then(() => {
+            })
+            .catch((error) => {
+                console.error("Ошибка:", JSON.stringify(error, null, 2));
+            });
+    }
+
+
 
     useEffect(() => {
         if (!notEmpty(taskData)) return
@@ -61,17 +90,20 @@ export default function Task({ taskData, userPosts }) {
 
                 <div className={classes.body}>
                     <div className={classes.checkboxContainer} onClick={() => completeTask()}>
-                        <input type="checkbox" checked={checkboxStatus} readOnly />
+                        <input type="checkbox" checked={checkboxStatus} disabled={isArchive} readOnly />
                     </div>
                     <div className={classes.titleContainer} onClick={() => setOpenDetailsTaskModal(true)}>
-                        <div className={classes.titleText}>
+                        <div
+                            className={classes.titleText}
+                            style={{ 'color': isArchive ? '#00000040' : 'none' }}
+                        >
                             {taskData.content}
                         </div>
                     </div>
                     <div className={classes.dateContainer} onClick={() => setOpenDetailsTaskModal(true)}>
-                        Завершить:
+                        {checkboxStatus ? 'Завершено' : 'Завершить:'}
                         <span>
-                            {transformDate(taskData.deadline)}
+                            {checkboxStatus ? transformDate(taskData.dateComplete) : transformDate(taskData.deadline)}
                         </span>
                     </div>
                 </div>

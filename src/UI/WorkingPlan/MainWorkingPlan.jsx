@@ -81,6 +81,7 @@ export default function MainWorkingPlan() {
                                         key={index}
                                         taskData={item}
                                         userPosts={userPosts}
+                                        isArchive={true}
                                     ></Task>
                                 ))}
                             </>

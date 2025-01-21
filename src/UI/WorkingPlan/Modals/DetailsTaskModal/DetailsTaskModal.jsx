@@ -29,6 +29,10 @@ export default function DetailsTaskModal({ setOpenModal, taskData, userPosts }) 
 
     } = useTargetsHook()
 
+    const {
+        activeDirectives,
+        activeInstructions,
+    } = usePolicyHook({ organizationId: selectedPostOrganizationId })
 
 
     const updateTask = async () => {
@@ -54,6 +58,10 @@ export default function DetailsTaskModal({ setOpenModal, taskData, userPosts }) 
             if (taskStatus !== taskData.targetState) Data.targetState = taskStatus
             if (startDate !== taskData.dateStart.split('T')[0]) Data.dateStart = startDate
             if (deadlineDate !== taskData.deadline.split('T')[0]) Data.deadline = deadlineDate
+            if (selectedPolicy === 'null')
+                Data.policyId = null
+            else if (selectedPolicy && selectedPolicy !== taskData.policy?.id)
+                Data.policyId = selectedPolicy
 
             if (!notEmpty(Data)) return
 
@@ -70,11 +78,19 @@ export default function DetailsTaskModal({ setOpenModal, taskData, userPosts }) 
                 });
         }
     }
-console.log(taskData)
+    console.log(taskData)
 
-    const setHolderPostId = (value) =>{
+    const setHolderPostId = (value) => {
         setHolderPost(value)
-        setSelectedPostOrganizationId(userPosts?.find(item => item.id === value)?.organization)
+        setSelectedPostOrganizationId(prevState => {
+
+            const _selectedPostOrganizationId = userPosts?.find(item => item.id === value)?.organization
+
+            if (prevState !== _selectedPostOrganizationId)
+                setSelectedPolicy('null')
+
+            return _selectedPostOrganizationId
+        })
     }
 
     useEffect(() => {
@@ -87,26 +103,25 @@ console.log(taskData)
         setContentInput(taskData.content)
         setTaskStatus(taskData?.targetState)
         setHolderPost(taskData?.holderPostId)
-        setSelectedPolicy(taskData?.policyId)
+        setSelectedPolicy(taskData?.policy?.id || false)
         setSelectedPostOrganizationId(userPosts?.find(item => item.id === taskData.holderPostId)?.organization)
     }, [taskData])
-
-
-    const {
-        activeDirectives,
-        activeInstructions,
-    } = usePolicyHook({organizationId: userPosts?.find(item => item.id === holderPost)?.organization})
 
     useEffect(() => {
         resizeTextarea(taskData?.id)
     }, [contentInput])
- 
 
-    console.log('selectedPostOrganizationId     ',selectedPostOrganizationId)
+    const clickFunction = () => {
+        updateTask()
+        setOpenModal(false)
+    }
+
+    console.log('selectedPostOrganizationId     ', selectedPostOrganizationId)
     return (
         <ModalContainer
             setOpenModal={setOpenModal}
-            clickFunction={updateTask}
+            clickFunction={clickFunction}
+            disabledButton={isArchive}
         >
             <div className={classes.content}>
                 {taskData.type === 'Приказ' && (
@@ -129,7 +144,7 @@ console.log(taskData)
                 </div>
                 <div className={classes.dateContainer}>
                     <input type="date" disabled={isArchive} value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-                    <input type="date" disabled={isArchive} value={deadlineDate} onChange={(e) => setDeadlineDate(e.target.value)} />
+                    <input type="date" disabled={isArchive} value={isArchive ? taskData.dateComplete.split('T')[0] : deadlineDate} onChange={(e) => setDeadlineDate(e.target.value)} />
                 </div>
                 <div className={classes.descriptionContainer}>
                     <textarea
@@ -154,7 +169,7 @@ console.log(taskData)
                 </div>
                 <div className={classes.attachContainer}>
                     <select name="policy" disabled={isArchive} value={selectedPolicy} onChange={(e) => setSelectedPolicy(e.target.value)}>
-                        <option value="">Выберите политику</option>
+                        <option value={'null'}>Выберите политику</option>
                         {activeDirectives.map((item, index) => (
                             <option key={index} value={item.id}>{item.policyName}</option>
                         ))}

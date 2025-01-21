@@ -10,7 +10,7 @@ export const policyApi = createApi({
   endpoints: (build) => ({
     getPolicies: build.query({
       query: ({organizationId}) => ({
-        url: `policies/${organizationId ? organizationId : selectedOrganizationId}`,
+        url: `policies/${organizationId}`,
       }),
 
       transformResponse: (response) => {

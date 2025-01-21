@@ -5,8 +5,7 @@ import { useGetPoliciesIdQuery, useGetPoliciesQuery, usePostPoliciesMutation, us
 export const usePolicyHook = (props) => {
 
     const [localPolicyId] = useState(props?.policyId ? props.policyId : false)
-    const [localOrganizationId] = useState(props.organizationId ? props.organizationId : false)
-    console.log('localOrganizationId     ',localOrganizationId, props)
+
     const {
         activeDirectives = [],
         draftDirectives = [],
@@ -17,7 +16,7 @@ export const usePolicyHook = (props) => {
         isLoadingGetPolicies,
         isErrorGetPolicies,
         isFetchingGetPolicies
-    } = useGetPoliciesQuery({organizationId: localOrganizationId}, {
+    } = useGetPoliciesQuery({organizationId: props?.organizationId}, {
         selectFromResult: ({ data, isLoading, isError, isFetching }) => ({
             activeDirectives: data?.activeDirectives || [],
             draftDirectives: data?.draftDirectives || [],
@@ -29,7 +28,7 @@ export const usePolicyHook = (props) => {
             isErrorGetPolicies: isError,
             isFetchingGetPolicies: isFetching,
         }),
-        skip: localOrganizationId === undefined ? true : false
+        skip: !props.organizationId
     });
 
     const {

@@ -9,6 +9,7 @@ import { projectApi } from './projectApi';
 import { organizationsApi } from './organizationsApi';
 import { statisticsApi } from './statisticsApi';
 import { targetsApi } from './targetsApi';
+import { convertApi } from './convertApi'; 
 import strategReducer from "./strategSlice";
 
 export const store = configureStore({
@@ -23,6 +24,7 @@ export const store = configureStore({
         [organizationsApi.reducerPath]: organizationsApi.reducer,
         [statisticsApi.reducerPath]: statisticsApi.reducer,
         [targetsApi.reducerPath]: targetsApi.reducer,
+        [convertApi.reducerPath]: convertApi.reducer,
         strateg: strategReducer,
     },
     middleware: (getDefaultMiddleware) =>
@@ -37,5 +39,6 @@ export const store = configureStore({
           .concat(organizationsApi.middleware)
           .concat(statisticsApi.middleware)
           .concat(targetsApi.middleware)
+          .concat(convertApi.middleware)
       });
 export default store;

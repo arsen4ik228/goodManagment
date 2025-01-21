@@ -9,6 +9,7 @@ import CalendarModal from '../Modals/CalendarModal/CalendarModal'
 import FilesModal from '../Modals/FilesModal/FilesModal'
 import OrderModal from '../Modals/OrderModal/OrderModal'
 import { useTargetsHook } from '../../../hooks/useTargetsHook'
+import { useConvertsHook } from '../../../hooks/useConvertsHook'
 
 export default function InputTextContainer({ userPosts }) {
 
@@ -20,9 +21,10 @@ export default function InputTextContainer({ userPosts }) {
     const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0])
     const [deadlineDate, setDeadlineDate] = useState(new Date().toISOString().split('T')[0])
     const [contentInput, setContentInput] = useState()
-    const [selectedPolicy,setSelectedPolicy] = useState()
+    const [selectedPolicy, setSelectedPolicy] = useState(false)
 
-    const [isOrder, setIsOreder] = useState(false)
+    const [convertTheme, setConvertTheme] = useState('')
+    const [reciverPostId, setReciverPostId] = useState()
 
     const idTextarea = 1001
 
@@ -34,18 +36,38 @@ export default function InputTextContainer({ userPosts }) {
         ErrorPostTargetsMutation
     } = useTargetsHook()
 
+    const {
+        postConvert,
+        isLoadingPostPoliciesMutation,
+        isSuccessPostPoliciesMutation,
+        isErrorPostPoliciesMutation,
+        ErrorPostPoliciesMutation,
+
+    } = useConvertsHook()
+
+
+    const reset = () => {
+        setStartDate(new Date().toISOString().split('T')[0])
+        setDeadlineDate(new Date().toISOString().split('T')[0])
+        setContentInput('')
+        setSelectedPolicy(false)
+    }
+
     const createTargets = async () => {
 
         if (!contentInput) return
 
         const Data = {}
 
-        Data.type = isOrder ? 'Приказ' : 'Личная'
+        Data.type = 'Личная'
         Data.orderNumber = 1
         Data.content = contentInput
         Data.holderPostId = selectedPost
         Data.dateStart = startDate
         Data.deadline = deadlineDate
+        if (selectedPolicy)
+            Data.policyId = selectedPolicy
+
         console.log(Data)
 
         await postTargets({
@@ -53,10 +75,46 @@ export default function InputTextContainer({ userPosts }) {
         })
             .unwrap()
             .then(() => {
+                reset()
             })
             .catch((error) => {
                 console.error("Ошибка:", JSON.stringify(error, null, 2));
             });
+    }
+
+    const createOrder = async () => {
+
+        if (!contentInput) return
+
+        const Data = {}
+
+        Data.convertTheme = convertTheme
+        Data.expirationTime = 999
+        Data.convertType = "Приказ"
+        Data.convertPath = 'Прямой'
+        Data.dateFinish = new Date(deadlineDate)
+        Data.senderPostId = selectedPost
+        Data.reciverPostId = reciverPostId
+        Data.targetCreateDto = {
+            type: "Приказ",
+            orderNumber: 1,
+            content: contentInput,
+            holderPostId: reciverPostId,
+            dateStart: new Date(startDate),
+            deadline: new Date(deadlineDate)
+        }
+
+        await postConvert({
+            ...Data
+        })
+            .unwrap()
+            .then(() => {
+                reset()
+            })
+            .catch((error) => {
+                console.error("Ошибка:", JSON.stringify(error, null, 2));
+            });
+
     }
 
     const selectedPostOrganizationId = userPosts?.find(item => item.id === selectedPost?.organization)
@@ -124,10 +182,13 @@ export default function InputTextContainer({ userPosts }) {
                     postOrganizationId={userPosts?.find(item => item.id === selectedPost)?.organization}
                 ></FilesModal>
             )}
-            
+
             {openOrderModal && (
                 <OrderModal
                     setModalOpen={setOpenOrderModal}
+                    setReciverPost={setReciverPostId}
+                    setTheme={setConvertTheme}
+                    buttonFunc={createOrder}
                 ></OrderModal>
             )}
 
