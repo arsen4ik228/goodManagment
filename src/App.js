@@ -28,7 +28,6 @@ import NewStatistic from './UI/Statistics/NewStatistic.jsx';
 import MainWorkingPlan from './UI/WorkingPlan/MainWorkingPlan.jsx';
 import ModalContainer from './UI/Custom/ModalContainer/ModalContainer.jsx';
 
-
 function App() {
     return (
         <>

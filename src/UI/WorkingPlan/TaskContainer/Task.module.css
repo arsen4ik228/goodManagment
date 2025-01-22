@@ -22,6 +22,44 @@
 
 }
 
+._body{
+    position: relative;
+
+    width: 100%;
+    /* min-height: 50px;
+    max-height: 70px; */
+    height: 60px;
+
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+._body::before{
+    position: absolute;
+    left: 10px;
+    top: -12px;
+
+    /* width: 100px;
+    height: 30px; */
+
+    padding: 2px 8px;
+
+    border-radius: 5px;
+    box-shadow: 0 0 2px rgb(0, 0, 0, 0.5);
+    background-color: white;
+
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #005475;
+    
+    content: 'Приказ';
+
+    /* z-index: 1000; */
+}
+
 .checkboxContainer {
 
     margin: auto 0;

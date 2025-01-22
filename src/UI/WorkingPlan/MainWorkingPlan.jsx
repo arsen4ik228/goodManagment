@@ -10,10 +10,10 @@ export default function MainWorkingPlan() {
     const [isViewArchive, setIsViewArchive] = useState(false)
 
     const {
-        currentTargets,
-        otherTargets,
-        personalTargets,
-        ordersTargets,
+        currentPersonalTargets,
+        otherPersonalTargets,
+        currentOrdersTargets,
+        otherOrdersTargets,
         projectTragets,
         userPosts,
         isLoadingGetTargets,
@@ -27,8 +27,6 @@ export default function MainWorkingPlan() {
         isErrorGetArchiveTargets,
 
     } = useTargetsHook()
-
-    console.log(archivePersonalTargets)
 
     return (
         <>
@@ -48,7 +46,7 @@ export default function MainWorkingPlan() {
                     <div className={classes.tasksContainer}>
                         {!isViewArchive ? (
                             <>
-                                {otherTargets.map((elem, elemIndex) => (
+                                {otherPersonalTargets.map((elem, elemIndex) => (
                                     <>
                                         <div key={elemIndex} className={classes.dayContainer}>
                                             <span>Начать {elem.date}</span>
@@ -65,7 +63,15 @@ export default function MainWorkingPlan() {
                                 <div className={classes.dayContainer}>
                                     <span>Текущие</span>
                                 </div>
-                                {currentTargets.map((item, index) => (
+                                {currentOrdersTargets.map((item, index) => (
+                                    <Task
+                                        key={index}
+                                        taskData={item}
+                                        userPosts={userPosts}
+                                    ></Task>
+                                ))}
+
+                                {currentPersonalTargets.map((item, index) => (
                                     <Task
                                         key={index}
                                         taskData={item}

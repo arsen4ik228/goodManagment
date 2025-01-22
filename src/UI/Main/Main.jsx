@@ -3,6 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import classes from './Main.module.css';
 import menuIcon from './icon/icon _ menu.svg'
 import { useGetOrganizationsQuery } from '../../BLL/organizationsApi';
+import NavigationBar from '../Custom/NavigationBar/NavigationBar';
+import Header from '../Custom/CustomHeader/Header';
 const Main = () => {
 
     const navigate = useNavigate();
@@ -46,14 +48,9 @@ const Main = () => {
 
     return (
         <div className={classes.wrapper}>
-            <div className={classes.headContainer}>
-                <div className={classes.headRow}>
-                    <div className={classes.headElem}>
-                        <div className={classes.headText}>КОНТАКТЫ</div>
-                    </div>
-                    <img src={menuIcon} alt="icon" />
-                </div>
-            </div>
+            <>
+                <Header offLeftIcon={true}>Good Management</Header>
+            </>
             <div className={classes.body}>
                 <div className={classes.bodyColumn}>
                     {organizations?.map((item, index) => (
@@ -68,10 +65,17 @@ const Main = () => {
                     ))}
                 </div>
             </div>
-            <footer className={classes.inputContainer}>
-                <div className={classes.inputRow}>
+            <footer className={classes.footer}>
+                {/* <div className={classes.navigationContainer}>
+                    <div className={classes.imgContainer}></div>
+                    <div className={classes.imgContainer}></div>
+                    <div className={classes.imgContainer}></div>
+                </div> */}
+
+                <NavigationBar></NavigationBar>
+                {/* <div className={classes.inputRow}>
                     <div className={classes.inputElement}><input type="search" placeholder="Поиск" /></div>
-                </div>
+                </div> */}
             </footer>
         </div>
     );

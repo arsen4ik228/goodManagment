@@ -16,7 +16,8 @@ export default function DetailsTaskModal({ setOpenModal, taskData, userPosts }) 
     const [isArchive, setIsArchive] = useState(false)
     const [selectedPostOrganizationId, setSelectedPostOrganizationId] = useState()
 
-
+    const isOrder = taskData.type === 'Приказ'
+    console.log(taskData)
 
     const {
         updateTargets,
@@ -78,7 +79,6 @@ export default function DetailsTaskModal({ setOpenModal, taskData, userPosts }) 
                 });
         }
     }
-    console.log(taskData)
 
     const setHolderPostId = (value) => {
         setHolderPost(value)
@@ -132,7 +132,7 @@ export default function DetailsTaskModal({ setOpenModal, taskData, userPosts }) 
                 <div className={classes.postContainer}>
                     <select
                         name="stateSelect"
-                        disabled={isArchive}
+                        disabled={isArchive || isOrder}
                         value={holderPost}
                         onChange={(e) => setHolderPostId(e.target.value)}
                     >
@@ -143,13 +143,13 @@ export default function DetailsTaskModal({ setOpenModal, taskData, userPosts }) 
                     </select>
                 </div>
                 <div className={classes.dateContainer}>
-                    <input type="date" disabled={isArchive} value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-                    <input type="date" disabled={isArchive} value={isArchive ? taskData.dateComplete.split('T')[0] : deadlineDate} onChange={(e) => setDeadlineDate(e.target.value)} />
+                    <input type="date" disabled={isArchive || isOrder} value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+                    <input type="date" disabled={isArchive || isOrder} value={isArchive ? taskData.dateComplete.split('T')[0] : deadlineDate} onChange={(e) => setDeadlineDate(e.target.value)} />
                 </div>
                 <div className={classes.descriptionContainer}>
                     <textarea
                         name="description"
-                        disabled={isArchive}
+                        disabled={isArchive || isOrder}
                         id={taskData.id}
                         value={contentInput}
                         onChange={(e) => setContentInput(e.target.value)}
@@ -158,7 +158,7 @@ export default function DetailsTaskModal({ setOpenModal, taskData, userPosts }) 
                 <div className={classes.stateContainer}>
                     <select
                         name="stateSelect"
-                        disabled={isArchive}
+                        disabled={isArchive || isOrder}
                         value={taskStatus}
                         onChange={(e) => setTaskStatus(e.target.value)}
                     >
@@ -168,7 +168,7 @@ export default function DetailsTaskModal({ setOpenModal, taskData, userPosts }) 
                     </select>
                 </div>
                 <div className={classes.attachContainer}>
-                    <select name="policy" disabled={isArchive} value={selectedPolicy} onChange={(e) => setSelectedPolicy(e.target.value)}>
+                    <select name="policy" disabled={isArchive || isOrder} value={selectedPolicy} onChange={(e) => setSelectedPolicy(e.target.value)}>
                         <option value={'null'}>Выберите политику</option>
                         {activeDirectives.map((item, index) => (
                             <option key={index} value={item.id}>{item.policyName}</option>

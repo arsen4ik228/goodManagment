@@ -53,6 +53,7 @@ export const targetsApi = createApi({
                 };
 
                 const newPersonalTargets = transformTargetsArray(response?.personalTargets)
+                const newOrdersTargets = transformTargetsArray(response?.ordersTargets)
                 console.log(newPersonalTargets)
 
                 const _userPosts = response?.userPosts.map(item => ({ ...item, organization: item.organization.id }))
@@ -60,6 +61,7 @@ export const targetsApi = createApi({
                 return {
                     userPosts: _userPosts,
                     personalTargets: newPersonalTargets,
+                    ordersTargets: newOrdersTargets,
                 }
             },
             providesTags: (result) => result ? [{ type: "Targets", id: "LIST" }] : [],

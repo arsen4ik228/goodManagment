@@ -27,6 +27,8 @@ export default function InputTextContainer({ userPosts }) {
     const [reciverPostId, setReciverPostId] = useState()
 
     const idTextarea = 1001
+    const selectedPostOrganizationId = userPosts?.find(item => item.id === selectedPost?.organization)
+
 
     const {
         postTargets,
@@ -92,7 +94,7 @@ export default function InputTextContainer({ userPosts }) {
         Data.expirationTime = 999
         Data.convertType = "Приказ"
         Data.convertPath = 'Прямой'
-        Data.dateFinish = new Date(deadlineDate)
+        Data.dateFinish =  deadlineDate
         Data.senderPostId = selectedPost
         Data.reciverPostId = reciverPostId
         Data.targetCreateDto = {
@@ -100,8 +102,8 @@ export default function InputTextContainer({ userPosts }) {
             orderNumber: 1,
             content: contentInput,
             holderPostId: reciverPostId,
-            dateStart: new Date(startDate),
-            deadline: new Date(deadlineDate)
+            dateStart: startDate,
+            deadline: deadlineDate
         }
 
         await postConvert({
@@ -116,8 +118,6 @@ export default function InputTextContainer({ userPosts }) {
             });
 
     }
-
-    const selectedPostOrganizationId = userPosts?.find(item => item.id === selectedPost?.organization)
 
     useEffect(() => {
         setTimeout(resizeTextarea(idTextarea), 0)
@@ -179,7 +179,7 @@ export default function InputTextContainer({ userPosts }) {
                     setOpenModal={setOpenFilesModal}
                     policyId={selectedPolicy}
                     setPolicyId={setSelectedPolicy}
-                    postOrganizationId={userPosts?.find(item => item.id === selectedPost)?.organization}
+                    postOrganizationId={selectedPostOrganizationId}
                 ></FilesModal>
             )}
 

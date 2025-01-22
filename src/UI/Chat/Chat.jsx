@@ -9,6 +9,7 @@ import strategy from './icon/icon _ strategy.svg'
 import policy from './icon/icon _policy.svg'
 import avatar from '../Custom/icon/messendger _ avatar.svg'
 import { useNavigate, useParams } from "react-router-dom";
+import Header from '../Custom/CustomHeader/Header';
 
 const Chat = () => {
 
@@ -38,19 +39,9 @@ const Chat = () => {
 
         <>
             <div className={classes.wrapper}>
-                <div className={classes.headContainer}>
-                    <div className={classes.headRow}>
-                        <div className={classes.blueLine}></div>
-                        <div className={classes.headElem}>
-                            <div className={classes.icon}>
-                                <img src={backRow} alt="icon" />
-                            </div>
-                            <div className={classes.txt}>
-                                <div className={classes.headText}>Личный помощник</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <>
+                 <Header>Личный помощник</Header>   
+                </>
                 <div className={classes.body}>
 
 

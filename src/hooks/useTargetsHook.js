@@ -3,20 +3,20 @@ import { useDeleteTargetMutation, useGetArchiveTargetsQuery, useGetTargetsQuery,
 export const useTargetsHook = () => {
 
     const {
-        currentTargets = [],
-        otherTargets = [],
-        personalTargets = [],
-        ordersTargets = [],
+        currentPersonalTargets = [],
+        otherPersonalTargets = [],
+        currentOrdersTargets = [],
+        otherOrdersTargets = [],
         projectTragets = [],
         userPosts = [],
         isLoadingGetTargets,
         isErrorGetTargets,
     } = useGetTargetsQuery(undefined, {
         selectFromResult: ({ data, isLoading, isError, }) => ({
-            currentTargets: data?.personalTargets?.currentTargets || [],
-            otherTargets: data?.personalTargets?.otherTargets || [],
-            personalTargets: data?.personalTargets || [],
-            ordersTargets: data?.ordersTargets || [],
+            currentPersonalTargets: data?.personalTargets?.currentTargets || [],
+            otherPersonalTargets: data?.personalTargets?.otherTargets || [],
+            currentOrdersTargets: data?.ordersTargets.currentTargets || [],
+            otherOrdersTargets: data?.ordersTargets.otherTargets || [],
             projectTragets: data?.projectTargets || [],
             userPosts: data?.userPosts || [],
             isLoadingGetTargets: isLoading,
@@ -72,10 +72,10 @@ export const useTargetsHook = () => {
 
     return {
         // getTargets
-        currentTargets,
-        otherTargets,
-        personalTargets,
-        ordersTargets,
+        currentPersonalTargets,
+        otherPersonalTargets,
+        currentOrdersTargets,
+        otherOrdersTargets,
         projectTragets,
         userPosts,
         isLoadingGetTargets,

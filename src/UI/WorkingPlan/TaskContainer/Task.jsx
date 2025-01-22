@@ -9,6 +9,8 @@ export default function Task({ taskData, userPosts, isArchive }) {
     const [openDetailsTaskModal, setOpenDetailsTaskModal] = useState(false)
     const [checkboxStatus, setCheckboxStatus] = useState(false)
 
+    const isOrder = taskData?.type === 'Приказ'
+
     const transformDate = (dateString) => {
 
         if (!dateString) return ' ОШИБКА '
@@ -58,6 +60,8 @@ export default function Task({ taskData, userPosts, isArchive }) {
     const completeTask = () => {
         if (isArchive) return
 
+        if (isOrder) setOpenDetailsTaskModal(true)
+
         updateTask()
     }
 
@@ -88,7 +92,7 @@ export default function Task({ taskData, userPosts, isArchive }) {
         <>
             <div className={classes.wrapper}>
 
-                <div className={classes.body}>
+                <div className={isOrder ? classes._body : classes.body}>
                     <div className={classes.checkboxContainer} onClick={() => completeTask()}>
                         <input type="checkbox" checked={checkboxStatus} disabled={isArchive} readOnly />
                     </div>
