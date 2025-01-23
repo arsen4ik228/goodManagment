@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { baseUrl, formattedDate } from "./constans";
+import { baseUrl, formattedDate, notEmpty } from "./constans";
 import { prepareHeaders } from "./Function/prepareHeaders.js"
+import { merge } from "draft-js/lib/DefaultDraftBlockRenderMap.js";
 
 export const targetsApi = createApi({
     reducerPath: "targets",
@@ -42,7 +43,6 @@ export const targetsApi = createApi({
                         .map(items => ({
                             date: formattedDate(items[0].dateStart).slice(0, 5),
                             items: items.filter(item => item.isFutureOrPastCurrent)
-                                .sort((a, b) => new Date(a.deadline) - new Date(b.deadline))
                         }));
 
 
@@ -52,16 +52,60 @@ export const targetsApi = createApi({
                     };
                 };
 
+                const merdgeOtherTargets = (array1, array2) => {
+
+                    if (!notEmpty(array1) && !notEmpty(array2))
+                        return []
+
+                    else if (notEmpty(array1) && !notEmpty(array2))
+                        return array1
+
+                    else if (!notEmpty(array1) && notEmpty(array2))
+                        return array2
+
+                    let largerArray = array1.length > array2.length ? array1 : array2
+                    let smallerArray = array1.length > array2.length ? array2 : array1
+                    console.log(smallerArray, largerArray)
+
+                    const result = smallerArray.map((smaller, smallerIndex) => {
+
+                        let newOtherTargets = []
+                        console.log('smaller   ', smaller.date)
+                        const sameDateElem = largerArray.find(larger => larger.date === smaller.date)
+                        if (sameDateElem) {
+                            smaller.items = smaller.items.concat(sameDateElem.items)
+                            newOtherTargets.push(smaller)
+
+                            const index = largerArray.indexOf(sameDateElem)
+                            if (index > -1)
+                                largerArray.splice(index, 1)
+                        }
+                        else
+                            newOtherTargets.push(smaller)
+
+                        if (smallerIndex === smallerArray.length - 1) {
+                            newOtherTargets = newOtherTargets.concat(largerArray)
+                        }
+
+                        return {
+                            newOtherTargets
+                        }
+                    })
+
+                    return result[0].newOtherTargets
+                }
+
                 const newPersonalTargets = transformTargetsArray(response?.personalTargets)
                 const newOrdersTargets = transformTargetsArray(response?.ordersTargets)
                 console.log(newPersonalTargets)
 
                 const _userPosts = response?.userPosts.map(item => ({ ...item, organization: item.organization.id }))
-
+                const otherTargets = merdgeOtherTargets(newOrdersTargets.otherTargets, newPersonalTargets.otherTargets)
                 return {
                     userPosts: _userPosts,
                     personalTargets: newPersonalTargets,
                     ordersTargets: newOrdersTargets,
+                    otherTargets
                 }
             },
             providesTags: (result) => result ? [{ type: "Targets", id: "LIST" }] : [],
