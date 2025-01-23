@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import classes from './Chat.module.css';
 import backRow from './icon/icon _ back.svg'
 import star from './icon/icon _ star.svg'
@@ -10,6 +10,8 @@ import policy from './icon/icon _policy.svg'
 import avatar from '../Custom/icon/messendger _ avatar.svg'
 import { useNavigate, useParams } from "react-router-dom";
 import Header from '../Custom/CustomHeader/Header';
+import { useGetOrganizationsQuery } from '../../BLL/organizationsApi';
+import { notEmpty } from '../../BLL/constans';
 
 const Chat = () => {
 
@@ -21,10 +23,31 @@ const Chat = () => {
         { id: '5', icon: stats, text: 'Статистики', link: 'Statistics', },
         { id: '6', icon: policy, text: 'Политика', link: 'Policy' },
         { id: '7', icon: star, text: 'Цели', link: 'Goal' },
+        { id: '8', icon: star, text: 'Рабочий план', link: 'WorkingPlan' },
     ]
 
     const navigate = useNavigate()
     const [searchTerm, setSearchTerm] = useState('');
+    const [selectedOrg, setSelectedOrg] = useState()
+
+    const {
+        organizations = []
+    } = useGetOrganizationsQuery(undefined, {
+        selectFromResult: ({ data }) => ({
+            organizations: data?.organizations || []
+        })
+    })
+
+    const selectOrganization = (id) => {
+        setSelectedOrg(id);
+        if (typeof window !== 'undefined' && window.localStorage) {
+            let savedId = window.localStorage.getItem('selectedOrganizationId');
+
+            if (savedId && savedId === id.toString()) return
+
+            window.localStorage.setItem('selectedOrganizationId', id.toString());
+        }
+    }
 
     // const filteredArray = useMemo(() => {
     //     return array.filter((item) => item.text.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -34,19 +57,38 @@ const Chat = () => {
         [searchTerm]
     );
 
+    useEffect(() => {
+
+        if (!notEmpty(organizations)) return
+
+        const saveId = window.localStorage.getItem('selectedOrganizationId')
+
+        if (saveId) 
+            return setSelectedOrg(saveId)
+        
+        setSelectedOrg(organizations[0].id)
+
+        // if (typeof window !== 'undefined' && window.localStorage) {
+        //     let savedId = window.localStorage.getItem('selectedOrganizationId');
+
+        //     if (savedId && savedId === id.toString()) return
+
+        //     window.localStorage.setItem('selectedOrganizationId', id.toString());
+        // }
+    }, [organizations])
+
 
     return (
 
         <>
             <div className={classes.wrapper}>
                 <>
-                 <Header>Личный помощник</Header>   
+                    <Header>Личный помощник</Header>
                 </>
                 <div className={classes.body}>
 
 
                     <div className={classes.bodyColumn}>
-
                         {filteredArray.map((item) => {
                             return (
                                 <div key={item.id} className={classes.bodyRow}>
@@ -61,17 +103,25 @@ const Chat = () => {
                             );
 
                         })}
+                    </div>
                         <div className={classes.questionContainer}>
                             <div className={classes.questionBody}>
                                 <div className={classes.imgContainer}>
                                     <img src={avatar} alt="" />
                                 </div>
                                 <div className={classes.textContainer}>
-                                    <span>С чем будем работать?</span>
+                                    <span>С чем будем работать в</span>
+                                    <span>
+                                    <select name="oragnization" value={selectedOrg} onChange={(e) => selectOrganization(e.target.value)}>
+                                        {organizations.map((item, index) => (
+                                            <option key={index} value={item.id}>{item.organizationName}</option>
+                                        ))}
+                                    </select>
+                                    
+                                    ?</span>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
                 </div>
                 <footer className={classes.inputContainer}>

@@ -122,13 +122,14 @@ export default function DetailsTaskModal({ setOpenModal, taskData, userPosts }) 
             setOpenModal={setOpenModal}
             clickFunction={clickFunction}
             disabledButton={isArchive}
+            buttonText={isOrder && 'К диалогу'} 
         >
             <div className={classes.content}>
-                {taskData.type === 'Приказ' && (
+                {/* {taskData.type === 'Приказ' && (
                     <div className={classes.titleContainer}>
                         <input type="text" placeholder='Название приказа' />
                     </div>
-                )}
+                )} */}
                 <div className={classes.postContainer}>
                     <select
                         name="stateSelect"

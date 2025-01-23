@@ -14,6 +14,7 @@ export default function MainWorkingPlan() {
         otherPersonalTargets,
         currentOrdersTargets,
         otherOrdersTargets,
+        otherTargets,
         projectTragets,
         userPosts,
         isLoadingGetTargets,
@@ -27,7 +28,7 @@ export default function MainWorkingPlan() {
         isErrorGetArchiveTargets,
 
     } = useTargetsHook()
-
+    console.warn(otherTargets, otherOrdersTargets)
     return (
         <>
             <div className={classes.wrapper}>
@@ -46,7 +47,7 @@ export default function MainWorkingPlan() {
                     <div className={classes.tasksContainer}>
                         {!isViewArchive ? (
                             <>
-                                {otherPersonalTargets.map((elem, elemIndex) => (
+                                {otherTargets.map((elem, elemIndex) => (
                                     <>
                                         <div key={elemIndex} className={classes.dayContainer}>
                                             <span>Начать {elem.date}</span>
@@ -60,6 +61,20 @@ export default function MainWorkingPlan() {
                                         ))}
                                     </>
                                 ))}
+                                {/* {otherPersonalTargets.map((elem, elemIndex) => (
+                                    <>
+                                        <div key={elemIndex} className={classes.dayContainer}>
+                                            <span>Начать {elem.date}</span>
+                                        </div>
+                                        {elem?.items?.map((item, index) => (
+                                            <Task
+                                                key={index}
+                                                taskData={item}
+                                                userPosts={userPosts}
+                                            ></Task>
+                                        ))}
+                                    </>
+                                ))} */}
                                 <div className={classes.dayContainer}>
                                     <span>Текущие</span>
                                 </div>
