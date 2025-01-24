@@ -11,10 +11,9 @@ export default function MainWorkingPlan() {
 
     const {
         currentPersonalTargets,
-        otherPersonalTargets,
         currentOrdersTargets,
-        otherOrdersTargets,
         otherTargets,
+        
         projectTragets,
         userPosts,
         isLoadingGetTargets,
@@ -28,7 +27,7 @@ export default function MainWorkingPlan() {
         isErrorGetArchiveTargets,
 
     } = useTargetsHook()
-    console.warn(otherTargets, otherOrdersTargets)
+
     return (
         <>
             <div className={classes.wrapper}>

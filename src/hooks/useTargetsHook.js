@@ -4,9 +4,8 @@ export const useTargetsHook = () => {
 
     const {
         currentPersonalTargets = [],
-        otherPersonalTargets = [],
         currentOrdersTargets = [],
-        otherOrdersTargets = [],
+
         otherTargets = [],
         projectTragets = [],
         userPosts = [],
@@ -14,11 +13,10 @@ export const useTargetsHook = () => {
         isErrorGetTargets,
     } = useGetTargetsQuery(undefined, {
         selectFromResult: ({ data, isLoading, isError, }) => ({
-            currentPersonalTargets: data?.personalTargets?.currentTargets || [],
-            otherPersonalTargets: data?.personalTargets?.otherTargets || [],
-            currentOrdersTargets: data?.ordersTargets.currentTargets || [],
-            otherOrdersTargets: data?.ordersTargets.otherTargets || [],
+            currentPersonalTargets: data?.personalTargets || [],
+            currentOrdersTargets: data?.ordersTargets || [],
             otherTargets: data?.otherTargets,
+
             projectTragets: data?.projectTargets || [],
             userPosts: data?.userPosts || [],
             isLoadingGetTargets: isLoading,
@@ -75,9 +73,7 @@ export const useTargetsHook = () => {
     return {
         // getTargets
         currentPersonalTargets,
-        otherPersonalTargets,
         currentOrdersTargets,
-        otherOrdersTargets,
         otherTargets,
         projectTragets,
         userPosts,

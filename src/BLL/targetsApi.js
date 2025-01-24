@@ -1,7 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { baseUrl, formattedDate, notEmpty } from "./constans";
 import { prepareHeaders } from "./Function/prepareHeaders.js"
-import { merge } from "draft-js/lib/DefaultDraftBlockRenderMap.js";
 
 export const targetsApi = createApi({
     reducerPath: "targets",
@@ -15,12 +14,16 @@ export const targetsApi = createApi({
             transformResponse: (response) => {
                 console.log('getTargets:    ', response)
 
-                const transformTargetsArray = (array) => {
+                const transformTargetsArray = (array, marker) => {
                     const currentDate = new Date().toISOString().split('T')[0];
                     const groupedItems = {};
+                    console.warn(array, '         ', marker)
 
                     array.forEach(item => {
-                        const dateStart = item.dateStart;
+                        // Создаём копию объекта item, чтобы не мутировать исходные данные
+                        const itemCopy = JSON.parse(JSON.stringify(item)); // Глубокая копия
+                        console.log('item', itemCopy)
+                        const dateStart = itemCopy.dateStart;
                         const dateWithoutTime = new Date(dateStart).toISOString().split('T')[0];
                         const isFutureOrPastCurrent = dateWithoutTime > currentDate;
 
@@ -29,82 +32,93 @@ export const targetsApi = createApi({
                         }
 
                         groupedItems[dateWithoutTime].push({
-                            ...item,
+                            ...itemCopy, // Используем копию объекта
                             isFutureOrPastCurrent: isFutureOrPastCurrent
                         });
                     });
+                    console.log(groupedItems)
+                    const _groupedItems = JSON.parse(JSON.stringify(groupedItems))
                     const currentTargets = Object.values(groupedItems)
                         .filter(items => !items.some(item => item.isFutureOrPastCurrent))
                         .flat()
                         .sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
 
-                    const otherTargets = Object.values(groupedItems)
+                    const _futureTargets = Object.values(groupedItems)
                         .filter(items => items.some(item => item.isFutureOrPastCurrent))
-                        .map(items => ({
-                            date: formattedDate(items[0].dateStart).slice(0, 5),
-                            items: items.filter(item => item.isFutureOrPastCurrent)
-                        }));
+                        .map(elem => ({
+                            date: formattedDate(elem[0].dateStart).slice(0, 5),
+                            items: elem
+                        }))
+                    console.log(_futureTargets)
 
+                    const futureTargets = Object.values(_groupedItems)
+                        .filter(items => items.some(item => item.isFutureOrPastCurrent))
+                        .map(elem => ({
+                            date: formattedDate(elem[0].dateStart).slice(0, 5),
+                            items: elem
+                        }))
+                    console.log(futureTargets)
 
                     return {
                         currentTargets,
-                        otherTargets
+                        futureTargets
                     };
                 };
 
                 const merdgeOtherTargets = (array1, array2) => {
 
+
                     if (!notEmpty(array1) && !notEmpty(array2))
                         return []
 
-                    else if (notEmpty(array1) && !notEmpty(array2))
-                        return array1
-
-                    else if (!notEmpty(array1) && notEmpty(array2))
+                    if (!notEmpty(array1))
                         return array2
 
-                    let largerArray = array1.length > array2.length ? array1 : array2
-                    let smallerArray = array1.length > array2.length ? array2 : array1
-                    console.log(smallerArray, largerArray)
+                    if (!notEmpty(array2))
+                        return array1
+
+                    const [largerArray, smallerArray] = array1.length > array2.length ? [array1, array2] : [array2, array1];
 
                     const result = smallerArray.map((smaller, smallerIndex) => {
+                        // Находим элемент в largerArray с такой же датой
+                        const sameDateElemIndex = largerArray.findIndex(larger => larger.date === smaller.date);
 
-                        let newOtherTargets = []
-                        console.log('smaller   ', smaller.date)
-                        const sameDateElem = largerArray.find(larger => larger.date === smaller.date)
-                        if (sameDateElem) {
-                            smaller.items = smaller.items.concat(sameDateElem.items)
-                            newOtherTargets.push(smaller)
-
-                            const index = largerArray.indexOf(sameDateElem)
-                            if (index > -1)
-                                largerArray.splice(index, 1)
+                        if (sameDateElemIndex > -1) {
+                            // Если найден элемент с такой же датой, объединяем items
+                            smaller.items = smaller.items.concat(largerArray[sameDateElemIndex].items);
+                            // Удаляем элемент из largerArray, чтобы он не попал в финальный результат
+                            largerArray.splice(sameDateElemIndex, 1);
                         }
-                        else
-                            newOtherTargets.push(smaller)
 
+                        // Если это последний элемент smallerArray, добавляем оставшиеся элементы largerArray
                         if (smallerIndex === smallerArray.length - 1) {
-                            newOtherTargets = newOtherTargets.concat(largerArray)
+                            smallerArray.push(...largerArray);
                         }
 
-                        return {
-                            newOtherTargets
-                        }
-                    })
+                        return smaller;
+                    });
 
-                    return result[0].newOtherTargets
+                    // Сортируем финальный результат по дате
+
+                    const sortedResult = result.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                    console.warn('sorted   ', sortedResult);
+                    return sortedResult;
                 }
 
-                const newPersonalTargets = transformTargetsArray(response?.personalTargets)
-                const newOrdersTargets = transformTargetsArray(response?.ordersTargets)
-                console.log(newPersonalTargets)
+                const newPersonalTargets = transformTargetsArray(response?.personalTargets, 'personal')
+                const newOrdersTargets = transformTargetsArray(response?.ordersTargets, 'order')
+
 
                 const _userPosts = response?.userPosts.map(item => ({ ...item, organization: item.organization.id }))
-                const otherTargets = merdgeOtherTargets(newOrdersTargets.otherTargets, newPersonalTargets.otherTargets)
+                console.log(' Orders   ', newOrdersTargets.futureTargets)
+                console.log('personal  ', newPersonalTargets.futureTargets)
+                const otherTargets = merdgeOtherTargets(newOrdersTargets.futureTargets, newPersonalTargets.futureTargets)
+
                 return {
                     userPosts: _userPosts,
-                    personalTargets: newPersonalTargets,
-                    ordersTargets: newOrdersTargets,
+                    personalTargets: newPersonalTargets.currentTargets,
+                    ordersTargets: newOrdersTargets.currentTargets,
                     otherTargets
                 }
             },

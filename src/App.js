@@ -1,9 +1,9 @@
 import './App.css';
 import React from 'react';
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import AuthorizationPage from './UI/Authorization/AuthorizationPage.jsx'
 import Main from './UI/Main/Main.jsx'
-import Chat from './UI/Chat/Chat.jsx'
+import HelperChat from './UI/Chat/Chat.jsx'
 import MainPolicy from './UI/Policy/MainPolicy.jsx'
 import Policy from './UI/Policy/Policy.jsx'
 import CreatePolicyDirectory from './UI/Policy/PolicyDirectory/CreatePolicyDirectory.jsx';
@@ -33,44 +33,56 @@ function App() {
         <>
             <Routes>
                 {/* <Route path={'/'} element={<Navigate replace to="Main" />}></Route> */}
-                <Route path={'/'} element={<AuthorizationPage/>}></Route>
+                <Route path={'/'} element={<AuthorizationPage />}></Route>
                 <Route path="/*"
                     element={
                         <Routes>
+                            <Route path="test" element={<ModalContainer />} />
                             <Route path="Main" element={<Main />} />
 
-                            <Route path="Chat" element={<Chat />} />
-                            <Route path="test" element={<ModalContainer />} />
+                            <Route path="Chat/*"
+                                element={
+                                    <Routes>
+                                        <Route path="/" element={<Navigate to="HelperChat" replace />} />
 
-                            <Route path="Policy" element={<MainPolicy />} />
-                            <Route path="Policy/:policyId" element={<Policy />} />
-                            <Route path="Policy/CreateDirectory" element={<CreatePolicyDirectory />} />
-                            <Route path="Policy/EditDirectory/:policyDirectoryId" element={<EditPolicyDirectories />} />
+                                        <Route path="HelperChat" element={<HelperChat />} />
 
-                            <Route path="Posts" element={<MainPost />} />
-                            <Route path="Posts/:postId" element={<Posts />} />
-                            <Route path="Posts/new" element={<NewPosts />} />
-                            <Route path="Posts/:postId/attachStatistics" element={<AttachStatistics />} />
+                                        <Route path="Policy" element={<MainPolicy />} />
+                                        <Route path="Policy/:policyId" element={<Policy />} />
+                                        <Route path="Policy/CreateDirectory" element={<CreatePolicyDirectory />} />
+                                        <Route path="Policy/EditDirectory/:policyDirectoryId" element={<EditPolicyDirectories />} />
 
-                            <Route path="Strategy" element={<MainStrategy />} />
-                            <Route path="Strategy/:strategyId" element={<Strategy />} />
+                                        <Route path="Posts" element={<MainPost />} />
+                                        <Route path="Posts/:postId" element={<Posts />} />
+                                        <Route path="Posts/new" element={<NewPosts />} />
+                                        <Route path="Posts/:postId/attachStatistics" element={<AttachStatistics />} />
 
-                            <Route path="Goal" element={<Goal />} />
+                                        <Route path="Strategy" element={<MainStrategy />} />
+                                        <Route path="Strategy/:strategyId" element={<Strategy />} />
 
-                            <Route path="Objective" element={<Objective />} />
+                                        <Route path="Goal" element={<Goal />} />
 
-                            <Route path="Projects" element={<MainProject />} />
-                            <Route path="Projects/:projectId" element={<Projects />} />
-                            <Route path="Projects/Target" element={<Target />} />
-                            <Route path="Projects/new" element={<NewProject />} />
-                            <Route path="Projects/program/:programId" element={<Programs />} />
-                            <Route path="Projects/archive/:projectId" element={<ProjectArchive />} />
+                                        <Route path="Objective" element={<Objective />} />
 
-                            <Route path="Statistics" element={<MainStatistics />} />
-                            <Route path="Statistics/:statisticId" element={<Statistics />} />
-                            <Route path="Statistics/new/:paramPostID?" element={<NewStatistic />} />
+                                        <Route path="Projects" element={<MainProject />} />
+                                        <Route path="Projects/:projectId" element={<Projects />} />
+                                        <Route path="Projects/Target" element={<Target />} />
+                                        <Route path="Projects/new" element={<NewProject />} />
+                                        <Route path="Projects/program/:programId" element={<Programs />} />
+                                        <Route path="Projects/archive/:projectId" element={<ProjectArchive />} />
 
-                            <Route path='WorkingPlan' element={<MainWorkingPlan/>} />
+                                        <Route path="Statistics" element={<MainStatistics />} />
+                                        <Route path="Statistics/:statisticId" element={<Statistics />} />
+                                        <Route path="Statistics/new/:paramPostID?" element={<NewStatistic />} />
+
+                                        <Route path='WorkingPlan' element={<MainWorkingPlan />} />
+
+                                    </Routes>
+                                }
+
+                            />
+
+
 
                         </Routes>
                     }>

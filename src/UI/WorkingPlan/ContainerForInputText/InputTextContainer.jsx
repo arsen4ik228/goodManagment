@@ -22,12 +22,12 @@ export default function InputTextContainer({ userPosts }) {
     const [deadlineDate, setDeadlineDate] = useState(new Date().toISOString().split('T')[0])
     const [contentInput, setContentInput] = useState()
     const [selectedPolicy, setSelectedPolicy] = useState(false)
+    const [selectedPostOrganizationId, setSelectedPostOrganizationId] = useState()
 
     const [convertTheme, setConvertTheme] = useState('')
     const [reciverPostId, setReciverPostId] = useState()
 
     const idTextarea = 1001
-    const selectedPostOrganizationId = userPosts?.find(item => item.id === selectedPost?.organization)
 
 
     const {
@@ -119,6 +119,16 @@ export default function InputTextContainer({ userPosts }) {
 
     }
 
+    const selectPost = (e) => {
+        const value = e.target.value;
+        if (value) {
+            const [postId, organization] = value.split(' ');
+            setSelectedPost(postId);
+            setSelectedPostOrganizationId(organization);
+        }
+    };
+
+    
     useEffect(() => {
         setTimeout(resizeTextarea(idTextarea), 0)
     }, [contentInput])
@@ -127,6 +137,7 @@ export default function InputTextContainer({ userPosts }) {
         if (!notEmpty(userPosts)) return
 
         setSelectedPost(userPosts[0].id)
+        setSelectedPostOrganizationId(userPosts[0].organization)
     }, [userPosts])
 
     return (
@@ -136,11 +147,11 @@ export default function InputTextContainer({ userPosts }) {
                     <div className={classes.choosePostContainer}>
                         <select
                             name="choosePost"
-                            value={selectedPost}
-                            onChange={(e) => setSelectedPost(e.target.value)}
+                            // value={selectedPost}
+                            onChange={selectPost}
                         >
                             {userPosts.map((item, index) => (
-                                <option key={index} value={item.id}>{item.postName}</option>
+                                <option key={index} value={`${item.id} ${item.organization}`}>{item.postName}</option>
                             ))}
                         </select>
                     </div>

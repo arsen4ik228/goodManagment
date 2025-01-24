@@ -1,6 +1,5 @@
 //constants.js
-export const baseUrl = "http://localhost:5002/";
-// export const baseUrl = "https://24academy.ru/gm/";
+export const baseUrl = process.env.REACT_APP_BASE_URL;
 
 export const selectedOrganizationId = localStorage.getItem('selectedOrganizationId')
 
